@@ -38,4 +38,33 @@ public class Catalog {
     public List<Product> getAllProducts() {
         return new ArrayList<>(products.values());
     }
+
+    public Product updateProduct(int productId, String fieldToUpdate, String newValue) throws Exception {
+        Product product = findProductById(productId);
+        if (product == null) {
+            throw new Exception("Error: Product with ID " + productId + " not found.");
+        }
+
+        switch (fieldToUpdate.toUpperCase()) {
+            case "NAME" -> product.setName(newValue);
+            case "CATEGORY" -> {
+                try {
+                    ProductCategory category = ProductCategory.valueOf(newValue.toUpperCase());
+                    product.setCategory(category);
+                } catch (IllegalArgumentException e) {
+                    throw new Exception("Error: Invalid category '" + newValue + "'.");
+                }
+            }
+            case "PRICE" -> {
+                try {
+                    double price = Double.parseDouble(newValue);
+                    product.setPrice(price);
+                } catch (NumberFormatException e) {
+                    throw new Exception("Error: Invalid price format '" + newValue + "'.");
+                }
+            }
+            default -> throw new Exception("Error: Invalid field '" + fieldToUpdate + "'. Can only be NAME, CATEGORY, or PRICE.");
+        }
+        return product;
+    }
 }
