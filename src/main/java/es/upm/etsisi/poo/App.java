@@ -129,7 +129,7 @@ public class App {
         switch (subCommand) {
             case "add" -> {
                 // Add a new product to the catalog.
-                if (args.length != 5) throw new Exception("Usage: prod add <id> \"<name>\" <category> <price>");
+                if (args.length != 6) throw new Exception("Usage: prod add <id> \"<name>\" <category> <price>");
                 int id = Integer.parseInt(args[2]);
                 String name = args[3];
                 ProductCategory category = ProductCategory.valueOf(args[4].toUpperCase());
