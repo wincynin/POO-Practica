@@ -1,83 +1,159 @@
-POO-Practica: Tienda UPM - E1
-This project is the first delivery (E1) for the Object-Oriented Programming course assignment. It is a command-line interface (CLI) application developed in Java to manage products and sales tickets for the UPM university store.
+<div align="center">
+	<h1> OOP-ASSIGNMENT: <br> 🧾 Ticket Management System 🧾</h1>
+</div>
 
-How to Run the Application
+
+## 🏬 UPM STORE (English)
+
+This project is the first delivery (E1) for the Object-Oriented Programming (POO) course assignment. It is a command-line interface (CLI) application developed in Java to manage products and sales tickets for the UPM university store.
+
+---
+
+### 🚀 How to Run the Application
+
 This project is built using Apache Maven.
 
-Prerequisites
-Java 21 or higher
+#### 📋 Prerequisites
 
-Apache Maven
+- Java 21 or higher
+- Apache Maven
 
-Compilation and Packaging
-To compile the source code and package it into a runnable .jar file, navigate to the project's root directory and run the following command:
+#### ⚙️ Compilation and Packaging
 
+From the project’s root directory, run:
+
+```bash
 mvn clean package
+```
 
-This will generate a POO-practica-1-1.0-SNAPSHOT.jar file in the target/ directory.
+This will generate a runnable .jar file:
 
-Execution
-To run the application, use the following command from the root directory:
+```
+target/POO-practica-1-1.0-SNAPSHOT.jar
+```
 
+#### ▶️ Execution
+
+Run the application with:
+
+```bash
 java -jar target/POO-practica-1-1.0-SNAPSHOT.jar
+```
 
-Justification of Class Design
-The application is designed following key Object-Oriented principles such as Encapsulation, Separation of Concerns, and Data Integrity. The responsibilities are divided among several specialized classes.
+---
 
-1. App.java - The Controller
-Role: This class acts as the main controller and entry point of the application. It is responsible for the user-facing logic.
+### 🏗️ Justification of Class Design
 
-Design Justification:
+The application follows Object-Oriented Principles such as Encapsulation, Separation of Concerns, and Data Integrity. Responsibilities are divided across specialized classes:
 
-Separation of Concerns: App.java handles all user interaction (reading input from the console) and command parsing. It does not contain any business logic related to products or tickets; instead, it delegates these tasks to the Catalog and Ticket classes. This makes the code modular and easier to maintain.
+- **App.java — The Controller**
+	- Entry point and main controller of the application, handling user interaction.
+	- Deals only with console I/O and command parsing, delegating business logic to other classes.
+	- Uses Regex to robustly parse user commands (supports quoted arguments with spaces).
+	- Manages the lifecycle of Catalog and Ticket objects.
 
-Command Parsing: A Regex Pattern is used to parse user commands. This approach was chosen for its robustness, as it correctly handles arguments that contain spaces when enclosed in double quotes (e.g., product names), a common challenge in CLI applications.
+- **Catalog.java — Product Management**
+	- Manages the collection of products available in the store.
+	- Uses HashMap<Integer, Product> for efficient lookups, updates, and deletions.
+	- The products map is private and can only be accessed via public methods (addProduct, removeProduct, etc.).
+	- Enforces business rules, such as a maximum of 200 products and the uniqueness of product IDs.
 
-State Management: It manages the lifecycle of the Catalog and Ticket objects, creating new instances as required by the application flow (e.g., creating a new Ticket after printing).
+- **Ticket.java — Sales and Discount Logic**
+	- Represents a customer’s shopping cart and handles all price and discount calculations.
+	- All discount logic is contained within the getTicketDetails() method.
+	- Uses HashMap<Product, Integer> to store products and their quantities.
+	- Enforces a maximum of 100 items per ticket, throwing an exception if the limit is exceeded.
 
-2. Catalog.java - Product Management
-Role: This class is responsible for managing the entire collection of products available in the store.
+- **Product.java — The Data Model**
+	- A Plain Old Java Object (POJO) that represents a product.
+	- The constructor and setters validate all inputs (e.g., prices cannot be negative).
+	- The id field is final and immutable. The class is also final to prevent unsafe inheritance.
+	- The overridden toString() method ensures the output consistently matches the required format.
 
-Design Justification:
+- **ProductCategory.java — Type-Safe Categories**
+	- An Enum representing the fixed set of product categories.
+	- Prevents errors and typos that could occur with string-based categories (e.g., "ELECTRONICA" vs "ELECCTRONICA").
+	- Each enum constant directly holds its associated discount percentage.
 
-Data Structure: A HashMap<Integer, Product> is used to store the products. This was a deliberate choice for efficiency. It allows for average-case O(1) time complexity for crucial operations like finding, updating, or removing a product by its unique ID.
+---
 
-Encapsulation: The products map is private and can only be modified through the public methods (addProduct, removeProduct, etc.). This encapsulates the product management logic and protects the data from uncontrolled external access.
+### 📚 Libraries Used
 
-Rule Enforcement: This class enforces the business rules specified in the PDF, such as the maximum limit of 200 products and the constraint that all product IDs must be unique.
+- **Java Standard Library** → Used for all core application logic. No external dependencies are required for the main application.
+- **JUnit 5** → Included via Maven for unit testing.
 
-3. Ticket.java - Sales and Discount Logic
-Role: This class models a customer's shopping cart. It manages the items to be purchased and handles all price and discount calculations.
+<br>
 
-Design Justification:
+---
+<div align="center">
+	<h3>📦 Entrega E1 📦</h3>
+</div>
 
-Encapsulation of Complexity: The most complex logic in the application—the calculation of category-based discounts—is entirely encapsulated within this class. The getTicketDetails() method handles counting categories, applying discounts conditionally, sorting the output, and formatting the final invoice. This prevents the complex logic from leaking into other parts of the application.
+---
+<br>
 
-Data Structure: A HashMap<Product, Integer> is used to store the items and their respective quantities. This is an efficient way to manage a collection where each unique item can have a variable quantity.
+## Descripción
 
-State Integrity: The class enforces the rule that a ticket cannot contain more than 100 items in total, throwing an exception if this limit is exceeded.
+El cliente solicita un módulo de tickets que permita crear y gestionar productos, aplicar descuentos por categoría y emitir factura de un ticket ordenada alfabéticamente por nombre de producto.
 
-4. Product.java - The Data Model
-Role: This is a model class (or POJO - Plain Old Java Object) that represents a single product.
+---
 
-Design Justification:
+## 🛒 Productos
 
-Data Integrity: Validation logic is built directly into the constructor and setters. This guarantees that it is impossible to create a Product object in an invalid state (e.g., with a negative price or an empty name).
+- Cada producto tiene:
+	- **ID**: Identificador único y positivo (no pueden existir dos productos con el mismo ID).
+	- **Nombre**: No vacío y de menos de 100 caracteres.
+	- **Categoría**: Una de las siguientes: `MERCH`, `PAPELERIA`, `ROPA`, `LIBRO`, `ELECTRONICA`.
+	- **Precio**: Número mayor a 0, sin límite superior.
+- Máximo **200 productos** diferentes en el sistema.
 
-Immutability and Safety: The id field is final and can only be set in the constructor. This makes a product's identity immutable, which is crucial for data consistency. The entire class is also declared as final, which prevents inheritance and resolves potential issues with overridable methods being called in the constructor, ensuring robust and predictable behavior.
+---
 
-toString() Method: The toString() method is overridden to produce the exact output format required by the project specifications, promoting code reuse and consistency.
+## 🎟️ Tickets y Descuentos
 
-5. ProductCategory.java - Type-Safe Categories
-Role: Represents the fixed set of product categories.
+- Al generar un ticket, se aplican descuentos automáticos si hay más de un producto de la misma categoría:
+	- `MERCH`: **0%**
+	- `PAPELERIA`: **5%**
+	- `ROPA`: **7%**
+	- `LIBRO`: **10%**
+	- `ELECTRONICA`: **3%**
+- El ticket se imprime ordenado alfabéticamente por nombre de producto.
+- Máximo **100 productos** por ticket.
+- Se puede reiniciar el ticket en cualquier momento.
+- Al modificar el ticket, se imprime el importe provisional con descuentos aplicados.
+- Eliminar un producto borra todas sus apariciones en el ticket.
 
-Design Justification:
+---
 
-Type Safety: An enum was chosen because there is a predefined, fixed list of categories. This prevents errors that could arise from using simple strings (e.g., typos like "ELECCTRONICA").
+## 🖥️ Comandos Disponibles
 
-Encapsulation: The discount percentage is directly associated with its category within the enum. This is a powerful form of encapsulation, ensuring that the data (the discount rate) is stored right next to the entity it belongs to.
+```bash
+prod add <id> "<nombre>" <categoria> <precio>   # Agrega un producto con nuevo id
+prod list                                        # Lista productos actuales
+prod update <id> campo valor                     # Actualiza campo (nombre|categoria|precio)
+prod remove <id>                                 # Elimina producto por id
+ticket new                                       # Resetea ticket en curso
+ticket add <prodId> <cantidad>                   # Agrega cantidad de producto al ticket
+ticket remove <prodId>                           # Elimina todas las apariciones del producto
+ticket print                                     # Imprime factura
+help                                             # Lista los comandos
+echo "<texto>"                                   # Imprime el texto
+exit                                             # Cierra la aplicación
+```
 
-Libraries Used
-Java Standard Library: No external libraries were required for the core application logic.
+## 📦 Entregables
 
-JUnit 5: Used for unit testing, as included by the standard Maven archetype.
+- Código fuente y empaquetado (`jar`) comprimidos en un **zip** subido a Moodle.
+- Diagrama **UML** del modelo propuesto en formato legible (PNG, JPG, SVG, ...).
+	- Justificación del diseño de clases y uso de librerías (si las hubiera).
+
+---
+
+## ⚠️ Consideraciones
+
+- El código entregado **no debe tener errores de compilación**.
+- Se debe respetar el formato de entrada y salida de comandos especificado.
+- **No** se pueden crear más comandos de los pedidos en el enunciado.
+- El código debe ejecutar sin errores todos los comandos del ejemplo propuesto (verificado en la defensa).
+
+---
