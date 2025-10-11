@@ -3,223 +3,298 @@ package es.upm.etsisi.poo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * Main application class for the ticket module.
- * <p>
- * This class provides a command-line interface for managing a product catalog and creating tickets (sales receipts).
- * Users can add, list, update, and remove products, as well as create new tickets, add/remove products to/from tickets,
- * and print tickets. Discounts are applied based on product categories and quantities.
- * </p>
- *
- * <ul>
- *   <li>prod add &mdash; Add a new product to the catalog.</li>
- *   <li>prod list &mdash; List all products in the catalog.</li>
- *   <li>prod update &mdash; Update a product's field (name, category, or price).</li>
- *   <li>prod remove &mdash; Remove a product from the catalog.</li>
- *   <li>ticket new &mdash; Start a new ticket.</li>
- *   <li>ticket add &mdash; Add a product to the current ticket.</li>
- *   <li>ticket remove &mdash; Remove a product from the current ticket.</li>
- *   <li>ticket print &mdash; Print the current ticket and reset it.</li>
- *   <li>help &mdash; Show available commands.</li>
- *   <li>exit &mdash; Exit the application.</li>
- * </ul>
- *
- * <p>
- * Supported product categories: MERCH, PAPELERIA, ROPA, LIBRO, ELECTRONICA.
- * Discounts are applied if there are two or more units in a category:
- * MERCH 0%, PAPELERIA 5%, ROPA 7%, LIBRO 10%, ELECTRONICA 3%.
- * </p>
- *
- * @author IWSIT21_02
+ * Main application class for the UPM Store ticket module.
+ * This class provides a command-line interface (Controller) to interact with the model classes (Store, Ticket, Product).
  */
 public class App {
-    // Catalog of products available for sale.
-    private final Catalog catalog;
-
-    // Current ticket (sales receipt) being processed.
-    private Ticket ticket;
-
-    // Scanner for reading user input from the command line.
-    private final Scanner scanner;
+    // Model: Manages the product inventory.
+    private static Store store;
+    // Model: Manages the current shopping ticket.
+    private static Ticket ticket;
+    // View/Input: Reads user input from the console.
+    private static Scanner scanner;
 
     /**
-     * Constructs the App, initializing the catalog, ticket, and scanner.
+     * Main entry point. Initializes the application and runs the command loop.
      */
-    public App() {
-        this.catalog = new Catalog();
-        this.ticket = new Ticket();
-        this.scanner = new Scanner(System.in);
+    public static void main(String[] args) {
+        // Initialization of our main components
+        store = new Store();
+        ticket = new Ticket();
+        scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to the ticket module App.");
+        System.out.println("Ticket module. Type 'help' to see commands.");
+
+        // Main command loop continues until the user types 'exit'
+        while (true) {
+            System.out.print("tUPM> ");
+            String line = scanner.nextLine();
+
+            // Check for the exit command to terminate the loop
+            if (line.trim().equalsIgnoreCase("exit")) {
+                System.out.println("Closing application.");
+                System.out.println("Goodbye!");
+                break;
+            }
+
+            // Only process the command if the line is not empty
+            if (!line.trim().isEmpty()) {
+                processCommand(line);
+            }
+        }
+        // Close the scanner to release system resources
+        scanner.close();
     }
 
     /**
-     * Runs the main application loop, reading and processing user commands.
-     * The loop continues until the user enters 'exit'.
+     * Processes a single command line entered by the user.
+     * It acts as a dispatcher, sending the command to the correct handler.
      */
-    public void run() {
-        // Try-with-resources ensures scanner is closed when done.
-        try (scanner) {
-            System.out.println("Welcome to the ticket module App.");
-            System.out.println("Ticket module. Type 'help' to see commands.");
+    private static void processCommand(String line) {
+        List<String> args = parseArguments(line);
+        // If parsing results in no arguments, there's nothing to do.
+        if (args.isEmpty()) {
+            return;
+        }
 
-            // Main command loop.
-            while (true) {
-                System.out.print("tUPM> ");
-                String line = scanner.nextLine();
-                if (line.equalsIgnoreCase("exit")) {
-                    System.out.println("Closing application.");
-                    System.out.println("Goodbye!");
-                    break;
-                }
-                if (!line.isBlank()) {
-                    processCommand(line);
-                }
-            }
+        String command = args.get(0).toLowerCase();
+
+        // Use a traditional switch to delegate to the appropriate handler method.
+        switch (command) {
+            case "prod":
+                handleProdCommand(args);
+                break;
+            case "ticket":
+                handleTicketCommand(args);
+                break;
+            case "help":
+                printHelp();
+                break;
+            case "echo":
+                // The echo command simply prints back the original line.
+                System.out.println(line);
+                break;
+            default:
+                System.out.println("Error: Unknown command '" + command + "'");
+                break;
         }
     }
 
     /**
-     * Parses and processes a single command line entered by the user.
-     * Supports quoted arguments for names with spaces.
-     *
-     * @param line the command line entered by the user
+     * Manually parses a command line into arguments, respecting quoted strings.
+     * This method avoids using Regex, relying only on basic String manipulation.
      */
-    private void processCommand(String line) {
-        // Parse arguments, supporting quoted strings.
-        List<String> argsList = new ArrayList<>();
-        Pattern pattern = Pattern.compile("\"([^\"]*)\"|(\\S+)");
-        Matcher matcher = pattern.matcher(line);
-        while (matcher.find()) {
-            if (matcher.group(1) != null) {
-                argsList.add(matcher.group(1));
+    private static List<String> parseArguments(String commandLine) {
+        List<String> args = new ArrayList<>();
+        StringBuilder currentArg = new StringBuilder();
+        boolean inQuotes = false; // A flag to track if we are inside quotes
+
+        // Iterate over each character of the command line
+        for (int i = 0; i < commandLine.length(); i++) {
+            char c = commandLine.charAt(i);
+            
+            if (c == '\"') {
+                // When a quote is found, toggle the inQuotes flag
+                inQuotes = !inQuotes;
+            } else if (c == ' ' && !inQuotes) {
+                // If a space is found AND we are not in quotes, it's a separator
+                if (currentArg.length() > 0) {
+                    args.add(currentArg.toString());
+                    currentArg = new StringBuilder(); // Reset for the next argument
+                }
             } else {
-                argsList.add(matcher.group(2));
+                // Otherwise, just append the character to the current argument
+                currentArg.append(c);
             }
         }
-        String[] args = argsList.toArray(String[]::new);
-        String command = args[0].toLowerCase();
-
-        try {
-            // Dispatch command to appropriate handler.
-            switch (command) {
-                case "prod" -> handleProdCommand(args);
-                case "ticket" -> handleTicketCommand(args);
-                case "help" -> printHelp();
-                case "echo" -> System.out.println(line);
-                default -> System.out.println("Error: Unknown command '" + command + "'");
-            }
-        } catch (Exception e) {
-            // Print user-friendly error messages.
-            System.out.println(e.getMessage());
+        // Add the last argument if it exists
+        if (currentArg.length() > 0) {
+            args.add(currentArg.toString());
         }
+        return args;
     }
 
     /**
-     * Handles product-related commands: add, list, update, remove.
-     *
-     * @param args the parsed command arguments
-     * @throws Exception if arguments are missing or invalid
+     * Handles product-related subcommands (add, list, update, remove).
      */
-    private void handleProdCommand(String[] args) throws Exception {
-        if (args.length < 2) throw new Exception("Error: Missing arguments for 'prod' command.");
-        String subCommand = args[1].toLowerCase();
+    private static void handleProdCommand(List<String> args) {
+        if (args.size() < 2) {
+            System.out.println("Error: Missing arguments for 'prod' command.");
+            return;
+        }
+        String subCommand = args.get(1).toLowerCase();
 
         switch (subCommand) {
-            case "add" -> {
-                // Add a new product to the catalog.
-                if (args.length != 6) throw new Exception("Usage: prod add <id> \"<name>\" <category> <price>");
-                int id = Integer.parseInt(args[2]);
-                String name = args[3];
-                ProductCategory category = ProductCategory.valueOf(args[4].toUpperCase());
-                double price = Double.parseDouble(args[5]);
-                Product newProduct = new Product(id, name, category, price);
-                catalog.addProduct(newProduct);
-                System.out.println(newProduct);
-                System.out.println("prod add: ok");
-            }
-            case "list" -> {
-                // List all products in the catalog.
+            case "add":
+                // Check for the correct number of arguments for 'prod add'
+                if (args.size() != 6) {
+                    System.out.println("Usage: prod add <id> \"<name>\" <category> <price>");
+                    return;
+                }
+                // Use try-catch for parsing numbers, as NumberFormatException can occur.
+                try {
+                    // Convert string arguments to their correct types
+                    int id = Integer.parseInt(args.get(2));
+                    String name = args.get(3);
+                    ProductCategory category = ProductCategory.valueOf(args.get(4).toUpperCase());
+                    double price = Double.parseDouble(args.get(5));
+
+                    // Use the factory method from the Product class for creation and validation
+                    Product newProduct = Product.createInstance(id, name, category, price);
+                    // Check if the product was created successfully (not null) and added to the store
+                    if (newProduct != null && store.addProduct(newProduct)) {
+                        System.out.println(newProduct);
+                        System.out.println("prod add: ok");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid number format for id or price.");
+                } catch (IllegalArgumentException e) {
+                    // This catches errors from ProductCategory.valueOf() if the category is invalid
+                    System.out.println("Error: Invalid category specified.");
+                }
+                break;
+
+            case "list":
                 System.out.println("Catalog:");
-                for (Product p : catalog.getAllProducts()) {
+                // Loop through all products from the store and print them
+                for (Product p : store.getAllProducts()) {
                     System.out.println(p);
                 }
                 System.out.println("prod list: ok");
-            }
-            case "update" -> {
-                // Update a product's field.
-                if (args.length != 5) throw new Exception("Usage: prod update <id> <field> <value>");
-                int id = Integer.parseInt(args[2]);
-                String field = args[3];
-                String value = args[4];
-                Product updatedProduct = catalog.updateProduct(id, field, value);
-                System.out.println(updatedProduct);
-                System.out.println("prod update: ok");
-            }
-            case "remove" -> {
-                // Remove a product from the catalog.
-                if (args.length != 3) throw new Exception("Usage: prod remove <id>");
-                int id = Integer.parseInt(args[2]);
-                Product removedProduct = catalog.removeProduct(id);
-                System.out.println(removedProduct);
-                System.out.println("prod remove: ok");
-            }
-            default -> throw new Exception("Error: Unknown 'prod' subcommand '" + subCommand + "'");
+                break;
+
+            case "update":
+                if (args.size() != 5) {
+                    System.out.println("Usage: prod update <id> <field> <value>");
+                    return;
+                }
+                try {
+                    int id = Integer.parseInt(args.get(2));
+                    String field = args.get(3);
+                    String value = args.get(4);
+                    // The update logic is encapsulated in the Store class. We just check the boolean result.
+                    if (store.updateProduct(id, field, value)) {
+                        System.out.println(store.findProductById(id));
+                        System.out.println("prod update: ok");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid number format for id.");
+                }
+                break;
+
+            case "remove":
+                if (args.size() != 3) {
+                    System.out.println("Usage: prod remove <id>");
+                    return;
+                }
+                try {
+                    int id = Integer.parseInt(args.get(2));
+                    // The remove logic is in the Store class. We check if it returned the removed product.
+                    Product removed = store.removeProduct(id);
+                    if (removed != null) {
+                        System.out.println(removed);
+                        System.out.println("prod remove: ok");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid number format for id.");
+                }
+                break;
+
+            default:
+                System.out.println("Error: Unknown 'prod' subcommand '" + subCommand + "'");
+                break;
         }
     }
 
     /**
-     * Handles ticket-related commands: new, add, remove, print.
-     *
-     * @param args the parsed command arguments
-     * @throws Exception if arguments are missing or invalid
+     * Handles ticket-related subcommands (new, add, remove, print).
      */
-    private void handleTicketCommand(String[] args) throws Exception {
-        if (args.length < 2) throw new Exception("Error: Missing arguments for 'ticket' command.");
-        String subCommand = args[1].toLowerCase();
+    private static void handleTicketCommand(List<String> args) {
+        if (args.size() < 2) {
+            System.out.println("Error: Missing arguments for 'ticket' command.");
+            return;
+        }
+        String subCommand = args.get(1).toLowerCase();
 
         switch (subCommand) {
-            case "new" -> {
-                // Start a new ticket.
-                ticket = new Ticket();
+            case "new":
+                // Reset the current ticket
+                ticket.clear();
                 System.out.println("ticket new: ok");
-            }
-            case "add" -> {
-                // Add a product to the current ticket.
-                if (args.length != 4) throw new Exception("Usage: ticket add <prodId> <quantity>");
-                int prodId = Integer.parseInt(args[2]);
-                int quantity = Integer.parseInt(args[3]);
-                Product product = catalog.findProductById(prodId);
-                if (product == null) throw new Exception("Error: Product with ID " + prodId + " not found.");
-                ticket.addProduct(product, quantity);
-                System.out.println(ticket.getTicketDetails());
-                System.out.println("ticket add: ok");
-            }
-            case "remove" -> {
-                // Remove a product from the current ticket.
-                if (args.length != 3) throw new Exception("Usage: ticket remove <prodId>");
-                int prodId = Integer.parseInt(args[2]);
-                Product product = catalog.findProductById(prodId);
-                if (product == null) throw new Exception("Error: Product with ID " + prodId + " not found.");
-                ticket.removeProduct(product);
-                System.out.println(ticket.getTicketDetails());
-                System.out.println("ticket remove: ok");
-            }
-            case "print" -> {
-                // Print the current ticket and reset it.
+                break;
+
+            case "add":
+                if (args.size() != 4) {
+                    System.out.println("Usage: ticket add <prodId> <quantity>");
+                    return;
+                }
+                try {
+                    int prodId = Integer.parseInt(args.get(2));
+                    int quantity = Integer.parseInt(args.get(3));
+                    // First, find the product in the store
+                    Product product = store.findProductById(prodId);
+                    if (product == null) {
+                        System.out.println("Error: Product with ID " + prodId + " not found.");
+                        return;
+                    }
+                    // If the product is found, try to add it to the ticket
+                    if (ticket.addProduct(product, quantity)) {
+                        System.out.println(ticket.getTicketDetails());
+                        System.out.println("ticket add: ok");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid number format for id or quantity.");
+                }
+                break;
+
+            case "remove":
+                // Check for correct number of arguments for 'ticket remove'
+                if (args.size() != 3) {
+                    System.out.println("Usage: ticket remove <prodId>");
+                    return;
+                }
+                try {
+                    // Parse the product ID from arguments
+                    int prodId = Integer.parseInt(args.get(2));
+                    // Find the product in the store by ID
+                    Product product = store.findProductById(prodId);
+                    if (product == null) {
+                        // If product not found, print error and return
+                        System.out.println("Error: Product with ID " + prodId + " not found.");
+                        return;
+                    }
+                    // Remove the product from the ticket
+                    ticket.removeProduct(product);
+                    // Print the updated ticket details
+                    System.out.println(ticket.getTicketDetails());
+                    System.out.println("ticket remove: ok");
+                } catch (NumberFormatException e) {
+                    // Handle invalid number format for product ID
+                    System.out.println("Error: Invalid number format for id.");
+                }
+                break;
+
+            case "print":
+                // Display the final ticket details
                 System.out.println(ticket.getTicketDetails());
                 System.out.println("ticket print: ok");
-                ticket = new Ticket();
-            }
-            default -> throw new Exception("Error: Unknown 'ticket' subcommand '" + subCommand + "'");
+                // As per requirements, printing a ticket also starts a new one
+                ticket.clear();
+                break;
+
+            default:
+                System.out.println("Error: Unknown 'ticket' subcommand '" + subCommand + "'");
+                break;
         }
     }
 
     /**
      * Prints help information about available commands and categories.
      */
-    private void printHelp() {
+    private static void printHelp() {
         System.out.println("Commands:");
         System.out.println("  prod add <id> \"<name>\" <category> <price>");
         System.out.println("  prod list");
@@ -232,17 +307,7 @@ public class App {
         System.out.println("  echo \"<text>\"");
         System.out.println("  help");
         System.out.println("  exit");
-        System.out.println("Categories: MERCH, PAPELERIA, ROPA, LIBRO, ELECTRONICA");
-        System.out.println("Discounts if there are >=2 units in the category: MERCH 0%, PAPELERIA 5%, ROPA 7%, LIBRO 10%, ELECTRONICA 3%.");
-    }
-
-    /**
-     * Main entry point. Starts the application.
-     *
-     * @param args command-line arguments (not used)
-     */
-    public static void main(String[] args) {
-        App app = new App();
-        app.run();
+        System.out.println("Categories: MERCH, STATIONERY, CLOTHES, BOOK, ELECTRONICS");
+        System.out.println("Discounts if there are >=2 units in the category: MERCH 0%, STATIONERY 5%, CLOTHES 7%, BOOK 10%, ELECTRONICS 3%.");
     }
 }
