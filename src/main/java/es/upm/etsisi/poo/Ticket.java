@@ -1,13 +1,14 @@
 package es.upm.etsisi.poo;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.time.LocalDateTime; // For timestamps in ID
-import java.time.format.DateTimeFormatter; // For formatting timestamps
-import java.util.Random; // For random part of ID
+import java.util.Objects; // For timestamps in ID
+import java.util.Random; // For formatting timestamps
+import java.util.Set; // For random part of ID
 
 /**
  * Represents a single sales ticket for E2.
