@@ -1,6 +1,6 @@
 package es.upm.etsisi.poo;
 
-public enum ProductCategory {
+public enum Category {
     MERCH(0.0),
     STATIONERY(0.05),
     CLOTHES(0.07),
@@ -9,7 +9,7 @@ public enum ProductCategory {
 
     private final double discount;
 
-    ProductCategory(double discount) {
+    Category(double discount) {
         this.discount = discount;
     }
 
