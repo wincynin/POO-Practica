@@ -1,4 +1,3 @@
-//CLASE TICKET
 package es.upm.etsisi.poo;
 
 import java.util.ArrayList;
@@ -14,9 +13,6 @@ public class Ticket {
         this.items = new ArrayList<Product>();
     }
 
-    /**
-     * Añade un producto al ticket N veces (cantidad).
-     */
     public boolean addProduct(Product prod, int quantity) {
         if (items.size() + quantity > MAX_ITEMS) {
             System.out.println("Error: Se alcanzó el máximo de productos en el ticket.");
@@ -28,9 +24,6 @@ public class Ticket {
         return true;
     }
 
-    /**
-     * Elimina todas las apariciones de un producto por ID.
-     */
     public boolean removeProduct(int id) {
         boolean removed = false;
         List<Product> toRemove = new ArrayList<Product>();
@@ -44,23 +37,16 @@ public class Ticket {
         return removed;
     }
 
-    /**
-     * Reinicia el ticket actual.
-     */
     public void clear() {
         items.clear();
     }
 
-    /**
-     * Imprime el ticket con precios, descuentos y totales.
-     */
     public void printTicket() {
         double totalPrice;
         totalPrice = totalPrice();
         double totalDiscount = totalDiscount();
         double finalPrice = totalPrice - totalDiscount;
 
-        // Ordenamos por nombre alfabéticamente
         Collections.sort(items, new Comparator<Product>() {
             @Override
             public int compare(Product p1, Product p2) {
@@ -82,9 +68,6 @@ public class Ticket {
         System.out.printf("Final Price: %.1f%n", finalPrice);
     }
 
-    /**
-     * Calcula el precio total de los productos.
-     */
     public double totalPrice() {
         double suma = 0.0;
         for (Product prod : items) {
@@ -93,9 +76,6 @@ public class Ticket {
         return suma;
     }
 
-    /**
-     * Calcula el descuento total aplicado al ticket.
-     */
     public double totalDiscount() {
         double suma = 0.0;
         for (Product prod : items) {
@@ -104,10 +84,6 @@ public class Ticket {
         return suma;
     }
 
-    /**
-     * Devuelve el descuento aplicable a un producto.
-     * Si hay 2 o más productos de la misma categoría, se aplica el descuento de esa categoría.
-     */
     public double getDiscountForProduct(Product p) {
         int count = 0;
         for (Product prod : items) {
@@ -121,9 +97,6 @@ public class Ticket {
         return 0.0;
     }
 
-    /**
-     * Indica si el ticket está vacío.
-     */
     public boolean isEmpty() {
         return items.isEmpty();
     }
