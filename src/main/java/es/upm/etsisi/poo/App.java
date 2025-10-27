@@ -1,15 +1,14 @@
 package es.upm.etsisi.poo;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws FileNotFoundException {
-        if(args.length > 0){
+        if (args.length > 0) {
             Scanner input = new Scanner(new File("input.txt"));
-        }else{
+        } else {
             Scanner input = new Scanner(System.in);
         }
         System.out.println("Welcome to the ticket module App.");
