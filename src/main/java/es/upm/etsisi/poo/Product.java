@@ -1,12 +1,27 @@
+/*CLASE PRODUCTS - TERMINADA
+Product
+   Atributos:
+     id / name / category / price
+   Métodos:
+     Constructor + getters/setters
+     toString() con el formato del enunciado
+*/
 package es.upm.etsisi.poo;
 
 public class Product {
     private int id;
     private String name;
-    private ProductCategory category;
+    private Category category;
     private double price;
 
-    public Product(int id, String name, ProductCategory category, double price) {
+    /**
+     * Constructor
+     * @param id
+     * @param name
+     * @param category
+     * @param price
+     */
+    public Product(int id, String name, Category category, double price) {
         if (id <= 0) {
             throw new IllegalArgumentException("Error: ID debe ser positivo.");
         }
@@ -21,12 +36,16 @@ public class Product {
         this.category = category;
         this.price = price;
     }
-
+    /**
+     * Métodos getters
+     */
     public int getId() { return id;}
     public  String getName() { return name; }
-    public ProductCategory getCategory() { return category; }
+    public Category getCategory() { return category; }
     public double getPrice() { return price; }
-
+    /**
+     * Métodos setters
+     */
     public void setName(String name) {
         if (name == null || name.length() > 100) {
             throw new IllegalArgumentException("Error: El nombre no puede estar vacío ni superar los 100 caracteres.");
@@ -34,7 +53,7 @@ public class Product {
             this.name = name;
         }
     }
-    public void setCategory(ProductCategory category) { this.category = category; }
+    public void setCategory(Category category) { this.category = category; }
     public void setPrice(double price) {
         if (price <= 0) {
             throw new IllegalArgumentException("Error: el precio debe ser > 0 euros.");
