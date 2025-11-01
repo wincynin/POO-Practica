@@ -7,64 +7,48 @@ import java.util.List;
 
 public class Catalog {
     private static final int MAX_PRODUCTS = 200;
-    private Product[] products;
-    private int amount;
+    private final List<Product> products;
 
     public Catalog() {
-        this.products = new Product[MAX_PRODUCTS];
-        this.amount = 0;
+        this.products = new ArrayList<>();
     }
 
     public boolean addProduct(Product prod) {
-        if (amount >= MAX_PRODUCTS) {
-            System.out.println("Error: Se alcanzó el máximo de productos permitidos.");
+        if (products.size() >= MAX_PRODUCTS) {
+            System.out.println("Error: Maximum number of products reached.");
             return false;
         } else if (getProduct(prod.getId()) != null) {
-            System.out.println("Error: Ya existe un producto con ese ID.");
+            System.out.println("Error: A product with that ID already exists.");
             return false;
         }
-        products[amount++] = prod;
+        products.add(prod);
         return true;
     }
 
-    public Product removeProduct(int id) {
-        for (int i = 0; i < amount; i++) {
-            if (products[i].getId() == id) {
-                Product removed = products[i];
-                for (int j = i; j < amount; j++) {
-                    products[j] = products[j + 1];
-                }
-                products[--amount] = null;
-                return removed;
+    public Product removeProduct(String id) {
+        for (int i = 0; i < products.size(); i++) {
+            if (products.get(i).getId().equals(id)) {
+                return products.remove(i);
             }
         }
         return null;
     }
 
-    public Product getProduct(int id) {
-        for (int i = 0; i < amount; i++) {
-            if (products[i].getId() == id) {
-                return products[i];
+    public Product getProduct(String id) {
+        for (Product product : products) {
+            if (product.getId().equals(id)) {
+                return product;
             }
         }
         return null;
     }
 
     public List<Product> listProducts() {
-        List<Product> list = new ArrayList<Product>();
-        for (int i = 0; i < amount; i++) {
-            list.add(products[i]);
-        }
-        Collections.sort(list, new Comparator<Product>() {
-            @Override
-            public int compare(Product prod1, Product prod2) {
-                return Integer.compare(prod1.getId(), prod2.getId());
-            }
-        });
-        return list;
+        products.sort(Comparator.comparing(Product::getId));
+        return products;
     }
 
-    public boolean updateProduct(int id, String field, String value) {
+    public boolean updateProduct(String id, String field, String value) {
         Product prod = getProduct(id);
         if (prod == null) {
             return false;
@@ -79,7 +63,7 @@ public class Catalog {
                     ProductCategory newCategory = ProductCategory.valueOf(value.toUpperCase());
                     prod.setCategory(newCategory);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Error: Categoría inválida");
+                    System.out.println("Error: Invalid category.");
                     return false;
                 }
                 break;
@@ -87,27 +71,27 @@ public class Catalog {
                 try {
                     double newPrice = Double.parseDouble(value);
                     if (newPrice <= 0) {
-                        System.out.println("Error: Precio debe ser > 0");
+                        System.out.println("Error: Price must be greater than 0.");
                         return false;
                     }
                     prod.setPrice(newPrice);
                 } catch (NumberFormatException e) {
-                    System.out.println("Error: Precio inválido");
+                    System.out.println("Error: Invalid price.");
                     return false;
                 }
                 break;
             default:
-                System.out.println("Error: Campo inválido");
+                System.out.println("Error: Invalid field.");
                 return false;
         }
         return true;
     }
 
     public boolean isEmpty() {
-        return amount == 0;
+        return products.isEmpty();
     }
 
     public int getSize() {
-        return amount;
+        return products.size();
     }
 }

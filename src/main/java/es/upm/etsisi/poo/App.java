@@ -14,9 +14,8 @@ public class App {
         System.out.println("Welcome to the ticket module App.");
         System.out.println("Ticket module. Type 'help' to see commands.");
 
-        Catalog catalog = new Catalog();
-        Ticket ticket = new Ticket();
-        CommandHandler handler = new CommandHandler(catalog, ticket);
+        Store store = new Store();
+        CommandHandler handler = new CommandHandler(store);
 
         Scanner teclado = new Scanner(System.in);
         boolean running = true;

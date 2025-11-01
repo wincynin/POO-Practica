@@ -3,162 +3,151 @@ package es.upm.etsisi.poo;
 import java.util.List;
 
 public class CommandHandler {
-    private Catalog catalog;
-    private Ticket ticket;
+    private Store store;
 
-    public CommandHandler(Catalog catalog, Ticket ticket) {
-        this.catalog = catalog;
-        this.ticket = ticket;
+    public CommandHandler(Store store) {
+        this.store = store;
     }
 
-    public void handle(String entrada) {
-        if (entrada == null || entrada.trim().isEmpty()) {
+    public void handle(String input) {
+        if (input == null || input.trim().isEmpty()) {
             return;
         }
 
-        String[] partes = entrada.split(" ", 2);
-        String comando = partes[0];
+        String[] parts = input.split(" ", 2);
+        String command = parts[0];
 
-        switch (comando) {
+        switch (command) {
             case "prod":
-                handleProd(partes.length > 1 ? partes[1] : "");
+                handleProd(parts.length > 1 ? parts[1] : "");
                 break;
             case "ticket":
-                handleTicket(partes.length > 1 ? partes[1] : "");
+                handleTicket(parts.length > 1 ? parts[1] : "");
+                break;
+            case "client":
+                // TODO: Implement handleClient
+                break;
+            case "cash":
+                handleCash(parts.length > 1 ? parts[1] : "");
                 break;
             case "help":
                 printHelp();
                 break;
             case "echo":
-                if (partes.length > 1) {
-                    System.out.println(partes[0] + " " + partes[1]);
+                if (parts.length > 1) {
+                    System.out.println(parts[0] + " " + parts[1]);
                 }
                 break;
             default:
-                System.out.println("Comando no reconocido. Escribe 'help' para ver la lista.");
+                System.out.println("Command not recognized. Type 'help' for a list of commands.");
         }
     }
 
     private void handleProd(String args) {
 
-        String[] comandoProd = args.split(" ", 2);
-        if (comandoProd.length == 0) {
+        String[] prodCommand = args.split(" ", 2);
+        if (prodCommand.length == 0) {
             return;
         }
 
-        switch (comandoProd[0]) {
+        switch (prodCommand[0]) {
             case "add":
-                String[] comandosAdd = comandoProd[1].split("\"");
-                if (comandosAdd.length >= 3) {
+                String[] addCommands = prodCommand[1].split("\"");
+                if (addCommands.length >= 3) {
                     try {
-                        int id = Integer.parseInt(comandosAdd[0].trim());
-                        String name = comandosAdd[1];
-                        ProductCategory category = ProductCategory.valueOf(comandosAdd[2].split(" ")[1].toUpperCase());
-                        double price = Double.parseDouble(comandosAdd[2].split(" ")[2]);
+                        String id = addCommands[0].trim();
+                        String name = addCommands[1];
+                        ProductCategory category = ProductCategory.valueOf(addCommands[2].split(" ")[1].toUpperCase());
+                        double price = Double.parseDouble(addCommands[2].split(" ")[2]);
 
                         Product prod = new Product(id, name, category, price);
-                        if (catalog.addProduct(prod)) {
+                        if (store.getCatalog().addProduct(prod)) {
                             System.out.println(prod);
                             System.out.println("prod add: ok");
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Error: Invalid number format for id or price.");
+                        System.out.println("Error: Invalid number format for price.");
                     } catch (IllegalArgumentException e) {
                         System.out.println("Error: Invalid category specified.");
                     }
                 }
                 break;
             case "list":
-                List<Product> lista = catalog.listProducts();
+                List<Product> productList = store.getCatalog().listProducts();
                 System.out.println("Catalog:");
-                for (Product prod : lista) {
+                for (Product prod : productList) {
                     System.out.println("  " + prod);
                 }
                 System.out.println("prod list: ok");
                 break;
             case "update":
-                comandosAdd = comandoProd[1].split(" ", 3);
-                if (comandosAdd.length >= 3) {
+                addCommands = prodCommand[1].split(" ", 3);
+                if (addCommands.length >= 3) {
                     try {
-                        int idProd = Integer.parseInt(comandosAdd[0]);
-                        String campo = comandosAdd[1];
-                        String actualizacion = comandosAdd[2].replace("\"", "");
-                        if (catalog.updateProduct(idProd, campo, actualizacion)) {
-                            System.out.println(catalog.getProduct(idProd));
+                        String productId = addCommands[0];
+                        String field = addCommands[1];
+                        String updateValue = addCommands[2].replace("\"", "");
+                        if (store.getCatalog().updateProduct(productId, field, updateValue)) {
+                            System.out.println(store.getCatalog().getProduct(productId));
                             System.out.println("prod update: ok");
                         }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error en prod update: " + e.getMessage());
+                    } catch (Exception e) {
+                        System.out.println("Error in prod update: " + e.getMessage());
                     }
                 }
                 break;
             case "remove":
-                if (comandoProd.length >= 2) {
+                if (prodCommand.length >= 2) {
                     try {
-                        int id = Integer.parseInt(comandoProd[1]);
-                        Product eliminado = catalog.removeProduct(id);
-                        if (eliminado != null) {
-                            System.out.println(eliminado);
+                        String id = prodCommand[1];
+                        Product removedProduct = store.getCatalog().removeProduct(id);
+                        if (removedProduct != null) {
+                            System.out.println(removedProduct);
                             System.out.println("prod remove: ok");
                         }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error en prod remove: " + e.getMessage());
+                    } catch (Exception e) {
+                        System.out.println("Error in prod remove: " + e.getMessage());
                     }
                 }
                 break;
             default:
-                System.out.println("Uso de prod: add | list | update | remove");
+                System.out.println("Usage: prod add | list | update | remove");
         }
     }
 
     private void handleTicket(String args) {
-        String[] comandoTicket = args.split(" ");
-        if (comandoTicket.length == 0)
-            return;
+        // This method needs to be completely refactored to work with the Store and the new commands.
+        System.out.println("Ticket commands are not yet implemented correctly.");
+    }
 
-        switch (comandoTicket[0]) {
-            case "new":
-                ticket.clear();
-                System.out.println("ticket new: ok");
-                break;
+    private void handleCash(String args) {
+        String[] parts = args.split(" ", 2);
+        String command = parts[0];
+
+        switch (command) {
             case "add":
-                if (comandoTicket.length >= 3) {
-                    try {
-                        int id = Integer.parseInt(comandoTicket[1]);
-                        int quantity = Integer.parseInt(comandoTicket[2]);
-                        Product prod = catalog.getProduct(id);
-                        if (prod != null && ticket.addProduct(prod, quantity)) {
-                            ticket.printTicket();
-                            System.out.println("ticket add: ok");
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error en ticket add: " + e.getMessage());
+                try {
+                    String[] addParts = parts[1].split("\"");
+                    String id = null;
+                    String name;
+                    String email;
+                    if(addParts.length > 2){
+                        id = addParts[0].trim();
+                        name = addParts[1];
+                        email = addParts[2].trim();
+                    }else{
+                        name = addParts[1];
+                        email = addParts[2].trim();
                     }
-                }
-                break;
-            case "remove":
-                if (comandoTicket.length >= 2) {
-                    try {
-                        int id = Integer.parseInt(comandoTicket[1]);
-                        if (ticket.removeProduct(id)) {
-                            System.out.println("ticket remove: ok");
-                        } else
-                            System.out.println("ticket remove: error, no existe producto con este id en el ticket.");
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error en ticket remove: " + e.getMessage());
-                    }
-                }
-                break;
-            case "print":
-                if (ticket.isEmpty()) {
-                    System.out.println("El ticket está vacío.");
-                } else {
-                    ticket.printTicket();
-                    System.out.println("ticket print: ok");
+
+                    store.addCashier(id, name, email);
+                    System.out.println("cash add: ok");
+                } catch (Exception e) {
+                    System.out.println("Error adding cashier: " + e.getMessage());
                 }
                 break;
             default:
-                System.out.println("Uso de ticket: new | add | remove | print");
+                System.out.println("Unknown cash command.");
         }
     }
 
@@ -168,11 +157,21 @@ public class CommandHandler {
         System.out.println("  prod list");
         System.out.println("  prod update <id> NAME|CATEGORY|PRICE <value>");
         System.out.println("  prod remove <id>");
-        System.out.println("  ticket new");
-        System.out.println("  ticket add <prodId> <quantity>");
-        System.out.println("  ticket remove <prodId>");
-        System.out.println("  ticket print");
-        System.out.println("  echo \"<texto>\"");
+        System.out.println("  ticket new [id] <cashId> <userId>");
+        System.out.println("  ticket add <ticketId> <cashId> <prodId> <amount> [--p <text>]");
+        System.out.println("  ticket remove <ticketId> <cashId> <prodId>");
+        System.out.println("  ticket print <ticketId> <cashId>");
+        System.out.println("  ticket list");
+        System.out.println("  client add \"<name>\" <dni> <email> <cashId>");
+        System.out.println("  client remove <dni>");
+        System.out.println("  client list");
+        System.out.println("  cash add [id] \"<name>\" <email>");
+        System.out.println("  cash remove <id>");
+        System.out.println("  cash list");
+        System.out.println("  cash tickets <id>");
+        System.out.println("  prod addFood [id] \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
+        System.out.println("  prod addMeeting [id] \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
+        System.out.println("  echo \"<text>\"");
         System.out.println("  help");
         System.out.println("  exit");
         System.out.println();
