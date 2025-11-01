@@ -1,20 +1,20 @@
 package es.upm.etsisi.poo;
 
 public class Product {
-    private int id;
+    private final String id;
     private String name;
     private ProductCategory category;
     private double price;
 
-    public Product(int id, String name, ProductCategory category, double price) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("Error: ID debe ser positivo.");
+    public Product(String id, String name, ProductCategory category, double price) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("Error: ID cannot be null or empty.");
         }
         if (name == null || name.length() > 100) {
-            throw new IllegalArgumentException("Error: El nombre no puede estar vacío ni superar los 100 caracteres.");
+            throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
         }
         if (price <= 0) {
-            throw new IllegalArgumentException("Error: el precio debe ser > 0 euros.");
+            throw new IllegalArgumentException("Error: Price must be greater than 0.");
         }
         this.id = id;
         this.name = name;
@@ -22,7 +22,7 @@ public class Product {
         this.price = price;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -40,7 +40,7 @@ public class Product {
 
     public void setName(String name) {
         if (name == null || name.length() > 100) {
-            throw new IllegalArgumentException("Error: El nombre no puede estar vacío ni superar los 100 caracteres.");
+            throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
         } else {
             this.name = name;
         }
@@ -52,7 +52,7 @@ public class Product {
 
     public void setPrice(double price) {
         if (price <= 0) {
-            throw new IllegalArgumentException("Error: el precio debe ser > 0 euros.");
+            throw new IllegalArgumentException("Error: Price must be greater than 0.");
         } else {
             this.price = price;
         }
@@ -60,6 +60,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("{class: Product , id:%d, name:'%s', category:%s, price:%.1f}", id, name, category, price);
+        return String.format("{class: %s, id:%s, name:'%s', category:%s, price:%.1f}",
+                this.getClass().getSimpleName(), id, name, category, price);
     }
 }
