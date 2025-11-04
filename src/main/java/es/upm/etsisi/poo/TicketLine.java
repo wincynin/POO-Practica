@@ -17,7 +17,7 @@ public class TicketLine {
         }
         this.product = product;
         this.quantity = quantity;
-        this.customTexts = new ArrayList<>();
+        this.customTexts = new ArrayList<String>();
     }
 
     public Product getProduct() {

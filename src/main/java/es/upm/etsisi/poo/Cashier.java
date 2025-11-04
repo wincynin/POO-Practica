@@ -9,7 +9,7 @@ public class Cashier extends User {
 
     public Cashier(String id, String name, String email) {
         super(id, name, email);
-        this.tickets = new ArrayList<>();
+        this.tickets = new ArrayList<Ticket>();
     }
 
     public void addTicket(Ticket ticket) {
@@ -20,7 +20,7 @@ public class Cashier extends User {
     }
 
     public List<Ticket> getTickets() {
-        return new ArrayList<>(tickets);
+        return new ArrayList<Ticket>(tickets);
     }
 
     @Override

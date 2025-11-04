@@ -11,9 +11,9 @@ public class Store {
 
     public Store() {
         this.catalog = new Catalog();
-        this.clients = new ArrayList<>();
-        this.cashiers = new ArrayList<>();
-        this.tickets = new ArrayList<>(); // Added for E2
+        this.clients = new ArrayList<Client>();
+        this.cashiers = new ArrayList<Cashier>();
+        this.tickets = new ArrayList<Ticket>(); // Added for E2
     }
 
     public void addProduct(Product product) {
@@ -167,7 +167,7 @@ public class Store {
     }
 
     public List<Ticket> getTickets() {
-        return new ArrayList<>(tickets);
+        return new ArrayList<Ticket>(tickets);
     }
 
     public Catalog getCatalog() {
@@ -175,11 +175,11 @@ public class Store {
     }
 
     public List<Client> getClients() {
-        return new ArrayList<>(clients);
+        return new ArrayList<Client>(clients);
     }
 
     public List<Cashier> getCashiers() {
-        return new ArrayList<>(cashiers);
+        return new ArrayList<Cashier>(cashiers);
     }
 
     public String generateCashierId() {
