@@ -8,6 +8,7 @@ public class Catalog {
     private static final int MAX_PRODUCTS = 200;
     private final List<Product> products;
 
+    @SuppressWarnings("Convert2Diamond")
     public Catalog() {
         this.products = new ArrayList<Product>();
     }
@@ -43,6 +44,7 @@ public class Catalog {
         return null;
     }
 
+    @SuppressWarnings("Convert2Lambda")
     public List<Product> listProducts() {
         products.sort(new Comparator<Product>() {
             @Override

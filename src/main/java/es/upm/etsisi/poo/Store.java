@@ -9,6 +9,7 @@ public class Store {
     private final List<Cashier> cashiers;
     private final List<Ticket> tickets; // Added for E2
 
+    @SuppressWarnings("Convert2Diamond")
     public Store() {
         this.catalog = new Catalog();
         this.clients = new ArrayList<Client>();
@@ -20,17 +21,22 @@ public class Store {
         if (product.getId() == 0) {
             int newId = generateProductId();
             Product newProduct;
-            if (product instanceof CustomizableProduct) {
-                CustomizableProduct cp = (CustomizableProduct) product;
-                newProduct = new CustomizableProduct(newId, cp.getName(), cp.getCategory(), cp.getPrice(), cp.getMaxCustomizableTexts());
-            } else if (product instanceof Food) {
-                Food f = (Food) product;
-                newProduct = new Food(newId, f.getName(), f.getPrice(), f.getExpirationDate(), f.getMaxParticipants());
-            } else if (product instanceof Meeting) {
-                Meeting m = (Meeting) product;
-                newProduct = new Meeting(newId, m.getName(), m.getPrice(), m.getExpirationDate(), m.getMaxParticipants());
-            } else {
-                newProduct = new Product(newId, product.getName(), product.getCategory(), product.getPrice());
+            switch (product.getClass().getSimpleName()) {
+                case "CustomizableProduct":
+                    CustomizableProduct cp = (CustomizableProduct) product;
+                    newProduct = new CustomizableProduct(newId, cp.getName(), cp.getCategory(), cp.getPrice(), cp.getMaxCustomizableTexts());
+                    break;
+                case "Food":
+                    Food f = (Food) product;
+                    newProduct = new Food(newId, f.getName(), f.getPrice(), f.getExpirationDate(), f.getMaxParticipants());
+                    break;
+                case "Meeting":
+                    Meeting m = (Meeting) product;
+                    newProduct = new Meeting(newId, m.getName(), m.getPrice(), m.getExpirationDate(), m.getMaxParticipants());
+                    break;
+                default:
+                    newProduct = new Product(newId, product.getName(), product.getCategory(), product.getPrice());
+                    break;
             }
             catalog.addProduct(newProduct);
         } else {
@@ -166,6 +172,7 @@ public class Store {
         return null;
     }
 
+    @SuppressWarnings("Convert2Diamond")
     public List<Ticket> getTickets() {
         return new ArrayList<Ticket>(tickets);
     }
@@ -174,10 +181,12 @@ public class Store {
         return catalog;
     }
 
+    @SuppressWarnings("Convert2Diamond")
     public List<Client> getClients() {
         return new ArrayList<Client>(clients);
     }
 
+    @SuppressWarnings("Convert2Diamond")
     public List<Cashier> getCashiers() {
         return new ArrayList<Cashier>(cashiers);
     }

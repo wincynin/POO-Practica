@@ -8,6 +8,7 @@ public class TicketLine {
     private int quantity;
     private final List<String> customTexts;
 
+    @SuppressWarnings("Convert2Diamond")
     public TicketLine(Product product, int quantity) {
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null.");
@@ -40,8 +41,7 @@ public class TicketLine {
     }
 
     public void addCustomText(String text) {
-        if (product instanceof CustomizableProduct) {
-            CustomizableProduct cp = (CustomizableProduct) product;
+        if (product instanceof CustomizableProduct cp) {
             if (customTexts.size() < cp.getMaxCustomizableTexts()) {
                 customTexts.add(text);
             } else {
@@ -53,8 +53,7 @@ public class TicketLine {
     }
 
     public double getLineTotal() {
-        if (product instanceof CustomizableProduct) {
-            CustomizableProduct cp = (CustomizableProduct) product;
+        if (product instanceof CustomizableProduct cp) {
             return cp.getPrice() * quantity;
         }
         return product.getPrice() * quantity;

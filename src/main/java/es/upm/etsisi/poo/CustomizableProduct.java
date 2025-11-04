@@ -7,12 +7,14 @@ public class CustomizableProduct extends Product {
     private final int maxCustomizableTexts;
     private final List<String> customTexts;
 
+    @SuppressWarnings("Convert2Diamond")
     public CustomizableProduct(String name, ProductCategory category, double price, int maxCustomizableTexts) {
         super(name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;
         this.customTexts = new ArrayList<String>();
     }
 
+    @SuppressWarnings("Convert2Diamond")
     public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
         super(id, name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;
@@ -37,11 +39,7 @@ public class CustomizableProduct extends Product {
 
     @Override
     public double getPrice() {
-        double price = super.getPrice();
-        for (String customText : customTexts) {
-            price += super.getPrice() * 0.1;
-        }
-        return price;
+        return super.getPrice() * (1 + customTexts.size() * 0.1);
     }
 
     @Override
