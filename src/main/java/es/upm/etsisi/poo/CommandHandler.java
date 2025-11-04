@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class CommandHandler {
-    private Store store;
+    private final Store store;
 
     public CommandHandler(Store store) {
         this.store = store;
@@ -47,7 +47,7 @@ public class CommandHandler {
     }
 
     private List<String> parseArgs(String args) {
-        List<String> argList = new ArrayList<>();
+        List<String> argList = new ArrayList<String>();
         boolean inQuotes = false;
         StringBuilder currentArg = new StringBuilder();
 
@@ -239,7 +239,7 @@ public class CommandHandler {
                     int amount = Integer.parseInt(argList.get(3));
 
                     // Handle custom texts
-                    List<String> customTexts = new ArrayList<>();
+                    List<String> customTexts = new ArrayList<String>();
                     for (int i = 4; i < argList.size(); i++) {
                         if (argList.get(i).startsWith("--p")) {
                             customTexts.add(argList.get(i).substring(3));

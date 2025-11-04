@@ -7,16 +7,16 @@ public class CustomizableProduct extends Product {
     private final int maxCustomizableTexts;
     private final List<String> customTexts;
 
-    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
-        super(id, name, category, price);
-        this.maxCustomizableTexts = maxCustomizableTexts;
-        this.customTexts = new ArrayList<>();
-    }
-
     public CustomizableProduct(String name, ProductCategory category, double price, int maxCustomizableTexts) {
         super(name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;
-        this.customTexts = new ArrayList<>();
+        this.customTexts = new ArrayList<String>();
+    }
+
+    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
+        super(id, name, category, price);
+        this.maxCustomizableTexts = maxCustomizableTexts;
+        this.customTexts = new ArrayList<String>();
     }
 
     public int getMaxCustomizableTexts() {

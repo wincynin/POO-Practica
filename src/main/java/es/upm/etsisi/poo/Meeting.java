@@ -8,12 +8,18 @@ public class Meeting extends Product {
 
     public Meeting(String name, double price, LocalDateTime expirationDate, int maxParticipants) {
         super(0, name, null, price);
+        if (maxParticipants > 100) {
+            throw new IllegalArgumentException("Error: Maximum number of participants cannot exceed 100.");
+        }
         this.expirationDate = expirationDate;
         this.maxParticipants = maxParticipants;
     }
 
     public Meeting(int id, String name, double price, LocalDateTime expirationDate, int maxParticipants) {
         super(id, name, null, price);
+        if (maxParticipants > 100) {
+            throw new IllegalArgumentException("Error: Maximum number of participants cannot exceed 100.");
+        }
         this.expirationDate = expirationDate;
         this.maxParticipants = maxParticipants;
     }

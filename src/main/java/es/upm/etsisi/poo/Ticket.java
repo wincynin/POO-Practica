@@ -93,6 +93,9 @@ public class Ticket {
                 return;
             }
         }
+        if (lines.size() >= 100) {
+            throw new IllegalStateException("Error: Ticket cannot have more than 100 different products.");
+        }
         TicketLine newLine = new TicketLine(product, quantity);
         if (customTexts != null && product instanceof CustomizableProduct) {
             for (String text : customTexts) {
@@ -126,7 +129,7 @@ public class Ticket {
 
     public double getTotalDiscount() {
         double totalDiscount = 0.0;
-        List<ProductCategory> discountableCategories = new ArrayList<>();
+        List<ProductCategory> discountableCategories = new ArrayList<ProductCategory>();
         for (ProductCategory category : ProductCategory.values()) {
             int categoryCount = 0;
             for (TicketLine line : lines) {
@@ -164,7 +167,7 @@ public class Ticket {
         System.out.println("Client ID: " + this.userId);
         System.out.println("--------------------");
 
-        List<ProductCategory> discountableCategories = new ArrayList<>();
+        List<ProductCategory> discountableCategories = new ArrayList<ProductCategory>();
         for (ProductCategory category : ProductCategory.values()) {
             int categoryCount = 0;
             for (TicketLine line : lines) {
@@ -191,7 +194,6 @@ public class Ticket {
                 System.out.printf(" **discount-%.2f", discount);
             }
             if (product instanceof CustomizableProduct) {
-                @SuppressWarnings("unused")
                 CustomizableProduct cp = (CustomizableProduct) product;
                 if (!line.getCustomTexts().isEmpty()) {
                     System.out.print(" --p");

@@ -9,7 +9,7 @@ public class Catalog {
     private final List<Product> products;
 
     public Catalog() {
-        this.products = new ArrayList<>();
+        this.products = new ArrayList<Product>();
     }
 
     public boolean addProduct(Product prod) {
