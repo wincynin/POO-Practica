@@ -7,8 +7,14 @@ public class CustomizableProduct extends Product {
     private final int maxCustomizableTexts;
     private final List<String> customTexts;
 
-    public CustomizableProduct(String id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
+    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
         super(id, name, category, price);
+        this.maxCustomizableTexts = maxCustomizableTexts;
+        this.customTexts = new ArrayList<>();
+    }
+
+    public CustomizableProduct(String name, ProductCategory category, double price, int maxCustomizableTexts) {
+        super(name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;
         this.customTexts = new ArrayList<>();
     }
@@ -32,9 +38,15 @@ public class CustomizableProduct extends Product {
     @Override
     public double getPrice() {
         double price = super.getPrice();
-        for (int i = 0; i < customTexts.size(); i++) {
+        for (String customText : customTexts) {
             price += super.getPrice() * 0.1;
         }
         return price;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f, customTexts:%s}",
+                this.getClass().getSimpleName(), getId(), getName(), getCategory(), getPrice(), customTexts);
     }
 }

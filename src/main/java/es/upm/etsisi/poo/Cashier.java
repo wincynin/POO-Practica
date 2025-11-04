@@ -2,7 +2,7 @@ package es.upm.etsisi.poo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 
 public class Cashier extends User {
     private final List<Ticket> tickets;
@@ -13,12 +13,14 @@ public class Cashier extends User {
     }
 
     public void addTicket(Ticket ticket) {
-        Objects.requireNonNull(ticket, "Ticket cannot be null.");
+        if (ticket == null) {
+            throw new IllegalArgumentException("Ticket cannot be null.");
+        }
         this.tickets.add(ticket);
     }
 
     public List<Ticket> getTickets() {
-        return tickets;
+        return new ArrayList<>(tickets);
     }
 
     @Override

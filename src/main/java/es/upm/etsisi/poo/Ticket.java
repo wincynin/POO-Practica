@@ -1,6 +1,7 @@
 package es.upm.etsisi.poo;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -13,10 +14,11 @@ public class Ticket {
     private TicketState state;
     private final List<TicketLine> lines;
 
+    @SuppressWarnings("Convert2Diamond")
     public Ticket(String id, String cashierId, String userId) {
         this.cashierId = cashierId;
         this.userId = userId;
-        this.state = TicketState.ACTIVE;
+        this.state = TicketState.EMPTY;
         this.lines = new ArrayList<TicketLine>();
         if (id == null) {
             this.id = generateId();
@@ -26,16 +28,10 @@ public class Ticket {
     }
 
     private String generateId() {
-        LocalDateTime now = LocalDateTime.now();
-        String datePart = String.format("%02d-%02d-%02d-%02d:%02d-",
-                now.getYear() % 100,
-                now.getMonthValue(),
-                now.getDayOfMonth(),
-                now.getHour(),
-                now.getMinute());
+        String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
         Random random = new Random();
         int randomNumber = random.nextInt(90000) + 10000;
-        return datePart + randomNumber;
+        return datePart + "-" + randomNumber;
     }
 
     public String getId() {
@@ -54,6 +50,7 @@ public class Ticket {
         return state;
     }
 
+    @SuppressWarnings("Convert2Diamond")
     public List<TicketLine> getLines() {
         return new ArrayList<TicketLine>(lines);
     }
@@ -65,6 +62,10 @@ public class Ticket {
     public void addProduct(Product product, int quantity, List<String> customTexts) {
         if (this.state == TicketState.CLOSED) {
             throw new IllegalStateException("Error: Cannot add products to a closed ticket.");
+        }
+
+        if (this.state == TicketState.EMPTY) {
+            this.state = TicketState.ACTIVE;
         }
 
         if (product instanceof Food || product instanceof Meeting) {
@@ -125,8 +126,21 @@ public class Ticket {
 
     public double getTotalDiscount() {
         double totalDiscount = 0.0;
+        List<ProductCategory> discountableCategories = new ArrayList<>();
+        for (ProductCategory category : ProductCategory.values()) {
+            int categoryCount = 0;
+            for (TicketLine line : lines) {
+                if (line.getProduct().getCategory() == category) {
+                    categoryCount += line.getQuantity();
+                }
+            }
+            if (categoryCount > 1) {
+                discountableCategories.add(category);
+            }
+        }
+
         for (TicketLine line : lines) {
-            if (line.getQuantity() >= 2 && line.getProduct().getCategory() != null) {
+            if (discountableCategories.contains(line.getProduct().getCategory())) {
                 totalDiscount += line.getLineTotal() * line.getProduct().getCategory().getDiscount();
             }
         }
@@ -138,20 +152,38 @@ public class Ticket {
             System.out.println("Warning: Ticket is already closed. Reprinting.");
         }
 
-        lines.sort(Comparator.comparing(l -> l.getProduct().getName()));
+        lines.sort(new Comparator<TicketLine>() {
+            @Override
+            public int compare(TicketLine l1, TicketLine l2) {
+                return l1.getProduct().getName().compareToIgnoreCase(l2.getProduct().getName());
+            }
+        });
 
         System.out.println("Ticket ID: " + this.id);
         System.out.println("Cashier ID: " + this.cashierId);
         System.out.println("Client ID: " + this.userId);
         System.out.println("--------------------");
 
+        List<ProductCategory> discountableCategories = new ArrayList<>();
+        for (ProductCategory category : ProductCategory.values()) {
+            int categoryCount = 0;
+            for (TicketLine line : lines) {
+                if (line.getProduct().getCategory() == category) {
+                    categoryCount += line.getQuantity();
+                }
+            }
+            if (categoryCount > 1) {
+                discountableCategories.add(category);
+            }
+        }
+
         for (TicketLine line : lines) {
             Product product = line.getProduct();
             String productString = String.format("{class: %s, id:%d, name:'%s', price:%.1f}",
                     product.getClass().getSimpleName(), product.getId(), product.getName(), product.getPrice());
             double discount = 0.0;
-            if (line.getQuantity() >= 2 && product.getCategory() != null) {
-                discount = line.getLineTotal() * line.getProduct().getCategory().getDiscount();
+            if (discountableCategories.contains(product.getCategory())) {
+                discount = line.getLineTotal() * product.getCategory().getDiscount();
             }
 
             System.out.printf("  %s, Quantity: %d", productString, line.getQuantity());
@@ -159,6 +191,7 @@ public class Ticket {
                 System.out.printf(" **discount-%.2f", discount);
             }
             if (product instanceof CustomizableProduct) {
+                @SuppressWarnings("unused")
                 CustomizableProduct cp = (CustomizableProduct) product;
                 if (!line.getCustomTexts().isEmpty()) {
                     System.out.print(" --p");
@@ -181,14 +214,7 @@ public class Ticket {
 
         if (this.state != TicketState.CLOSED) {
             this.state = TicketState.CLOSED;
-            LocalDateTime now = LocalDateTime.now();
-            String closingDate = String.format("-%02d-%02d-%02d-%02d:%02d",
-                    now.getYear() % 100,
-                    now.getMonthValue(),
-                    now.getDayOfMonth(),
-                    now.getHour(),
-                    now.getMinute());
-            this.id += closingDate;
+            this.id += "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
         }
         System.out.println("ticket print: ok");
     }

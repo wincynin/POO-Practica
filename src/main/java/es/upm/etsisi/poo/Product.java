@@ -1,14 +1,18 @@
 package es.upm.etsisi.poo;
 
 public class Product {
-    private final String id;
+    private final int id;
     private String name;
     private ProductCategory category;
     private double price;
 
-    public Product(String id, String name, ProductCategory category, double price) {
-        if (id == null || id.isEmpty()) {
-            throw new IllegalArgumentException("Error: ID cannot be null or empty.");
+    public Product(String name, ProductCategory category, double price) {
+        this(0, name, category, price); // Use 0 as a placeholder for auto-generated ID
+    }
+
+    public Product(int id, String name, ProductCategory category, double price) {
+        if (id < 0) {
+            throw new IllegalArgumentException("Error: ID must be a positive number or 0 for auto-generation.");
         }
         if (name == null || name.length() > 100) {
             throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
@@ -22,7 +26,7 @@ public class Product {
         this.price = price;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -60,7 +64,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return String.format("{class: %s, id:%s, name:'%s', category:%s, price:%.1f}",
+        return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f}",
                 this.getClass().getSimpleName(), id, name, category, price);
     }
 }
