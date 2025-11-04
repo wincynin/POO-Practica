@@ -80,22 +80,37 @@ public class Ticket {
                     throw new IllegalStateException("Error: Food products must be planned at least 3 days in advance.");
                 }
             }
-            if (product instanceof Meeting meeting) {
+            if (product instanceof Meeting) {
+                Meeting meeting = (Meeting) product;
                 if (meeting.getExpirationDate().isBefore(LocalDateTime.now().plusHours(12))) {
                     throw new IllegalStateException("Error: Meeting products must be planned at least 12 hours in advance.");
                 }
             }
         }
-
+        
+        // We now check for matching ID AND matching customizations
         for (TicketLine currentLine : lines) {
             if (currentLine.getProduct().getId() == product.getId()) {
-                currentLine.setQuantity(currentLine.getQuantity() + quantity);
-                return;
+
+                // Check if customizations also match
+                List<String> lineTexts = currentLine.getCustomTexts(); // This is never null, just empty
+                boolean lineHasCustomTexts = !lineTexts.isEmpty();
+                boolean newHasCustomTexts = (customTexts != null && !customTexts.isEmpty());
+
+                if (!lineHasCustomTexts && !newHasCustomTexts) {
+                    // CASE 1: Both are plain (no customs), so merge
+                    currentLine.setQuantity(currentLine.getQuantity() + quantity);
+                    return;
+                }
+
+                if (lineHasCustomTexts && newHasCustomTexts && lineTexts.equals(customTexts)) {
+                    // CASE 2: Both have customs, and the lists are identical, so merge
+                    currentLine.setQuantity(currentLine.getQuantity() + quantity);
+                    return;
+                }
             }
         }
-        if (lines.size() >= 100) {
-            throw new IllegalStateException("Error: Ticket cannot have more than 100 different products.");
-        }
+
         TicketLine newLine = new TicketLine(product, quantity);
         if (customTexts != null && product instanceof CustomizableProduct) {
             for (String text : customTexts) {
@@ -129,6 +144,7 @@ public class Ticket {
 
     public double getTotalDiscount() {
         double totalDiscount = 0.0;
+        @SuppressWarnings("Convert2Diamond")
         List<ProductCategory> discountableCategories = new ArrayList<ProductCategory>();
         for (ProductCategory category : ProductCategory.values()) {
             int categoryCount = 0;
@@ -150,6 +166,7 @@ public class Ticket {
         return totalDiscount;
     }
 
+    @SuppressWarnings("Convert2Lambda")
     public void printAndClose() {
         if (this.state == TicketState.CLOSED) {
             System.out.println("Warning: Ticket is already closed. Reprinting.");
@@ -167,6 +184,7 @@ public class Ticket {
         System.out.println("Client ID: " + this.userId);
         System.out.println("--------------------");
 
+        @SuppressWarnings("Convert2Diamond")
         List<ProductCategory> discountableCategories = new ArrayList<ProductCategory>();
         for (ProductCategory category : ProductCategory.values()) {
             int categoryCount = 0;
@@ -194,7 +212,6 @@ public class Ticket {
                 System.out.printf(" **discount-%.2f", discount);
             }
             if (product instanceof CustomizableProduct) {
-                CustomizableProduct cp = (CustomizableProduct) product;
                 if (!line.getCustomTexts().isEmpty()) {
                     System.out.print(" --p");
                     for (String text : line.getCustomTexts()) {

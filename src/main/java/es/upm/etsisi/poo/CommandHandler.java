@@ -47,6 +47,7 @@ public class CommandHandler {
     }
 
     private List<String> parseArgs(String args) {
+        @SuppressWarnings("Convert2Diamond")
         List<String> argList = new ArrayList<String>();
         boolean inQuotes = false;
         StringBuilder currentArg = new StringBuilder();
@@ -203,6 +204,7 @@ public class CommandHandler {
         }
     }
 
+    @SuppressWarnings("Convert2Lambda")
     private void handleTicket(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
@@ -225,9 +227,9 @@ public class CommandHandler {
                     cashierId = argList.get(0);
                     userId = argList.get(1);
 
-                    Ticket newTicket = store.createTicket(ticketId, cashierId, userId);
+                    store.createTicket(ticketId, cashierId, userId);
                     System.out.println("ticket new: ok");
-                } catch (Exception e) {
+                } catch (IllegalArgumentException e) {
                     System.out.println("Error creating new ticket: " + e.getMessage());
                 }
                 break;
@@ -239,6 +241,7 @@ public class CommandHandler {
                     int amount = Integer.parseInt(argList.get(3));
 
                     // Handle custom texts
+                    @SuppressWarnings("Convert2Diamond")
                     List<String> customTexts = new ArrayList<String>();
                     for (int i = 4; i < argList.size(); i++) {
                         if (argList.get(i).startsWith("--p")) {
@@ -281,10 +284,11 @@ public class CommandHandler {
                     String cashierId = argList.get(1);
 
                     store.printTicket(ticketId, cashierId);
-                } catch (Exception e) {
+                } catch (IllegalArgumentException e) {
                     System.out.println("Error printing ticket: " + e.getMessage());
                 }
                 break;
+
             case "list":
                 List<Ticket> allTickets = store.getTickets();
                 // Sort tickets by cashier ID, then by ticket ID
@@ -309,6 +313,7 @@ public class CommandHandler {
         }
     }
 
+    @SuppressWarnings("Convert2Lambda")
     private void handleClient(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
@@ -363,6 +368,7 @@ public class CommandHandler {
         }
     }
 
+    @SuppressWarnings("Convert2Lambda")
     private void handleCash(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {

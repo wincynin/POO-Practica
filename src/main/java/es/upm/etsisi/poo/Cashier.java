@@ -7,6 +7,7 @@ import java.util.List;
 public class Cashier extends User {
     private final List<Ticket> tickets;
 
+    @SuppressWarnings("Convert2Diamond")
     public Cashier(String id, String name, String email) {
         super(id, name, email);
         this.tickets = new ArrayList<Ticket>();
@@ -19,6 +20,7 @@ public class Cashier extends User {
         this.tickets.add(ticket);
     }
 
+    @SuppressWarnings("Convert2Diamond")
     public List<Ticket> getTickets() {
         return new ArrayList<Ticket>(tickets);
     }
