@@ -16,6 +16,28 @@ public class Store {
         this.tickets = new ArrayList<>(); // Added for E2
     }
 
+    public void addProduct(Product product) {
+        if (product.getId() == 0) {
+            int newId = generateProductId();
+            Product newProduct;
+            if (product instanceof CustomizableProduct) {
+                CustomizableProduct cp = (CustomizableProduct) product;
+                newProduct = new CustomizableProduct(newId, cp.getName(), cp.getCategory(), cp.getPrice(), cp.getMaxCustomizableTexts());
+            } else if (product instanceof Food) {
+                Food f = (Food) product;
+                newProduct = new Food(newId, f.getName(), f.getPrice(), f.getExpirationDate(), f.getMaxParticipants());
+            } else if (product instanceof Meeting) {
+                Meeting m = (Meeting) product;
+                newProduct = new Meeting(newId, m.getName(), m.getPrice(), m.getExpirationDate(), m.getMaxParticipants());
+            } else {
+                newProduct = new Product(newId, product.getName(), product.getCategory(), product.getPrice());
+            }
+            catalog.addProduct(newProduct);
+        } else {
+            catalog.addProduct(product);
+        }
+    }
+
     public void addClient(Client client) {
         if (findClientById(client.getId()) != null) {
             throw new IllegalArgumentException("Error: A client with that ID already exists.");
@@ -47,6 +69,15 @@ public class Store {
         this.cashiers.add(cashier);
     }
 
+    public void addCashier(String id, String name, String email) {
+        String cashierId = id;
+        if (cashierId == null || cashierId.isEmpty()) {
+            cashierId = generateCashierId();
+        }
+        Cashier newCashier = new Cashier(cashierId, name, email);
+        addCashier(newCashier);
+    }
+
     public Cashier findCashierById(String id) {
         for (Cashier cashier : cashiers) {
             if (cashier.getId().equals(id)) {
@@ -72,9 +103,58 @@ public class Store {
     }
 
     public Ticket createTicket(String id, String cashierId, String userId) {
+        Cashier cashier = findCashierById(cashierId);
+        if (cashier == null) {
+            throw new IllegalArgumentException("Error: Cashier not found.");
+        }
+        Client client = findClientById(userId);
+        if (client == null) {
+            throw new IllegalArgumentException("Error: Client not found.");
+        }
+
         Ticket newTicket = new Ticket(id, cashierId, userId);
         tickets.add(newTicket);
+        cashier.addTicket(newTicket);
         return newTicket;
+    }
+
+    public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount, List<String> customTexts) {
+        Ticket ticket = getTicket(ticketId);
+        if (ticket == null) {
+            throw new IllegalArgumentException("Error: Ticket not found.");
+        }
+        if (!ticket.getCashierId().equals(cashierId)) {
+            throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
+        }
+        Product product = catalog.getProduct(prodId);
+        if (product == null) {
+            throw new IllegalArgumentException("Error: Product not found.");
+        }
+        ticket.addProduct(product, amount, customTexts);
+    }
+
+    public void removeProductFromTicket(String ticketId, String cashierId, int prodId) {
+        Ticket ticket = getTicket(ticketId);
+        if (ticket == null) {
+            throw new IllegalArgumentException("Error: Ticket not found.");
+        }
+        if (!ticket.getCashierId().equals(cashierId)) {
+            throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
+        }
+        if (!ticket.removeProduct(prodId)) {
+            throw new IllegalArgumentException("Error: Product not found in ticket.");
+        }
+    }
+
+    public void printTicket(String ticketId, String cashierId) {
+        Ticket ticket = getTicket(ticketId);
+        if (ticket == null) {
+            throw new IllegalArgumentException("Error: Ticket not found.");
+        }
+        if (!ticket.getCashierId().equals(cashierId)) {
+            throw new IllegalArgumentException("Error: Only the creating cashier can print this ticket.");
+        }
+        ticket.printAndClose();
     }
 
     public Ticket getTicket(String ticketId) {
@@ -108,6 +188,14 @@ public class Store {
             int randomDigits = (int) (Math.random() * 10000000);
             id = "UW" + String.format("%07d", randomDigits);
         } while (findCashierById(id) != null);
+        return id;
+    }
+
+    public int generateProductId() {
+        int id;
+        do {
+            id = (int) (Math.random() * 100000) + 1; // Generate a random ID between 1 and 100000
+        } while (catalog.getProduct(id) != null); // Check if ID already exists in catalog
         return id;
     }
 }

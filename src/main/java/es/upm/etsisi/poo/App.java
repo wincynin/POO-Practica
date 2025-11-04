@@ -6,10 +6,11 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws FileNotFoundException {
+        Scanner inputScanner;
         if (args.length > 0) {
-            Scanner input = new Scanner(new File("input.txt"));
+            inputScanner = new Scanner(new File(args[0]));
         } else {
-            Scanner input = new Scanner(System.in);
+            inputScanner = new Scanner(System.in);
         }
         System.out.println("Welcome to the ticket module App.");
         System.out.println("Ticket module. Type 'help' to see commands.");
@@ -17,23 +18,32 @@ public class App {
         Store store = new Store();
         CommandHandler handler = new CommandHandler(store);
 
-        Scanner teclado = new Scanner(System.in);
         boolean running = true;
 
         while (running) {
+            String inputLine;
+            if (args.length > 0) { // Reading from file
+                if (inputScanner.hasNextLine()) {
+                    inputLine = inputScanner.nextLine().trim();
+                    System.out.println("tUPM> " + inputLine); // Print command from file
+                } else {
+                    running = false; // End of file
+                    continue;
+                }
+            } else { // Interactive mode
+                System.out.print("tUPM> ");
+                inputLine = inputScanner.nextLine().trim();
+            }
 
-            System.out.print("tUPM> ");
-            String input = teclado.nextLine().trim();
-
-            if (input.equalsIgnoreCase("exit")) {
+            if (inputLine.equalsIgnoreCase("exit")) {
                 System.out.println("Closing application.");
                 System.out.println("Goodbye!");
                 running = false;
-            } else {
-                handler.handle(input);
+            } else if (!inputLine.isEmpty()) {
+                handler.handle(inputLine);
             }
         }
 
-        teclado.close();
+        inputScanner.close();
     }
 }
