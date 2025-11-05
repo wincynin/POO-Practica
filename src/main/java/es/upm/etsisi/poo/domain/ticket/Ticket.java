@@ -1,4 +1,4 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.ticket;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import es.upm.etsisi.poo.domain.product.*;
 
 public class Ticket {
     private String id;

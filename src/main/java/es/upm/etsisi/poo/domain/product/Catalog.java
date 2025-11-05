@@ -1,4 +1,4 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.product;
 
 import java.util.ArrayList;
 import java.util.Comparator;

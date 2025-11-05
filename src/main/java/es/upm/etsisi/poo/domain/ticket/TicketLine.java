@@ -1,7 +1,9 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.ticket;
 
 import java.util.ArrayList;
 import java.util.List;
+import es.upm.etsisi.poo.domain.product.CustomizableProduct;
+import es.upm.etsisi.poo.domain.product.Product;
 
 public class TicketLine {
     private final Product product;

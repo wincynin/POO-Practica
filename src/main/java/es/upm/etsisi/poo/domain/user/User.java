@@ -1,4 +1,4 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.user;
 
 public abstract class User {
     private String id;
