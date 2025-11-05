@@ -249,7 +249,16 @@ public class CommandHandler {
 
             case "list":
                 List<Ticket> allTickets = store.getTickets();
-                allTickets.sort(Comparator.comparing(Ticket::getCashierId).thenComparing(Ticket::getId));
+                allTickets.sort(new Comparator<Ticket>() {
+                    @Override
+                    public int compare(Ticket t1, Ticket t2) {
+                        int cashierIdCompare = t1.getCashierId().compareToIgnoreCase(t2.getCashierId());
+                        if (cashierIdCompare != 0) {
+                            return cashierIdCompare;
+                        }
+                        return t1.getId().compareToIgnoreCase(t2.getId());
+                    }
+                });
                 System.out.println("Tickets:");
                 for (Ticket ticket : allTickets) {
                     System.out.println("  ID: " + ticket.getId() + ", Cashier: " + ticket.getCashierId() + ", Client: "
@@ -310,6 +319,7 @@ public class CommandHandler {
         }
     }
 
+    @SuppressWarnings("Convert2Lambda")
     private void handleCash(String args) throws UserNotFoundException {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
@@ -345,7 +355,12 @@ public class CommandHandler {
                 break;
             case "list":
                 List<Cashier> cashierList = store.getCashiers();
-                cashierList.sort(Comparator.comparing(Cashier::getName, String.CASE_INSENSITIVE_ORDER));
+                cashierList.sort(new Comparator<Cashier>() {
+                    @Override
+                    public int compare(Cashier c1, Cashier c2) {
+                        return c1.getName().compareToIgnoreCase(c2.getName());
+                    }
+                });
                 System.out.println("Cashiers:");
                 for (Cashier cashier : cashierList) {
                     System.out.println("  " + cashier);
@@ -357,7 +372,12 @@ public class CommandHandler {
                     String cashierId = argList.get(0);
                     Cashier cashier = store.findCashierById(cashierId);
                     List<Ticket> cashierTickets = cashier.getTickets();
-                    cashierTickets.sort(Comparator.comparing(Ticket::getId));
+                    cashierTickets.sort(new Comparator<Ticket>() {
+                        @Override
+                        public int compare(Ticket t1, Ticket t2) {
+                            return t1.getId().compareToIgnoreCase(t2.getId());
+                        }
+                    });
                     System.out.println("Tickets for Cashier " + cashierId + ":");
                     for (Ticket ticket : cashierTickets) {
                         System.out.println("  ID: " + ticket.getId() + ", State: " + ticket.getState());
