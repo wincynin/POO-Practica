@@ -41,7 +41,8 @@ public class TicketLine {
     }
 
     public void addCustomText(String text) {
-        if (product instanceof CustomizableProduct cp) {
+        if (product instanceof CustomizableProduct) {
+            CustomizableProduct cp = (CustomizableProduct) product;
             if (customTexts.size() < cp.getMaxCustomizableTexts()) {
                 customTexts.add(text);
             } else {
@@ -53,7 +54,8 @@ public class TicketLine {
     }
 
     public double getLineTotal() {
-        if (product instanceof CustomizableProduct cp) {
+        if (product instanceof CustomizableProduct) {
+            CustomizableProduct cp = (CustomizableProduct) product;
             return cp.getPrice() * quantity;
         }
         return product.getPrice() * quantity;
