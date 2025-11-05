@@ -146,7 +146,8 @@ public class CommandHandler {
                     System.out.println(food);
                     System.out.println("prod addFood: ok");
                 } else {
-                    Meeting meeting = new Meeting(foodId, foodName, foodPrice, expirationDate.atStartOfDay(), maxPeople);
+                    Meeting meeting = new Meeting(foodId, foodName, foodPrice, expirationDate.atStartOfDay(),
+                            maxPeople);
                     store.addProduct(meeting);
                     System.out.println(meeting);
                     System.out.println("prod addMeeting: ok");
@@ -237,7 +238,7 @@ public class CommandHandler {
                 System.out.println("ticket remove: ok");
                 break;
             case "print":
-                 if (argList.size() != 2) {
+                if (argList.size() != 2) {
                     throw new IllegalArgumentException("Usage: ticket print <ticketId> <cashId>");
                 }
                 String printTicketId = argList.get(0);
@@ -251,7 +252,8 @@ public class CommandHandler {
                 allTickets.sort(Comparator.comparing(Ticket::getCashierId).thenComparing(Ticket::getId));
                 System.out.println("Tickets:");
                 for (Ticket ticket : allTickets) {
-                    System.out.println("  ID: " + ticket.getId() + ", Cashier: " + ticket.getCashierId() + ", Client: " + ticket.getUserId() + ", State: " + ticket.getState());
+                    System.out.println("  ID: " + ticket.getId() + ", Cashier: " + ticket.getCashierId() + ", Client: "
+                            + ticket.getUserId() + ", State: " + ticket.getState());
                 }
                 System.out.println("ticket list: ok");
                 break;
@@ -260,6 +262,7 @@ public class CommandHandler {
         }
     }
 
+    @SuppressWarnings("Convert2Lambda")
     private void handleClient(String args) throws UserNotFoundException {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
@@ -290,7 +293,12 @@ public class CommandHandler {
                 break;
             case "list":
                 List<Client> clientList = store.getClients();
-                clientList.sort(Comparator.comparing(Client::getName, String.CASE_INSENSITIVE_ORDER));
+                clientList.sort(new Comparator<Client>() {
+                    @Override
+                    public int compare(Client c1, Client c2) {
+                        return c1.getName().compareToIgnoreCase(c2.getName());
+                    }
+                });
                 System.out.println("Clients:");
                 for (Client client : clientList) {
                     System.out.println("  " + client);
@@ -389,6 +397,7 @@ public class CommandHandler {
         System.out.println("  exit");
         System.out.println();
         System.out.println("Categories: MERCH, STATIONERY, CLOTHES, BOOK, ELECTRONICS");
-        System.out.println("Discounts if there are ≥2 units in the category: MERCH 0%, STATIONERY 5%, CLOTHES 7%, BOOK 10%, ELECTRONICS 3%");
+        System.out.println(
+                "Discounts if there are ≥2 units in the category: MERCH 0%, STATIONERY 5%, CLOTHES 7%, BOOK 10%, ELECTRONICS 3%");
     }
 }
