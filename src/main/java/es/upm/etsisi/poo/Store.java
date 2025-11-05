@@ -20,24 +20,7 @@ public class Store {
     public void addProduct(Product product) {
         if (product.getId() == 0) {
             int newId = generateProductId();
-            Product newProduct;
-            switch (product.getClass().getSimpleName()) {
-                case "CustomizableProduct":
-                    CustomizableProduct cp = (CustomizableProduct) product;
-                    newProduct = new CustomizableProduct(newId, cp.getName(), cp.getCategory(), cp.getPrice(), cp.getMaxCustomizableTexts());
-                    break;
-                case "Food":
-                    Food f = (Food) product;
-                    newProduct = new Food(newId, f.getName(), f.getPrice(), f.getExpirationDate(), f.getMaxParticipants());
-                    break;
-                case "Meeting":
-                    Meeting m = (Meeting) product;
-                    newProduct = new Meeting(newId, m.getName(), m.getPrice(), m.getExpirationDate(), m.getMaxParticipants());
-                    break;
-                default:
-                    newProduct = new Product(newId, product.getName(), product.getCategory(), product.getPrice());
-                    break;
-            }
+            Product newProduct = product.copyWithNewId(newId);
             catalog.addProduct(newProduct);
         } else {
             catalog.addProduct(product);
@@ -124,7 +107,8 @@ public class Store {
         return newTicket;
     }
 
-    public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount, List<String> customTexts) {
+    public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount,
+            List<String> customTexts) {
         Ticket ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new IllegalArgumentException("Error: Ticket not found.");

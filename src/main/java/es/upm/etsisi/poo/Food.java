@@ -36,4 +36,9 @@ public class Food extends Product {
     public double getPrice() {
         return super.getPrice();
     }
+
+    @Override
+    public Product copyWithNewId(int newId) {
+        return new Food(newId, this.getName(), this.getPrice(), this.getExpirationDate(), this.getMaxParticipants());
+    }
 }

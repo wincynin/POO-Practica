@@ -85,7 +85,7 @@ public class CommandHandler {
                     String name;
                     ProductCategory category;
                     double price;
-                    int maxTexts = -1;
+                    int maxPers = -1;
 
                     if (argList.size() > 3 && !argList.get(0).contains("\"")) { // ID provided
                         id = Integer.parseInt(argList.get(0));
@@ -95,13 +95,13 @@ public class CommandHandler {
                     category = ProductCategory.valueOf(argList.get(1).toUpperCase());
                     price = Double.parseDouble(argList.get(2));
 
-                    if (argList.size() > 3) { // maxTexts is present
-                        maxTexts = Integer.parseInt(argList.get(3));
+                    if (argList.size() > 3) { // maxPers is present
+                        maxPers = Integer.parseInt(argList.get(3));
                     }
 
                     Product prod;
-                    if (maxTexts != -1) {
-                        prod = new CustomizableProduct(id, name, category, price, maxTexts);
+                    if (maxPers != -1) {
+                        prod = new CustomizableProduct(id, name, category, price, maxPers);
                     } else {
                         prod = new Product(id, name, category, price);
                     }
@@ -456,7 +456,7 @@ public class CommandHandler {
 
     private void printHelp() {
         System.out.println("Commands:");
-        System.out.println("  prod add [id] \"<name>\" <category> <price> [<maxTexts>]");
+        System.out.println("  prod add [id] \"<name>\" <category> <price> [<maxPers>]");
         System.out.println("  prod addFood [id] \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
         System.out.println("  prod addMeeting [id] \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
         System.out.println("  prod list");

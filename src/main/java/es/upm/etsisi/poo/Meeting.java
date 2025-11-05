@@ -36,4 +36,9 @@ public class Meeting extends Product {
     public double getPrice() {
         return super.getPrice();
     }
+
+    @Override
+    public Product copyWithNewId(int newId) {
+        return new Meeting(newId, this.getName(), this.getPrice(), this.getExpirationDate(), this.getMaxParticipants());
+    }
 }

@@ -47,4 +47,9 @@ public class CustomizableProduct extends Product {
         return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f, customTexts:%s}",
                 this.getClass().getSimpleName(), getId(), getName(), getCategory(), getPrice(), customTexts);
     }
+
+    @Override
+    public Product copyWithNewId(int newId) {
+        return new CustomizableProduct(newId, this.getName(), this.getCategory(), this.getPrice(), this.getMaxCustomizableTexts());
+    }
 }
