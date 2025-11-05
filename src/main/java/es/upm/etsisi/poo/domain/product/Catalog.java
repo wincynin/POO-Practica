@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.domain.product;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+
+import es.upm.etsisi.poo.common.ProductNotFoundException;
 
 public class Catalog {
     private static final int MAX_PRODUCTS = 200;
@@ -13,53 +14,28 @@ public class Catalog {
         this.products = new ArrayList<Product>();
     }
 
-    public boolean addProduct(Product prod) {
+    public void addProduct(Product prod) throws IllegalArgumentException {
         if (products.size() >= MAX_PRODUCTS) {
-            System.out.println("Error: Maximum number of products reached.");
-            return false;
+            throw new IllegalArgumentException("Error: Maximum number of products reached.");
         }
-        if (getProduct(prod.getId()) != null) {
-            System.out.println("Error: A product with that ID already exists.");
-            return false;
+        try {
+            getProduct(prod.getId());
+            // If we get here, the product exists
+            throw new IllegalArgumentException("Error: A product with that ID already exists.");
+        } catch (ProductNotFoundException e) {
+            // This is the expected case, the product does not exist, so we can add it.
+            products.add(prod);
         }
-        products.add(prod);
-        return true;
     }
 
-    public Product removeProduct(int id) {
-        for (int i = 0; i < products.size(); i++) {
-            if (products.get(i).getId() == id) {
-                return products.remove(i);
-            }
-        }
-        return null;
+    public Product removeProduct(int id) throws ProductNotFoundException {
+        Product productToRemove = getProduct(id);
+        products.remove(productToRemove);
+        return productToRemove;
     }
 
-    public Product getProduct(int id) {
-        for (Product product : products) {
-            if (product.getId() == id) {
-                return product;
-            }
-        }
-        return null;
-    }
-
-    @SuppressWarnings("Convert2Lambda")
-    public List<Product> listProducts() {
-        products.sort(new Comparator<Product>() {
-            @Override
-            public int compare(Product p1, Product p2) {
-                return Integer.compare(p1.getId(), p2.getId());
-            }
-        });
-        return products;
-    }
-
-    public boolean updateProduct(int id, String field, String value) {
+    public void updateProduct(int id, String field, String value) throws ProductNotFoundException, IllegalArgumentException {
         Product prod = getProduct(id);
-        if (prod == null) {
-            return false;
-        }
 
         switch (field.toUpperCase()) {
             case "NAME":
@@ -70,28 +46,23 @@ public class Catalog {
                     ProductCategory newCategory = ProductCategory.valueOf(value.toUpperCase());
                     prod.setCategory(newCategory);
                 } catch (IllegalArgumentException e) {
-                    System.out.println("Error: Invalid category");
-                    return false;
+                    throw new IllegalArgumentException("Error: Invalid category");
                 }
                 break;
             case "PRICE":
                 try {
                     double newPrice = Double.parseDouble(value);
                     if (newPrice <= 0) {
-                        System.out.println("Error: Price must be > 0");
-                        return false;
+                        throw new IllegalArgumentException("Error: Price must be > 0");
                     }
                     prod.setPrice(newPrice);
                 } catch (NumberFormatException e) {
-                    System.out.println("Error: Invalid price");
-                    return false;
+                    throw new IllegalArgumentException("Error: Invalid price");
                 }
                 break;
             default:
-                System.out.println("Error: Invalid field");
-                return false;
+                throw new IllegalArgumentException("Error: Invalid field");
         }
-        return true;
     }
 
     public boolean isEmpty() {
@@ -100,5 +71,18 @@ public class Catalog {
 
     public int getSize() {
         return products.size();
+    }
+
+    public Product getProduct(int id) throws ProductNotFoundException {
+        for (Product product : products) {
+            if (product.getId() == id) {
+                return product;
+            }
+        }
+        throw new ProductNotFoundException("Product with ID " + id + " not found.");
+    }
+
+    public List<Product> getProducts() {
+        return products;
     }
 }
