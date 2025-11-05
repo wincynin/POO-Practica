@@ -112,6 +112,10 @@ public class Ticket {
             }
         }
 
+        if (lines.size() >= 100) {
+            throw new IllegalStateException("Error: Ticket cannot have more than 100 product lines.");
+        }
+
         TicketLine newLine = new TicketLine(product, quantity);
         if (customTexts != null && product instanceof CustomizableProduct) {
             for (String text : customTexts) {

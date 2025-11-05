@@ -62,6 +62,10 @@ public class Product {
         }
     }
 
+    public Product copyWithNewId(int newId) {
+        return new Product(newId, this.getName(), this.getCategory(), this.getPrice());
+    }
+
     @Override
     public String toString() {
         return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f}",
