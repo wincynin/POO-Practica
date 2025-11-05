@@ -1,10 +1,15 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.ui;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.product.*;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.user.Client;
 
 public class CommandHandler {
     private final Store store;
@@ -474,7 +479,7 @@ public class CommandHandler {
         System.out.println("  cash remove <id>");
         System.out.println("  cash list");
         System.out.println("  cash tickets <id>");
-        System.out.println("  echo \"<text>\"");
+        System.out.println("  echo \"<text>\" ");
         System.out.println("  help");
         System.out.println("  exit");
         System.out.println();

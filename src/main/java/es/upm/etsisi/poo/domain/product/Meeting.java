@@ -1,12 +1,12 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.product;
 
 import java.time.LocalDateTime;
 
-public class Food extends Product {
+public class Meeting extends Product {
     private final LocalDateTime expirationDate;
     private final int maxParticipants;
 
-    public Food(String name, double price, LocalDateTime expirationDate, int maxParticipants) {
+    public Meeting(String name, double price, LocalDateTime expirationDate, int maxParticipants) {
         super(0, name, null, price);
         if (maxParticipants > 100) {
             throw new IllegalArgumentException("Error: Maximum number of participants cannot exceed 100.");
@@ -15,7 +15,7 @@ public class Food extends Product {
         this.maxParticipants = maxParticipants;
     }
 
-    public Food(int id, String name, double price, LocalDateTime expirationDate, int maxParticipants) {
+    public Meeting(int id, String name, double price, LocalDateTime expirationDate, int maxParticipants) {
         super(id, name, null, price);
         if (maxParticipants > 100) {
             throw new IllegalArgumentException("Error: Maximum number of participants cannot exceed 100.");
@@ -39,6 +39,6 @@ public class Food extends Product {
 
     @Override
     public Product copyWithNewId(int newId) {
-        return new Food(newId, this.getName(), this.getPrice(), this.getExpirationDate(), this.getMaxParticipants());
+        return new Meeting(newId, this.getName(), this.getPrice(), this.getExpirationDate(), this.getMaxParticipants());
     }
 }

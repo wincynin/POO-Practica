@@ -1,4 +1,4 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.ticket;
 
 public enum TicketState {
     EMPTY,

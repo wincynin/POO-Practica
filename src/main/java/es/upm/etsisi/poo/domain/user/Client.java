@@ -1,4 +1,4 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.user;
 
 public class Client extends User {
     private final String cashierId;

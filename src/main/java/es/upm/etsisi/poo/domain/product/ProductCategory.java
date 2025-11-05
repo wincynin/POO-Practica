@@ -1,4 +1,4 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.domain.product;
 
 public enum ProductCategory {
     MERCH(0.0),

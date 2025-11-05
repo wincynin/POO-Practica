@@ -1,7 +1,12 @@
-package es.upm.etsisi.poo;
+package es.upm.etsisi.poo.application;
 
 import java.util.ArrayList;
 import java.util.List;
+import es.upm.etsisi.poo.domain.product.Catalog;
+import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.user.Client;
 
 public class Store {
     private final Catalog catalog;
