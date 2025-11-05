@@ -60,6 +60,9 @@ public class Ticket {
     }
 
     public void addProduct(Product product, int quantity, List<String> customTexts) {
+        if (product == null) {
+            throw new IllegalArgumentException("Error: Product cannot be null.");
+        }
         if (this.state == TicketState.CLOSED) {
             throw new IllegalStateException("Error: Cannot add products to a closed ticket.");
         }
@@ -74,14 +77,12 @@ public class Ticket {
                     throw new IllegalStateException("Error: Food and Meeting products can only be added once.");
                 }
             }
-            if (product instanceof Food) {
-                Food food = (Food) product;
+            if (product instanceof Food food) {
                 if (food.getExpirationDate().isBefore(LocalDateTime.now().plusDays(3))) {
                     throw new IllegalStateException("Error: Food products must be planned at least 3 days in advance.");
                 }
             }
-            if (product instanceof Meeting) {
-                Meeting meeting = (Meeting) product;
+            if (product instanceof Meeting meeting) {
                 if (meeting.getExpirationDate().isBefore(LocalDateTime.now().plusHours(12))) {
                     throw new IllegalStateException("Error: Meeting products must be planned at least 12 hours in advance.");
                 }
