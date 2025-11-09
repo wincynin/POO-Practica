@@ -1,9 +1,8 @@
 package es.upm.etsisi.poo.domain.ticket;
 
-import java.util.ArrayList;
 import java.util.List;
-import es.upm.etsisi.poo.domain.product.CustomizableProduct;
-import es.upm.etsisi.poo.domain.product.Product;
+import java.util.ArrayList;
+import es.upm.etsisi.poo.domain.product.*;
 
 public class TicketLine {
     private final Product product;
@@ -43,8 +42,10 @@ public class TicketLine {
     }
 
     public void addCustomText(String text) {
+        // Required logic, texts can only be added if the product is a CustomizableProduct.
         if (product instanceof CustomizableProduct) {
             CustomizableProduct cp = (CustomizableProduct) product;
+            // Check if we can add more custom texts based on the product's limit.
             if (customTexts.size() < cp.getMaxCustomizableTexts()) {
                 customTexts.add(text);
             } else {
@@ -56,10 +57,15 @@ public class TicketLine {
     }
 
     public double getLineTotal() {
+        // We do not calculate the price here and call product.getPrice().
+
+        // If the product is 'CustomizableProduct', the overriden getPrice()
+        // will return the price with the 10% surcharge included.
         if (product instanceof CustomizableProduct) {
             CustomizableProduct cp = (CustomizableProduct) product;
             return cp.getPrice() * quantity;
         }
+        // If it is a normal product, it will call the getPrice() from Product.
         return product.getPrice() * quantity;
     }
 }

@@ -1,7 +1,7 @@
 package es.upm.etsisi.poo.domain.user;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 
@@ -28,6 +28,7 @@ public class Cashier extends User {
 
     @Override
     public String toString() {
+        // Returns a string representation of the Cashier, including id, name, and email, in that order.
         return String.format("{class: Cashier, id: '%s', name: '%s', email: '%s'}", getId(), getName(), getEmail());
     }
 }
