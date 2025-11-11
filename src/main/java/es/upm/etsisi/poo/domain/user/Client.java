@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.user;
 
+// Represents a client, as defined in E2.
 public class Client extends User {
     private final String cashierId;
 
@@ -17,7 +18,8 @@ public class Client extends User {
 
     @Override
     public String toString() {
-        // Returns a string representation of the Client, including id, name, email, and cashierId, in that order.
-        return String.format("{class: Client, id: '%s', name: '%s', email: '%s', cashierId: '%s'}", getId(), getName(), getEmail(), getCashierId());
+        // Returns a string representation of the Client, including id, name, email and cashierId, in that order.
+        return String.format("{class: Client, id: '%s', name: '%s', email: '%s', cashierId: '%s'}",
+                getId(), getName(), getEmail(), getCashierId());
     }
 }

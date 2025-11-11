@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
-
+// Represents a cashier, as defined in E2.
 public class Cashier extends User {
     private final List<Ticket> tickets;
 
@@ -28,7 +28,8 @@ public class Cashier extends User {
 
     @Override
     public String toString() {
-        // Returns a string representation of the Cashier, including id, name, and email, in that order.
-        return String.format("{class: Cashier, id: '%s', name: '%s', email: '%s'}", getId(), getName(), getEmail());
+        // Returns a string representation of the Cashier, including id, name and email, in that order.
+        return String.format("{class: Cashier, id: '%s', name: '%s', email: '%s'}",
+                getId(), getName(), getEmail());
     }
 }
