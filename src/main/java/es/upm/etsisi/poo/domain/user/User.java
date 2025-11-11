@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.user;
 
+// Represents a user in the system, as defined in E2.
 public abstract class User {
     private String id;
     private String name;

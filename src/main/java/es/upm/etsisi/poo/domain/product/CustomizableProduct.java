@@ -1,9 +1,11 @@
 package es.upm.etsisi.poo.domain.product;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
+// Represents a product that can be customized with texts, as defined in E2
 public class CustomizableProduct extends Product {
+    private static final double CUSTOM_SURCHARGE = 0.1;     //E2 Requirement: 10% surcharge per custom text
     private final int maxCustomizableTexts;
     private final List<String> customTexts;
 
@@ -39,15 +41,17 @@ public class CustomizableProduct extends Product {
 
     @Override
     public double getPrice() {
-        return super.getPrice() * (1 + customTexts.size() * 0.1);
+        return super.getPrice() * (1 + customTexts.size() * CUSTOM_SURCHARGE);
     }
 
     @Override
     public String toString() {
+        // Returns a string representation of the CustomizableProduct, including id, name, category, price and custom texts, in that order.
         return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f, customTexts:%s}",
                 this.getClass().getSimpleName(), getId(), getName(), getCategory(), getPrice(), customTexts);
     }
 
+    // Override copyWithNewId to create a CustomProd with the new generated ID to ensure not creating a Product instance by mistake.
     @Override
     public Product copyWithNewId(int newId) {
         return new CustomizableProduct(newId, this.getName(), this.getCategory(), this.getPrice(), this.getMaxCustomizableTexts());

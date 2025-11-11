@@ -1,19 +1,18 @@
 package es.upm.etsisi.poo.ui;
 
-import es.upm.etsisi.poo.application.Store;
-import es.upm.etsisi.poo.common.ProductNotFoundException;
-import es.upm.etsisi.poo.common.UserNotFoundException;
-import es.upm.etsisi.poo.domain.product.*;
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-import es.upm.etsisi.poo.domain.user.Cashier;
-import es.upm.etsisi.poo.domain.user.Client;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.time.format.DateTimeFormatter;
 
+import es.upm.etsisi.poo.common.*;
+import es.upm.etsisi.poo.domain.user.*;
+import es.upm.etsisi.poo.domain.product.*;
+import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
+
+// This class acts as the Controller. It parses user input and calls Store methods.
 public class CommandHandler {
     private final Store store;
 
@@ -26,6 +25,7 @@ public class CommandHandler {
             return;
         }
 
+        // Take first word as command, and the second word (if any) as the argument.
         String[] parts = input.split(" ", 2);
         String command = parts[0];
         String args = parts.length > 1 ? parts[1] : "";
@@ -66,16 +66,20 @@ public class CommandHandler {
 
         for (char c : args.toCharArray()) {
             if (c == '"') {
+                // Toggle the inQuotes flag when a quote is found
                 inQuotes = !inQuotes;
             } else if (c == ' ' && !inQuotes) {
+                // If it's a space and we're NOT in quotes, end the current argument
                 if (currentArg.length() > 0) {
                     argList.add(currentArg.toString());
                     currentArg = new StringBuilder();
                 }
             } else {
+                // Add any other character to the current argument
                 currentArg.append(c);
             }
         }
+        // Add the last argument
         if (currentArg.length() > 0) {
             argList.add(currentArg.toString());
         }
@@ -417,7 +421,6 @@ public class CommandHandler {
         System.out.println("  exit");
         System.out.println();
         System.out.println("Categories: MERCH, STATIONERY, CLOTHES, BOOK, ELECTRONICS");
-        System.out.println(
-                "Discounts if there are ≥2 units in the category: MERCH 0%, STATIONERY 5%, CLOTHES 7%, BOOK 10%, ELECTRONICS 3%");
+        System.out.println("Discounts if there are ≥2 units in the category: MERCH 0%, STATIONERY 5%, CLOTHES 7%, BOOK 10%, ELECTRONICS 3%");
     }
 }

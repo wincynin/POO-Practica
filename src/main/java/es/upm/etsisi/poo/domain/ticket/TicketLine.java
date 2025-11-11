@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.ArrayList;
 import es.upm.etsisi.poo.domain.product.*;
 
+// Represents a line in a ticket, as defined in E2.
 public class TicketLine {
-    private final Product product;
     private int quantity;
+    private final Product product;
     private final List<String> customTexts;
 
     @SuppressWarnings("Convert2Diamond")

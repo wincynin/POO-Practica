@@ -8,12 +8,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import es.upm.etsisi.poo.domain.product.*;
 
+// Represents a ticket, as defined in E1 and E2.
 public class Ticket {
     private String id;
-    private final String cashierId;
-    private final String userId;
     private TicketState state;
+    private final String userId;
+    private final String cashierId;
     private final List<TicketLine> lines;
+    private static final int MAX_PRODUCT_LINES = 100;
 
     @SuppressWarnings("Convert2Diamond")
     public Ticket(String id, String cashierId, String userId) {
@@ -105,7 +107,7 @@ public class Ticket {
         for (TicketLine currentLine : lines) {
             if (currentLine.getProduct().getId() == product.getId()) {
                 // Check if customizations also match
-                List<String> lineTexts = currentLine.getCustomTexts(); // This is never null, just empty
+                List<String> lineTexts = currentLine.getCustomTexts();      // This is never null, just empty
                 boolean lineHasCustomTexts = !lineTexts.isEmpty();
                 boolean newHasCustomTexts = (customTexts != null && !customTexts.isEmpty());
 
@@ -123,8 +125,8 @@ public class Ticket {
         }
 
         // We respect the E1 rule of max 100 items per ticket.
-        if (lines.size() >= 100) {
-            throw new IllegalStateException("Error: Ticket cannot have more than 100 product lines.");
+        if (lines.size() >= MAX_PRODUCT_LINES) {
+            throw new IllegalStateException("Error: Ticket cannot have more than " + MAX_PRODUCT_LINES + " product lines.");
         }
         // After all checks, we can add the new line.
         TicketLine newLine = new TicketLine(product, quantity);
