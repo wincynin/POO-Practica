@@ -58,6 +58,7 @@ public class CommandHandler {
         }
     }
 
+    // Parses arguments, respecting quoted strings
     private List<String> parseArgs(String args) {
         @SuppressWarnings("Convert2Diamond")
         List<String> argList = new ArrayList<String>();
@@ -96,21 +97,23 @@ public class CommandHandler {
 
         switch (command) {
             case "add":
-                int id = 0;
+                int id = 0;                 // Default ID (0 means auto-generate)
                 String name;
-                ProductCategory category;
                 double price;
-                int maxPers = -1;
+                int maxPers = -1;           // -1 means not customizable
+                ProductCategory category;
 
-                if (argList.size() > 3 && !argList.get(0).contains("\"")) { // ID provided
+                // E2: Check if an ID is provided (it's not a name in quotes)
+                if (argList.size() > 3 && !argList.get(0).contains("\"")) {
                     id = Integer.parseInt(argList.get(0));
                     argList.remove(0);
                 }
                 name = argList.get(0);
                 category = ProductCategory.valueOf(argList.get(1).toUpperCase());
                 price = Double.parseDouble(argList.get(2));
-
-                if (argList.size() > 3) { // maxPers is present
+                
+                // E2: Check for optional customizable parameter
+                if (argList.size() > 3) {
                     maxPers = Integer.parseInt(argList.get(3));
                 }
 
@@ -127,15 +130,17 @@ public class CommandHandler {
                 break;
             case "addFood":
             case "addMeeting":
-                int foodId = 0;
+                int maxPeople;
+                int foodId = 0;               // Default ID (0 means auto-generate)
                 String foodName;
                 double foodPrice;
                 LocalDate expirationDate;
-                int maxPeople;
 
+                // E2 Requirement: Date format yyyy-MM-dd
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-                if (argList.size() > 3 && !argList.get(0).contains("\"")) { // ID provided
+                // E2: Check if an ID is provided (it's not a name in quotes)
+                if (argList.size() > 3 && !argList.get(0).contains("\"")) {
                     foodId = Integer.parseInt(argList.get(0));
                     argList.remove(0);
                 }
@@ -203,7 +208,8 @@ public class CommandHandler {
                 String cashierId;
                 String userId;
 
-                if (argList.size() > 2) { // ID provided
+                // E2: Check if optional Ticket ID is provided
+                if (argList.size() > 2) {
                     ticketId = argList.get(0);
                     argList.remove(0);
                 }
@@ -219,11 +225,12 @@ public class CommandHandler {
                 int prodId = Integer.parseInt(argList.get(2));
                 int amount = Integer.parseInt(argList.get(3));
 
+                // E2: Parse optional customization flags
                 @SuppressWarnings("Convert2Diamond")
                 List<String> customTexts = new ArrayList<>();
                 for (int i = 4; i < argList.size(); i++) {
                     if (argList.get(i).startsWith("--p")) {
-                        customTexts.add(argList.get(i).substring(3));
+                        customTexts.add(argList.get(i).substring(3)); // Get text after "--p"
                     }
                 }
 
@@ -253,6 +260,7 @@ public class CommandHandler {
 
             case "list":
                 List<Ticket> allTickets = store.getTickets();
+                // E2 Requirement: Sort by cashier ID, then by ticket ID
                 allTickets.sort(new Comparator<Ticket>() {
                     @Override
                     public int compare(Ticket t1, Ticket t2) {
@@ -275,6 +283,7 @@ public class CommandHandler {
         }
     }
 
+    // Handles "client" sub-commands
     @SuppressWarnings("Convert2Lambda")
     private void handleClient(String args) throws UserNotFoundException {
         List<String> argList = parseArgs(args);
@@ -306,6 +315,8 @@ public class CommandHandler {
                 break;
             case "list":
                 List<Client> clientList = store.getClients();
+                
+                // E2 Requirement: Sort by name
                 clientList.sort(new Comparator<Client>() {
                     @Override
                     public int compare(Client c1, Client c2) {
@@ -338,7 +349,8 @@ public class CommandHandler {
                 String name;
                 String email;
 
-                if (argList.size() > 2) { // ID provided
+                // E2: Check if optional Cashier ID is provided
+                if (argList.size() > 2) {
                     id = argList.get(0);
                     argList.remove(0);
                 }
@@ -359,6 +371,7 @@ public class CommandHandler {
                 break;
             case "list":
                 List<Cashier> cashierList = store.getCashiers();
+                // E2 Requirement: Sort by name
                 cashierList.sort(new Comparator<Cashier>() {
                     @Override
                     public int compare(Cashier c1, Cashier c2) {
@@ -376,6 +389,7 @@ public class CommandHandler {
                     String cashierId = argList.get(0);
                     Cashier cashier = store.findCashierById(cashierId);
                     List<Ticket> cashierTickets = cashier.getTickets();
+                    // E2 Requirement: Sort by ticket ID
                     cashierTickets.sort(new Comparator<Ticket>() {
                         @Override
                         public int compare(Ticket t1, Ticket t2) {
@@ -384,6 +398,7 @@ public class CommandHandler {
                     });
                     System.out.println("Tickets for Cashier " + cashierId + ":");
                     for (Ticket ticket : cashierTickets) {
+                        // E2 Requirement: Show only ID and state
                         System.out.println("  ID: " + ticket.getId() + ", State: " + ticket.getState());
                     }
                     System.out.println("cash tickets: ok");
@@ -396,6 +411,7 @@ public class CommandHandler {
         }
     }
 
+    // Prints all available commands
     private void printHelp() {
         System.out.println("Commands:");
         System.out.println("  prod add [id] \"<name>\" <category> <price> [<maxPers>]");
