@@ -47,3 +47,11 @@ public class Food extends Product {
         return new Food(newId, this.getName(), this.getPrice(), this.getExpirationDate(), this.getMaxParticipants());
     }
 }
+
+/*
+ * TODO Comments: REMOVE THE COMMON PACKAGE
+ * TODO Comments: CREATE TWO TICKETLINES, NOT USE INSTANCE OF
+ * TODO Comments: USE CLIENT TYPE IN TICKET INSTEAD OF USER IN GENERAL
+ * TODO Comments: CHECK BILATERAL DEPENDECIES IN UML DIAGRAM
+ * TODO Comments: REVIEW EXCEPTIONS USAGE AND CUSTOM EXCEPTIONS IN STORE AND CATALOG
+ */
