@@ -1,5 +1,8 @@
 package es.upm.etsisi.poo.domain.product;
 
+import java.util.Collections;
+import java.util.List;
+
 // Represents a standard product, as defined in E1 and E2.
 public class Product {
 
@@ -41,6 +44,10 @@ public class Product {
         return price;
     }
 
+    public List<String> getCustomTexts() {
+        return Collections.emptyList();
+    }
+
     public void setName(String name) {
         // Check new name cannot be empty or > 100 chars
         if (name == null || name.length() > MAX_NAME_LENGTH) {
@@ -64,6 +71,23 @@ public class Product {
     }
 
 
+
+    public void addCustomText(List<String> customTexts, String text) {
+        throw new IllegalStateException("Error: This product is not customizable.");
+    }
+
+    public double getLineTotal(int quantity) {
+        return getPrice() * quantity;
+    }
+
+    public boolean isBookable() {
+        return false;
+    }
+
+
+    public void validate() {
+        // By default, do nothing. Subclasses can override this.
+    }
 
     @Override
     public String toString() {

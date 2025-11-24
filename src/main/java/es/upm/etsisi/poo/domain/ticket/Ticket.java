@@ -1,6 +1,8 @@
 package es.upm.etsisi.poo.domain.ticket;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -78,29 +80,16 @@ public class Ticket {
             this.state = TicketState.ACTIVE;
         }
 
-        // Special rules for Food and Meeting products.
-        if (product instanceof Food || product instanceof Meeting) {
+        // Special rules for Bookable products.
+        if (product.isBookable()) {
             // They can only be added once.
             for (TicketLine line : lines) {
                 if (line.getProduct().getId() == product.getId()) {
-                    throw new IllegalStateException("Error: Food and Meeting products can only be added once.");
+                    throw new IllegalStateException("Error: Bookable products can only be added once.");
                 }
             }
-            // Check planning time constraints, specified to be at least 3 days for Food
-            if (product instanceof Food) {
-                Food food = (Food) product;
-                if (food.getExpirationDate().isBefore(LocalDateTime.now().plusDays(3))) {
-                    throw new IllegalStateException("Error: Food products must be planned at least 3 days in advance.");
-                }
-            }
-            // Check planning time constraints, specified 12 hours for Meeting.
-            if (product instanceof Meeting) {
-                Meeting meeting = (Meeting) product;
-                if (meeting.getExpirationDate().isBefore(LocalDateTime.now().plusHours(12))) {
-                    throw new IllegalStateException(
-                            "Error: Meeting products must be planned at least 12 hours in advance.");
-                }
-            }
+            // Check planning time constraints
+            product.validate();
         }
 
         // We now check for matching ID AND matching customizations, to merge quantities them as requested.
@@ -130,7 +119,7 @@ public class Ticket {
         }
         // After all checks, we can add the new line.
         TicketLine newLine = new TicketLine(product, quantity);
-        if (customTexts != null && product instanceof CustomizableProduct) {
+        if (customTexts != null) {
             for (String text : customTexts) {
                 newLine.addCustomText(text);
             }
@@ -225,14 +214,12 @@ public class Ticket {
                 // Discount presented with two decimal places as requested.
                 System.out.printf(" **discount-%.2f", discount);
             }
-            if (product instanceof CustomizableProduct) {
-                // If the line has custom texts, we print the prefix " --p" to match the input
-                // command format.
-                if (!line.getCustomTexts().isEmpty()) {
-                    System.out.print(" --p");
-                    for (String text : line.getCustomTexts()) {
-                        System.out.print(" " + text);
-                    }
+            // If the line has custom texts, we print the prefix " --p" to match the input
+            // command format.
+            if (!line.getCustomTexts().isEmpty()) {
+                System.out.print(" --p");
+                for (String text : line.getCustomTexts()) {
+                    System.out.print(" " + text);
                 }
             }
             // Nueva línea para el siguiente item.
@@ -258,20 +245,19 @@ public class Ticket {
         System.out.println("ticket print: ok");
     }
 
-    @SuppressWarnings("Convert2Diamond")
     private List<ProductCategory> getDiscountableCategories() {
-        List<ProductCategory> discountableCategories = new ArrayList<ProductCategory>();
-
-        // Identify categories eligible for discount, criteria being more than 1 item in the same category.
-        for (ProductCategory category : ProductCategory.values()) {
-            int categoryCount = 0;
-            for (TicketLine line : lines) {
-                if (line.getProduct().getCategory() == category) {
-                    categoryCount += line.getQuantity();
-                }
+        Map<ProductCategory, Integer> categoryCounts = new HashMap<>();
+        for (TicketLine line : lines) {
+            ProductCategory category = line.getProduct().getCategory();
+            if (category != null) {
+                categoryCounts.put(category, categoryCounts.getOrDefault(category, 0) + line.getQuantity());
             }
-            if (categoryCount > 1) {
-                discountableCategories.add(category);
+        }
+
+        List<ProductCategory> discountableCategories = new ArrayList<>();
+        for (Map.Entry<ProductCategory, Integer> entry : categoryCounts.entrySet()) {
+            if (entry.getValue() > 1) {
+                discountableCategories.add(entry.getKey());
             }
         }
         return discountableCategories;

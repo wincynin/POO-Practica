@@ -20,11 +20,13 @@ public class CustomizableProduct extends Product {
         return maxCustomizableTexts;
     }
 
+    @Override
     public List<String> getCustomTexts() {
         return customTexts;
     }
 
-    public void addCustomText(String text) {
+    @Override
+    public void addCustomText(List<String> customTexts, String text) {
         if (customTexts.size() < maxCustomizableTexts) {
             customTexts.add(text);
         } else {
@@ -33,8 +35,8 @@ public class CustomizableProduct extends Product {
     }
 
     @Override
-    public double getPrice() {
-        return super.getPrice() * (1 + customTexts.size() * CUSTOM_SURCHARGE);
+    public double getLineTotal(int quantity) {
+        return super.getPrice() * (1 + customTexts.size() * CUSTOM_SURCHARGE) * quantity;
     }
 
     @Override
