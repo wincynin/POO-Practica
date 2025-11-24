@@ -137,8 +137,9 @@ public class CommandHandler {
                 expirationDate = LocalDate.parse(argList.get(2), formatter);
                 maxPeople = Integer.parseInt(argList.get(3));
 
-                EventProduct.EventType eventType = command.equals("addFood") ? EventProduct.EventType.FOOD : EventProduct.EventType.MEETING;
+                EventType eventType = command.equals("addFood") ? EventType.FOOD : EventType.MEETING;
                 EventProduct eventProduct = new EventProduct(eventName, eventPrice, expirationDate.atStartOfDay(), maxPeople, eventType);
+                eventProduct.validate();
                 
                 store.addProduct(eventProduct);
                 System.out.println(eventProduct);
