@@ -85,12 +85,7 @@ public class Store {
     public void removeCashier(String id) throws UserNotFoundException {
         Cashier cashierToRemove = findCashierById(id);
         // Remove tickets associated with the cashier.
-        for (int i = 0; i < tickets.size(); i++) {
-            if (tickets.get(i).getCashierId().equals(id)) {
-                tickets.remove(i);
-                i--; // Decrement to avoid skipping the next element.
-            }
-        }
+        tickets.removeIf(ticket -> ticket.getCashierId().equals(id));
         this.cashiers.remove(cashierToRemove);
     }
 
