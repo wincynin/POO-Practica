@@ -20,14 +20,7 @@ public class Catalog {
         if (products.size() >= MAX_PRODUCTS) {
             throw new IllegalArgumentException("Error: Maximum number of products reached.");
         }
-
-        // This try enforces E1 requirement: there cannot be two products with the same ID.
-        try {
-            getProduct(prod.getId());
-            throw new IllegalArgumentException("Error: A product with that ID already exists.");
-        } catch (ProductNotFoundException e) {
-            products.add(prod);
-        }
+        products.add(prod);
     }
 
     public Product removeProduct(int id) throws ProductNotFoundException {
