@@ -25,14 +25,7 @@ public class Store {
     }
 
     public void addProduct(Product product) {
-        // E2 requirement: Handle automatic ID generation requested by the user (ID=0).
-        if (product.getId() == 0) {
-            int newId = IdGenerator.generateProductId(this.catalog);
-            Product newProduct = product.copyWithNewId(newId);
-            catalog.addProduct(newProduct);
-        } else {
-            catalog.addProduct(product);
-        }
+        catalog.addProduct(product);
     }
 
     public void addClient(Client client) throws IllegalArgumentException {
@@ -75,7 +68,7 @@ public class Store {
     public void addCashier(String id, String name, String email) {
         String cashierId = id;
         if (cashierId == null || cashierId.isEmpty()) {
-            cashierId = IdGenerator.generateCashierId(this.cashiers);
+            cashierId = Cashier.generateCashierId(this.cashiers);
         }
         addCashier(new Cashier(cashierId, name, email));
     }

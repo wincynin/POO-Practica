@@ -16,13 +16,6 @@ public class CustomizableProduct extends Product {
         this.customTexts = new ArrayList<String>();
     }
 
-    @SuppressWarnings("Convert2Diamond")
-    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
-        super(id, name, category, price);
-        this.maxCustomizableTexts = maxCustomizableTexts;
-        this.customTexts = new ArrayList<String>();
-    }
-
     public int getMaxCustomizableTexts() {
         return maxCustomizableTexts;
     }
@@ -51,9 +44,5 @@ public class CustomizableProduct extends Product {
                 this.getClass().getSimpleName(), getId(), getName(), getCategory(), getPrice(), customTexts);
     }
 
-    // Override copyWithNewId to create a CustomProd with the new generated ID to ensure not creating a Product instance by mistake.
-    @Override
-    public Product copyWithNewId(int newId) {
-        return new CustomizableProduct(newId, this.getName(), this.getCategory(), this.getPrice(), this.getMaxCustomizableTexts());
-    }
+
 }

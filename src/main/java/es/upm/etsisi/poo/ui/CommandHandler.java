@@ -97,17 +97,11 @@ public class CommandHandler {
 
         switch (command) {
             case "add":
-                int id = 0;                 // Default ID (0 means auto-generate)
                 String name;
                 double price;
                 int maxPers = -1;           // -1 means not customizable
                 ProductCategory category;
 
-                // E2: Check if an ID is provided (it's not a name in quotes)
-                if (argList.size() > 3 && !argList.get(0).contains("\"")) {
-                    id = Integer.parseInt(argList.get(0));
-                    argList.remove(0);
-                }
                 name = argList.get(0);
                 category = ProductCategory.valueOf(argList.get(1).toUpperCase());
                 price = Double.parseDouble(argList.get(2));
@@ -119,9 +113,9 @@ public class CommandHandler {
 
                 Product prod;
                 if (maxPers != -1) {
-                    prod = new CustomizableProduct(id, name, category, price, maxPers);
+                    prod = new CustomizableProduct(name, category, price, maxPers);
                 } else {
-                    prod = new Product(id, name, category, price);
+                    prod = new Product(name, category, price);
                 }
 
                 store.addProduct(prod);
@@ -131,36 +125,24 @@ public class CommandHandler {
             case "addFood":
             case "addMeeting":
                 int maxPeople;
-                int foodId = 0;               // Default ID (0 means auto-generate)
-                String foodName;
-                double foodPrice;
+                String eventName;
+                double eventPrice;
                 LocalDate expirationDate;
 
                 // E2 Requirement: Date format yyyy-MM-dd
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-                // E2: Check if an ID is provided (it's not a name in quotes)
-                if (argList.size() > 3 && !argList.get(0).contains("\"")) {
-                    foodId = Integer.parseInt(argList.get(0));
-                    argList.remove(0);
-                }
-                foodName = argList.get(0);
-                foodPrice = Double.parseDouble(argList.get(1));
+                eventName = argList.get(0);
+                eventPrice = Double.parseDouble(argList.get(1));
                 expirationDate = LocalDate.parse(argList.get(2), formatter);
                 maxPeople = Integer.parseInt(argList.get(3));
 
-                if (command.equals("addFood")) {
-                    Food food = new Food(foodId, foodName, foodPrice, expirationDate.atStartOfDay(), maxPeople);
-                    store.addProduct(food);
-                    System.out.println(food);
-                    System.out.println("prod addFood: ok");
-                } else {
-                    Meeting meeting = new Meeting(foodId, foodName, foodPrice, expirationDate.atStartOfDay(),
-                            maxPeople);
-                    store.addProduct(meeting);
-                    System.out.println(meeting);
-                    System.out.println("prod addMeeting: ok");
-                }
+                EventProduct.EventType eventType = command.equals("addFood") ? EventProduct.EventType.FOOD : EventProduct.EventType.MEETING;
+                EventProduct eventProduct = new EventProduct(eventName, eventPrice, expirationDate.atStartOfDay(), maxPeople, eventType);
+                
+                store.addProduct(eventProduct);
+                System.out.println(eventProduct);
+                System.out.println("prod " + command + ": ok");
                 break;
             case "list":
                 List<Product> productList = store.getCatalog().getProducts();
@@ -414,9 +396,9 @@ public class CommandHandler {
     // Prints all available commands
     private void printHelp() {
         System.out.println("Commands:");
-        System.out.println("  prod add [id] \"<name>\" <category> <price> [<maxPers>]");
-        System.out.println("  prod addFood [id] \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
-        System.out.println("  prod addMeeting [id] \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
+        System.out.println("  prod add \"<name>\" <category> <price> [<maxPers>]");
+        System.out.println("  prod addFood \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
+        System.out.println("  prod addMeeting \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
         System.out.println("  prod list");
         System.out.println("  prod update <id> NAME|CATEGORY|PRICE <value>");
         System.out.println("  prod remove <id>");
