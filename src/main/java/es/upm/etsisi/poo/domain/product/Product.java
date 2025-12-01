@@ -6,12 +6,12 @@ import java.util.List;
 // Represents a standard product, as defined in E1 and E2.
 public class Product {
 
+    private int id;
     private String name;
     private double price;
-    private int id;
+    private static int nextId = 1;
     private ProductCategory category;
     private static final double MIN_PRICE = 0.0;        // E1 requirement: price must be > 0
-    private static int nextId = 1;
     private static final int MAX_NAME_LENGTH = 100;     // E1 reqeuirement: name max length to be under 100 char
 
     public Product(String name, ProductCategory category, double price) {

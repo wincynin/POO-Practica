@@ -3,7 +3,7 @@ package es.upm.etsisi.poo.domain.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.upm.etsisi.poo.domain.ticket.Ticket; 
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 public class Client extends User implements Comparable<Client> {
     private final String cashierId;

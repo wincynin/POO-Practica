@@ -1,13 +1,14 @@
 package es.upm.etsisi.poo.application;
 
+import es.upm.etsisi.poo.domain.user.Client;
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Catalog;
 import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-import es.upm.etsisi.poo.domain.user.Cashier;
-import es.upm.etsisi.poo.domain.user.Client;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+
 
 // Represents the store, acts as the model, holding all the application's data as per E2 requirements.
 public class Store {
@@ -215,7 +216,7 @@ public class Store {
         return catalog;
     }
 
-    // Delegate methods to avoid Law of Demeter violation in CommandHandler
+    // Delegate methods to keep Store as the main interface for product management
     public List<Product> getProducts() {
         return catalog.getProducts();
     }

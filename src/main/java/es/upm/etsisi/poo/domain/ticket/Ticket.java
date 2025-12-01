@@ -201,7 +201,7 @@ public class Ticket implements Comparable<Ticket> {
                     sb.append(" ").append(text);
                 }
             }
-            // Nueva línea para el siguiente item.
+            // New line after each product line.
             sb.append("\n");
         }
 
