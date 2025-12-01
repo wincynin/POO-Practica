@@ -83,7 +83,8 @@ public class Store {
         Cashier cashierToRemove = findCashierById(id);
         if (cashierToRemove != null) {
             // Remove tickets associated with the cashier.
-            tickets.removeIf(ticket -> ticket.getCashierId().equals(id));
+            List<Ticket> ticketsToRemove = cashierToRemove.getTickets();
+            tickets.removeAll(ticketsToRemove);
             this.cashiers.remove(cashierToRemove);
         }
     }
@@ -99,7 +100,7 @@ public class Store {
         if (client == null) {
             throw new IllegalArgumentException("Error: Client with ID " + userId + " not found.");
         }
-        Ticket newTicket = new Ticket(id, cashierId, userId);
+        Ticket newTicket = new Ticket(id);
         tickets.add(newTicket);
         cashier.addTicket(newTicket);
         client.addTicket(newTicket);
@@ -115,8 +116,8 @@ public class Store {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
 
-        // E2 requirement: only the cashier who created the ticket can modify it.
-        if (!ticket.getCashierId().equals(cashierId)) {
+        Cashier cashier = findCashierById(cashierId);
+        if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
         
@@ -134,8 +135,8 @@ public class Store {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
 
-        // E2 requirement: only the cashier who created the ticket can modify it.
-        if (!ticket.getCashierId().equals(cashierId)) {
+        Cashier cashier = findCashierById(cashierId);
+        if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
         if (!ticket.removeProduct(prodId)) {
@@ -150,8 +151,8 @@ public class Store {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
         
-        // E2 requirement: only the cashier who created the ticket can print it.
-        if (!ticket.getCashierId().equals(cashierId)) {
+        Cashier cashier = findCashierById(cashierId);
+        if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can print this ticket.");
         }
         ticket.printAndClose();
