@@ -50,6 +50,15 @@ public class Cashier extends User {
         return new ArrayList<>(tickets);
     }
 
+    public boolean hasTicket(String ticketId) {
+        for (Ticket ticket : tickets) {
+            if (ticket.getId().equals(ticketId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         // Returns a string representation of the Cashier, including id, name and email, in that order.

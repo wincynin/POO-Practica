@@ -15,15 +15,11 @@ import es.upm.etsisi.poo.domain.product.*;
 public class Ticket {
     private String id;
     private TicketState state;
-    private final String userId;
-    private final String cashierId;
     private final List<TicketLine> lines;
     private static final int MAX_PRODUCT_LINES = 100;
 
     @SuppressWarnings("Convert2Diamond")
-    public Ticket(String id, String cashierId, String userId) {
-        this.cashierId = cashierId;
-        this.userId = userId;
+    public Ticket(String id) {
         this.state = TicketState.EMPTY;
         this.lines = new ArrayList<TicketLine>();
 
@@ -45,14 +41,6 @@ public class Ticket {
 
     public String getId() {
         return id;
-    }
-
-    public String getCashierId() {
-        return cashierId;
-    }
-
-    public String getUserId() {
-        return userId;
     }
 
     public TicketState getState() {
@@ -190,8 +178,6 @@ public class Ticket {
 
         // Printing the ticket details in the order they were requested.
         System.out.println("Ticket ID: " + this.id);
-        System.out.println("Cashier ID: " + this.cashierId);
-        System.out.println("Client ID: " + this.userId);
         System.out.println("--------------------");
 
         // We recalculate the discountable categories to know where to print the text "**discount".
@@ -267,4 +253,4 @@ public class Ticket {
     public boolean isEmpty() {
         return lines.isEmpty();
     }
-} //
+}
