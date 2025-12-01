@@ -2,9 +2,10 @@ package es.upm.etsisi.poo.domain.product;
 
 import java.time.LocalDateTime;
 
+// Represents an event product that can be booked, as defined in E2.
 public abstract class BookableProduct extends Product {
-    private final LocalDateTime expirationDate;
     private final int maxParticipants;
+    private final LocalDateTime expirationDate;
 
     public BookableProduct(String name, double price, LocalDateTime expirationDate, int maxParticipants) {
         // E2 Requirement: These products do not have a category, so we pass null.

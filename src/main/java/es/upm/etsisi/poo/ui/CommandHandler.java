@@ -1,17 +1,16 @@
 package es.upm.etsisi.poo.ui;
 
 import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.time.format.DateTimeFormatter;
 
-import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.product.*;
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.user.Client;
-
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // This class acts as the Controller. It parses user input and calls Store methods.
 public class CommandHandler {
@@ -54,12 +53,10 @@ public class CommandHandler {
                 default:
                     System.out.println("Command not recognized. Type 'help' for a list of commands.");
             }
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        } catch (IllegalStateException e) {
-            // Catches the exception thrown by EventProduct validation and Ticket state checks
+        } catch (IllegalArgumentException | IllegalStateException e) {
             System.out.println(e.getMessage());
         }
+        // IllegalStateException catches the exception thrown by EventProduct validation and Ticket state checks
     }
 
     // Parses arguments, respecting quoted strings

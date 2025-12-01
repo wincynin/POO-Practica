@@ -5,9 +5,9 @@ import java.util.ArrayList;
 
 // Represents a product that can be customized with texts, as defined in E2
 public class CustomizableProduct extends Product {
-    private static final double CUSTOM_SURCHARGE = 0.1;     //E2 Requirement: 10% surcharge per custom text
     private final int maxCustomizableTexts;
     private final List<String> customTexts;
+    private static final double CUSTOM_SURCHARGE = 0.1;     //E2 Requirement: 10% surcharge per custom text
 
     @SuppressWarnings("Convert2Diamond")
     public CustomizableProduct(String name, ProductCategory category, double price, int maxCustomizableTexts) {
@@ -52,6 +52,4 @@ public class CustomizableProduct extends Product {
         return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f, customTexts:%s}",
                 this.getClass().getSimpleName(), getId(), getName(), getCategory(), getPrice(), customTexts);
     }
-
-
 }
