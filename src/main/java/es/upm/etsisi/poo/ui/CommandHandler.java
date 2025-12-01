@@ -288,7 +288,7 @@ public class CommandHandler {
                 for (Ticket ticket : allTickets) {
                     // Find owners for printing
                     String cId = store.findCashierIdByTicket(ticket);
-                    String uId = findClientIdByTicket(ticket);
+                    String uId = store.findClientIdByTicket(ticket);
                     
                     System.out.println("  ID: " + ticket.getId() + ", Cashier: " + cId + ", Client: "
                             + uId + ", State: " + ticket.getState());
@@ -298,16 +298,6 @@ public class CommandHandler {
             default:
                 System.out.println("Unknown ticket command.");
         }
-    }
-    
-    // Helper to find client ID for a ticket
-    private String findClientIdByTicket(Ticket ticket) {
-        for (Client c : store.getClients()) {
-            if (c.hasTicket(ticket.getId())) {
-                return c.getId();
-            }
-        }
-        return "Unknown";
     }
 
     // Handles "client" sub-commands

@@ -153,8 +153,13 @@ public class Ticket implements Comparable<Ticket> {
     @SuppressWarnings("Convert2Lambda")
     public String closeAndGetReceipt(String cashierId, String clientId) {
         StringBuilder sb = new StringBuilder();
-        // Check for closed tickets as they are required to be immutable after closing.
-        if (this.state == TicketState.CLOSED) {
+
+        // UPDATE STATE & ID FIRST (Fixes the ID consistency issue)
+        if (this.state != TicketState.CLOSED) {
+            this.state = TicketState.CLOSED;
+            this.id += "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
+        } else {
+            // Only add warning if it was ALREADY closed before this call
             sb.append("Warning: Ticket is already closed. Reprinting.\n");
         }
 
@@ -201,11 +206,13 @@ public class Ticket implements Comparable<Ticket> {
         }
 
         sb.append("--------------------\n");
+        
         // Printing total price, total discount and final price, each value with two decimal places.
         double totalPrice = getTotalPrice();
         double totalDiscount = getTotalDiscount();
         double finalPrice = totalPrice - totalDiscount;
 
+        // Final prices with two decimal places as requested.
         sb.append(String.format("Total price: %.2f%n", totalPrice));
         sb.append(String.format("Total discount: %.2f%n", totalDiscount));
         sb.append(String.format("Final Price: %.2f%n", finalPrice));
