@@ -3,8 +3,6 @@ package es.upm.etsisi.poo.domain.product;
 import java.util.List;
 import java.util.ArrayList;
 
-import es.upm.etsisi.poo.common.ProductNotFoundException;
-
 // Represents a catalog of products, as defined in E1 and E2, manages adding, removing, updating, and retrieving products.
 public class Catalog {
     private final List<Product> products;
@@ -23,15 +21,19 @@ public class Catalog {
         products.add(prod);
     }
 
-    public Product removeProduct(int id) throws ProductNotFoundException {
+    public Product removeProduct(int id) {
         Product productToRemove = getProduct(id);
-        products.remove(productToRemove);
+        if (productToRemove != null) {
+            products.remove(productToRemove);
+        }
         return productToRemove;
     }
 
-    public void updateProduct(int id, String field, String value)
-            throws ProductNotFoundException, IllegalArgumentException {
+    public void updateProduct(int id, String field, String value) throws IllegalArgumentException {
         Product prod = getProduct(id);
+        if (prod == null) {
+            throw new IllegalArgumentException("Error: Product with ID " + id + " not found.");
+        }
 
         switch (field.toUpperCase()) {
             case "NAME":
@@ -66,13 +68,13 @@ public class Catalog {
         return products.size();
     }
 
-    public Product getProduct(int id) throws ProductNotFoundException {
+    public Product getProduct(int id) {
         for (Product product : products) {
             if (product.getId() == id) {
                 return product;
             }
         }
-        throw new ProductNotFoundException("Product with ID " + id + " not found.");
+        return null;
     }
 
     public List<Product> getProducts() {
