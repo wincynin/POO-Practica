@@ -6,7 +6,7 @@ import java.util.List;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // Represents a cashier, as defined in E2.
-public class Cashier extends User {
+public class Cashier extends User implements Comparable<Cashier> {
     private final List<Ticket> tickets;
 
     public Cashier(String id, String name, String email) {
@@ -65,5 +65,10 @@ public class Cashier extends User {
         // Returns a string representation of the Cashier, including id, name and email, in that order.
         return String.format("{class: Cashier, id: '%s', name: '%s', email: '%s'}",
                 getId(), getName(), getEmail());
+    }
+
+    @Override
+    public int compareTo(Cashier other) {
+        return this.getName().compareToIgnoreCase(other.getName());
     }
 }

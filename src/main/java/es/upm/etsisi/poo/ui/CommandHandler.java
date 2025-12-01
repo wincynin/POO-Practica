@@ -1,6 +1,7 @@
 package es.upm.etsisi.poo.ui;
 
 import java.util.List;
+import java.util.Collections;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -178,7 +179,7 @@ public class CommandHandler {
                 System.out.println("prod " + command + ": ok");
                 break;
             case "list":
-                List<Product> productList = store.getCatalog().getProducts();
+                List<Product> productList = store.getProducts();
                 System.out.println("Catalog:");
                 for (Product p : productList) {
                     System.out.println("  " + p);
@@ -190,15 +191,15 @@ public class CommandHandler {
                     int productId = Integer.parseInt(argList.get(0));
                     String field = argList.get(1);
                     String updateValue = argList.get(2);
-                    store.getCatalog().updateProduct(productId, field, updateValue);
-                    System.out.println(store.getCatalog().getProduct(productId));
+                    store.updateProduct(productId, field, updateValue);
+                    System.out.println(store.getCatalog().getProduct(productId)); // Keeping this one for now as there's no `store.getProduct(id)`
                     System.out.println("prod update: ok");
                 }
                 break;
             case "remove":
                 if (!argList.isEmpty()) {
                     int removeId = Integer.parseInt(argList.get(0));
-                    Product removedProduct = store.getCatalog().removeProduct(removeId);
+                    Product removedProduct = store.removeProduct(removeId);
                     System.out.println(removedProduct);
                     System.out.println("prod remove: ok");
                 }
@@ -270,26 +271,15 @@ public class CommandHandler {
                 String printTicketId = argList.get(0);
                 String printCashierId = argList.get(1);
 
-                store.printTicket(printTicketId, printCashierId);
+                String receipt = store.printTicket(printTicketId, printCashierId);
+                System.out.print(receipt);
                 break;
 
             case "list":
                 List<Ticket> allTickets = store.getTickets();
                 // E2 Requirement: Sort by cashier ID, then by ticket ID
-                allTickets.sort(new Comparator<Ticket>() {
-                    @Override
-                    public int compare(Ticket t1, Ticket t2) {
-                        // Since Ticket doesn't have getCashierId(), we find it via helper
-                        String c1 = findCashierIdByTicket(t1);
-                        String c2 = findCashierIdByTicket(t2);
-                        
-                        int cashierIdCompare = c1.compareToIgnoreCase(c2);
-                        if (cashierIdCompare != 0) {
-                            return cashierIdCompare;
-                        }
-                        return t1.getId().compareToIgnoreCase(t2.getId());
-                    }
-                });
+                allTickets.sort(new TicketCashierComparator(store));
+
                 System.out.println("Tickets:");
                 for (Ticket ticket : allTickets) {
                     // Find owners for printing
@@ -304,16 +294,6 @@ public class CommandHandler {
             default:
                 System.out.println("Unknown ticket command.");
         }
-    }
-    
-    // Helper to find cashier ID for a ticket
-    private String findCashierIdByTicket(Ticket ticket) {
-        for (Cashier c : store.getCashiers()) {
-            if (c.hasTicket(ticket.getId())) {
-                return c.getId();
-            }
-        }
-        return "Unknown";
     }
     
     // Helper to find client ID for a ticket
@@ -360,12 +340,7 @@ public class CommandHandler {
                 List<Client> clientList = store.getClients();
                 
                 // E2 Requirement: Sort by name
-                clientList.sort(new Comparator<Client>() {
-                    @Override
-                    public int compare(Client c1, Client c2) {
-                        return c1.getName().compareToIgnoreCase(c2.getName());
-                    }
-                });
+                Collections.sort(clientList);
                 System.out.println("Clients:");
                 for (Client client : clientList) {
                     System.out.println("  " + client);
@@ -415,12 +390,7 @@ public class CommandHandler {
             case "list":
                 List<Cashier> cashierList = store.getCashiers();
                 // E2 Requirement: Sort by name
-                cashierList.sort(new Comparator<Cashier>() {
-                    @Override
-                    public int compare(Cashier c1, Cashier c2) {
-                        return c1.getName().compareToIgnoreCase(c2.getName());
-                    }
-                });
+                Collections.sort(cashierList);
                 System.out.println("Cashiers:");
                 for (Cashier cashier : cashierList) {
                     System.out.println("  " + cashier);
@@ -436,12 +406,7 @@ public class CommandHandler {
                     }
                     List<Ticket> cashierTickets = cashier.getTickets();
                     // E2 Requirement: Sort by ticket ID
-                    cashierTickets.sort(new Comparator<Ticket>() {
-                        @Override
-                        public int compare(Ticket t1, Ticket t2) {
-                            return t1.getId().compareToIgnoreCase(t2.getId());
-                        }
-                    });
+                    Collections.sort(cashierTickets);
                     System.out.println("Tickets for Cashier " + cashierId + ":");
                     for (Ticket ticket : cashierTickets) {
                         // E2 Requirement: Show only ID and state

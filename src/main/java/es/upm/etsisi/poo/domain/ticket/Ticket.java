@@ -1,18 +1,13 @@
 package es.upm.etsisi.poo.domain.ticket;
 
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import es.upm.etsisi.poo.domain.product.*;
 
 
 // Represents a ticket, as defined in E1 and E2.
-public class Ticket {
+public class Ticket implements Comparable<Ticket> {
     private String id;
     private TicketState state;
     private final List<TicketLine> lines;
@@ -156,31 +151,21 @@ public class Ticket {
     }
 
     @SuppressWarnings("Convert2Lambda")
-    public void printAndClose(String cashierId, String clientId) {
+    public String closeAndGetReceipt(String cashierId, String clientId) {
+        StringBuilder sb = new StringBuilder();
         // Check for closed tickets as they are required to be immutable after closing.
         if (this.state == TicketState.CLOSED) {
-            System.out.println("Warning: Ticket is already closed. Reprinting.");
+            sb.append("Warning: Ticket is already closed. Reprinting.\n");
         }
 
         // Mantaining E1 requirement of sorting by product name alphabetically when printing.
-        lines.sort(new Comparator<TicketLine>() {
-            // This sorts the 'lines' list alphabetically by product name, ignoring case.
-            // It uses compareToIgnoreCase(), which returns:
-            // - NEGATIVE: if l1's name < l2's name
-            // - ZERO: if l1's name == l2's name
-            // - POSITIVE: if l1's name > l2's name
-            // The sort() method then uses these return values to reorder the list.
-            @Override
-            public int compare(TicketLine l1, TicketLine l2) {
-                return l1.getProduct().getName().compareToIgnoreCase(l2.getProduct().getName());
-            }
-        });
+        Collections.sort(lines);
 
         // Printing the ticket details in the order they were requested.
-        System.out.println("Ticket ID: " + this.id);
-        System.out.println("Cashier ID: " + cashierId);
-        System.out.println("Client ID: " + clientId);
-        System.out.println("--------------------");
+        sb.append("Ticket ID: ").append(this.id).append("\n");
+        sb.append("Cashier ID: ").append(cashierId).append("\n");
+        sb.append("Client ID: ").append(clientId).append("\n");
+        sb.append("--------------------\n");
 
         // We recalculate the discountable categories to know where to print the text "**discount".
         List<ProductCategory> discountableCategories = getDiscountableCategories();
@@ -198,32 +183,32 @@ public class Ticket {
             }
 
             // Formatting the line output as requested, including discount and custom texts if any.
-            System.out.printf("  %s, Quantity: %d", productString, line.getQuantity());
+            sb.append(String.format("  %s, Quantity: %d", productString, line.getQuantity()));
             if (discount > 0) {
                 // Discount presented with two decimal places as requested.
-                System.out.printf(" **discount-%.2f", discount);
+                sb.append(String.format(" **discount-%.2f", discount));
             }
             // If the line has custom texts, we print the prefix " --p" to match the input
             // command format.
             if (!line.getCustomTexts().isEmpty()) {
-                System.out.print(" --p");
+                sb.append(" --p");
                 for (String text : line.getCustomTexts()) {
-                    System.out.print(" " + text);
+                    sb.append(" ").append(text);
                 }
             }
             // Nueva línea para el siguiente item.
-            System.out.println();
+            sb.append("\n");
         }
 
-        System.out.println("--------------------");
+        sb.append("--------------------\n");
         // Printing total price, total discount and final price, each value with two decimal places.
         double totalPrice = getTotalPrice();
         double totalDiscount = getTotalDiscount();
         double finalPrice = totalPrice - totalDiscount;
 
-        System.out.printf("Total price: %.2f%n", totalPrice);
-        System.out.printf("Total discount: %.2f%n", totalDiscount);
-        System.out.printf("Final Price: %.2f%n", finalPrice);
+        sb.append(String.format("Total price: %.2f%n", totalPrice));
+        sb.append(String.format("Total discount: %.2f%n", totalDiscount));
+        sb.append(String.format("Final Price: %.2f%n", finalPrice));
 
         // Closing the ticket and updating the ID after the printing as requested.
         if (this.state != TicketState.CLOSED) {
@@ -231,7 +216,8 @@ public class Ticket {
             this.id += "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
         }
 
-        System.out.println("ticket print: ok");
+        sb.append("ticket print: ok\n");
+        return sb.toString();
     }
 
     // Identify categories eligible for discount, criteria being more than 1 item in the same category.
@@ -255,5 +241,10 @@ public class Ticket {
 
     public boolean isEmpty() {
         return lines.isEmpty();
+    }
+
+    @Override
+    public int compareTo(Ticket other) {
+        return this.getId().compareToIgnoreCase(other.getId());
     }
 }
