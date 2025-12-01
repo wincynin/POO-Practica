@@ -151,7 +151,7 @@ public class Store {
         }
     }
 
-    public void printTicket(String ticketId, String cashierId) {
+    public String printTicket(String ticketId, String cashierId) {
         // Find the ticket.
         Ticket ticket = getTicket(ticketId);
         if (ticket == null) {
@@ -165,7 +165,7 @@ public class Store {
         }
         
         String clientId = findClientIdByTicket(ticket);
-        ticket.printAndClose(cashierId, clientId);
+        return ticket.closeAndGetReceipt(cashierId, clientId);
     }
 
     // Helper to find which client owns a specific ticket
@@ -204,6 +204,20 @@ public class Store {
     public Catalog getCatalog() {
         return catalog;
     }
+
+    // Delegate methods to avoid Law of Demeter violation in CommandHandler
+    public List<Product> getProducts() {
+        return catalog.getProducts();
+    }
+
+    public void updateProduct(int productId, String field, String updateValue) {
+        catalog.updateProduct(productId, field, updateValue);
+    }
+
+    public Product removeProduct(int id) {
+        return catalog.removeProduct(id);
+    }
+    // End of delegate methods
 
     @SuppressWarnings("Convert2Diamond")
     public List<Client> getClients() {

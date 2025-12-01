@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import es.upm.etsisi.poo.domain.product.*;
 
 // Represents a line in a ticket, as defined in E2.
-public class TicketLine {
+public class TicketLine implements Comparable<TicketLine> {
     private int quantity;
     private final Product product;
     private final List<String> customTexts;
@@ -48,5 +48,10 @@ public class TicketLine {
 
     public double getLineTotal() {
         return product.getLineTotal(quantity, this.customTexts);
+    }
+
+    @Override
+    public int compareTo(TicketLine other) {
+        return this.getProduct().getName().compareToIgnoreCase(other.getProduct().getName());
     }
 }

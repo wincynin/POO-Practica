@@ -3,9 +3,9 @@ package es.upm.etsisi.poo.domain.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.ticket.Ticket; 
 
-public class Client extends User {
+public class Client extends User implements Comparable<Client> {
     private final String cashierId;
     private final List<Ticket> tickets;
 
@@ -46,5 +46,10 @@ public class Client extends User {
     public String toString() {
         return String.format("{class: Client, id: '%s', name: '%s', email: '%s', cashierId: '%s'}",
                 getId(), getName(), getEmail(), getCashierId());
+    }
+
+    @Override
+    public int compareTo(Client other) {
+        return this.getName().compareToIgnoreCase(other.getName());
     }
 }
