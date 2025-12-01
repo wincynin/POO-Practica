@@ -3,15 +3,14 @@ package es.upm.etsisi.poo.domain.product;
 import java.time.LocalDateTime;
 
 public class EventProduct extends BookableProduct {
-    private static final int MAX_PARTICIPANTS = 100;
     private final int maxParticipants;
     private final LocalDateTime expirationDate;
     private final EventType eventType;
 
-    public EventProduct(String name, double price, LocalDateTime expirationDate, EventType eventType) {
+    public EventProduct(String name, double price, LocalDateTime expirationDate, int maxParticipants, EventType eventType) {
         super(name, price);
         this.expirationDate = expirationDate;
-        this.maxParticipants = MAX_PARTICIPANTS;
+        this.maxParticipants = maxParticipants;
         this.eventType = eventType;
     }
 

@@ -6,11 +6,11 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.time.format.DateTimeFormatter;
 
-import es.upm.etsisi.poo.common.*;
-import es.upm.etsisi.poo.domain.user.*;
-import es.upm.etsisi.poo.domain.product.*;
 import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.product.*;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.user.Client;
 
 // This class acts as the Controller. It parses user input and calls Store methods.
 public class CommandHandler {
@@ -53,7 +53,7 @@ public class CommandHandler {
                 default:
                     System.out.println("Command not recognized. Type 'help' for a list of commands.");
             }
-        } catch (ProductNotFoundException | UserNotFoundException | IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -87,7 +87,7 @@ public class CommandHandler {
         return argList;
     }
 
-    private void handleProd(String args) throws ProductNotFoundException {
+    private void handleProd(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
             return;
@@ -176,8 +176,7 @@ public class CommandHandler {
         }
     }
 
-    @SuppressWarnings("Convert2Lambda")
-    private void handleTicket(String args) throws UserNotFoundException, ProductNotFoundException {
+    private void handleTicket(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
             return;
@@ -189,7 +188,7 @@ public class CommandHandler {
             case "new":
                 String ticketId = null;
                 String cashierId;
-                String userId;
+                String clientId;
 
                 // E2: Check if optional Ticket ID is provided
                 if (argList.size() > 2) {
@@ -197,9 +196,9 @@ public class CommandHandler {
                     argList.remove(0);
                 }
                 cashierId = argList.get(0);
-                userId = argList.get(1);
+                clientId = argList.get(1);
 
-                store.createTicket(ticketId, cashierId, userId);
+                store.createTicket(ticketId, cashierId, clientId);
                 System.out.println("ticket new: ok");
                 break;
             case "add":
@@ -257,7 +256,7 @@ public class CommandHandler {
                 System.out.println("Tickets:");
                 for (Ticket ticket : allTickets) {
                     System.out.println("  ID: " + ticket.getId() + ", Cashier: " + ticket.getCashierId() + ", Client: "
-                            + ticket.getUserId() + ", State: " + ticket.getState());
+                            + ticket.getClient().getId() + ", State: " + ticket.getState());
                 }
                 System.out.println("ticket list: ok");
                 break;
@@ -267,8 +266,7 @@ public class CommandHandler {
     }
 
     // Handles "client" sub-commands
-    @SuppressWarnings("Convert2Lambda")
-    private void handleClient(String args) throws UserNotFoundException {
+    private void handleClient(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
             return;
@@ -317,8 +315,7 @@ public class CommandHandler {
         }
     }
 
-    @SuppressWarnings("Convert2Lambda")
-    private void handleCash(String args) throws UserNotFoundException {
+    private void handleCash(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
             return;
@@ -370,8 +367,10 @@ public class CommandHandler {
             case "tickets":
                 if (!argList.isEmpty()) {
                     String cashierId = argList.get(0);
-                    Cashier cashier = store.findCashierById(cashierId);
-                    List<Ticket> cashierTickets = cashier.getTickets();
+                    if (store.findCashierById(cashierId) == null) {
+                        throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
+                    }
+                    List<Ticket> cashierTickets = store.getTicketsByCashierId(cashierId);
                     // E2 Requirement: Sort by ticket ID
                     cashierTickets.sort(new Comparator<Ticket>() {
                         @Override
@@ -403,7 +402,7 @@ public class CommandHandler {
         System.out.println("  prod list");
         System.out.println("  prod update <id> NAME|CATEGORY|PRICE <value>");
         System.out.println("  prod remove <id>");
-        System.out.println("  ticket new [id] <cashId> <userId>");
+        System.out.println("  ticket new [id] <cashId> <clientId>");
         System.out.println("  ticket add <ticketId> <cashId> <prodId> <amount> [--p <text>]");
         System.out.println("  ticket remove <ticketId> <cashId> <prodId>");
         System.out.println("  ticket print <ticketId> <cashId>");

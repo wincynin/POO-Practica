@@ -1,12 +1,13 @@
 package es.upm.etsisi.poo.application;
 
-import java.util.List;
-import java.util.ArrayList;
-
-import es.upm.etsisi.poo.common.*;
-import es.upm.etsisi.poo.domain.user.*;
-import es.upm.etsisi.poo.domain.product.*;
+import es.upm.etsisi.poo.domain.product.Catalog;
+import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.user.Client;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // Represents the store, acts as the model, holding all the application's data as per E2 requirements.
 public class Store {
@@ -29,39 +30,35 @@ public class Store {
     }
 
     public void addClient(Client client) throws IllegalArgumentException {
-        // If findClientById doesn't throw, the client exists.
-        try {
-            findClientById(client.getId());
+        // If findClientById doesn't return null, the client exists.
+        if (findClientById(client.getId()) != null) {
             throw new IllegalArgumentException("Error: A client with that ID already exists.");
-        } catch (UserNotFoundException e) {
-            // This is the expected case, the client does not exist, so we can add it.
-            this.clients.add(client);
         }
+        this.clients.add(client);
     }
 
-    public Client findClientById(String id) throws UserNotFoundException {
+    public Client findClientById(String id) {
         for (Client client : clients) {
             if (client.getId().equals(id)) {
                 return client;
             }
         }
-        throw new UserNotFoundException("Error: Client with ID " + id + " not found.");
+        return null;
     }
 
-    public void removeClient(String id) throws UserNotFoundException {
+    public void removeClient(String id) {
         Client clientToRemove = findClientById(id);
-        this.clients.remove(clientToRemove);
+        if (clientToRemove != null) {
+            this.clients.remove(clientToRemove);
+        }
     }
 
     public void addCashier(Cashier cashier) throws IllegalArgumentException {
-        // If findCashierByID doesn't throw, the client exists.
-        try {
-            findCashierById(cashier.getId());
+        // If findCashierByID doesn't return null, the cashier exists.
+        if (findCashierById(cashier.getId()) != null) {
             throw new IllegalArgumentException("Error: A cashier with that ID already exists.");
-        } catch (UserNotFoundException e) {
-            // This is the expected case, the cashier does not exist, so we can add it.
-            this.cashiers.add(cashier);
         }
+        this.cashiers.add(cashier);
     }
 
     // Overloaded method to handle automatic ID generation for cashiers, this one is called by the handler.
@@ -73,36 +70,43 @@ public class Store {
         addCashier(new Cashier(cashierId, name, email));
     }
 
-    public Cashier findCashierById(String id) throws UserNotFoundException {
+    public Cashier findCashierById(String id) {
         for (Cashier cashier : cashiers) {
             if (cashier.getId().equals(id)) {
                 return cashier;
             }
         }
-        throw new UserNotFoundException("Error: Cashier with ID " + id + " not found.");
+        return null;
     }
 
-    public void removeCashier(String id) throws UserNotFoundException {
+    public void removeCashier(String id) {
         Cashier cashierToRemove = findCashierById(id);
-        // Remove tickets associated with the cashier.
-        tickets.removeIf(ticket -> ticket.getCashierId().equals(id));
-        this.cashiers.remove(cashierToRemove);
+        if (cashierToRemove != null) {
+            // Remove tickets associated with the cashier.
+            tickets.removeIf(ticket -> ticket.getCashierId().equals(id));
+            this.cashiers.remove(cashierToRemove);
+        }
     }
 
-    public Ticket createTicket(String id, String cashierId, String userId) throws UserNotFoundException {
-        // Find the associated cashier (throws UserNotFoundException if not found).
+    public Ticket createTicket(String id, String cashierId, String userId) {
+        // Find the associated cashier.
         Cashier cashier = findCashierById(cashierId);
-        Ticket newTicket = new Ticket(id, cashierId, userId);
+        if (cashier == null) {
+            throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
+        }
+        // Find the associated client.
+        Client client = findClientById(userId);
+        if (client == null) {
+            throw new IllegalArgumentException("Error: Client with ID " + userId + " not found.");
+        }
+        Ticket newTicket = new Ticket(id, cashierId, client);
         tickets.add(newTicket);
-
-        //E2 requirement: the cashiers also keep track of their tickets.
-        cashier.addTicket(newTicket);
 
         return newTicket;
     }
 
     public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount,
-            List<String> customTexts) throws ProductNotFoundException, UserNotFoundException {
+            List<String> customTexts) {
         // Find the ticket.
         Ticket ticket = getTicket(ticketId);
         if (ticket == null) {
@@ -111,14 +115,17 @@ public class Store {
 
         // E2 requirement: only the cashier who created the ticket can modify it.
         if (!ticket.getCashierId().equals(cashierId)) {
-            throw new UserNotFoundException("Error: Only the creating cashier can modify this ticket.");
+            throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
         
         Product product = catalog.getProduct(prodId);
+        if (product == null) {
+            throw new IllegalArgumentException("Error: Product with ID " + prodId + " not found.");
+        }
         ticket.addProduct(product, amount, customTexts);
     }
 
-    public void removeProductFromTicket(String ticketId, String cashierId, int prodId) throws UserNotFoundException {
+    public void removeProductFromTicket(String ticketId, String cashierId, int prodId) {
         // Find the ticket.
         Ticket ticket = getTicket(ticketId);
         if (ticket == null) {
@@ -127,14 +134,14 @@ public class Store {
 
         // E2 requirement: only the cashier who created the ticket can modify it.
         if (!ticket.getCashierId().equals(cashierId)) {
-            throw new UserNotFoundException("Error: Only the creating cashier can modify this ticket.");
+            throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
         if (!ticket.removeProduct(prodId)) {
             throw new IllegalArgumentException("Error: Product not found in ticket.");
         }
     }
 
-    public void printTicket(String ticketId, String cashierId) throws UserNotFoundException {
+    public void printTicket(String ticketId, String cashierId) {
         // Find the ticket.
         Ticket ticket = getTicket(ticketId);
         if (ticket == null) {
@@ -143,7 +150,7 @@ public class Store {
         
         // E2 requirement: only the cashier who created the ticket can print it.
         if (!ticket.getCashierId().equals(cashierId)) {
-            throw new UserNotFoundException("Error: Only the creating cashier can print this ticket.");
+            throw new IllegalArgumentException("Error: Only the creating cashier can print this ticket.");
         }
         ticket.printAndClose();
     }
@@ -160,6 +167,16 @@ public class Store {
     @SuppressWarnings("Convert2Diamond")
     public List<Ticket> getTickets() {
         return new ArrayList<Ticket>(tickets);
+    }
+
+    public List<Ticket> getTicketsByCashierId(String cashierId) {
+        List<Ticket> cashierTickets = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            if (ticket.getCashierId().equals(cashierId)) {
+                cashierTickets.add(ticket);
+            }
+        }
+        return cashierTickets;
     }
 
     public Catalog getCatalog() {

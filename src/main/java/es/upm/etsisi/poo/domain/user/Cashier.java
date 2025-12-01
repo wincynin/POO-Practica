@@ -1,17 +1,12 @@
 package es.upm.etsisi.poo.domain.user;
 
 import java.util.List;
-import java.util.ArrayList;
-import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // Represents a cashier, as defined in E2.
 public class Cashier extends User {
-    private final List<Ticket> tickets;
 
-    @SuppressWarnings("Convert2Diamond")
     public Cashier(String id, String name, String email) {
         super(id, name, email);
-        this.tickets = new ArrayList<Ticket>();
     }
 
     public static String generateCashierId(List<Cashier> existingCashiers) {
@@ -37,18 +32,6 @@ public class Cashier extends User {
             }
         }
         return false;
-    }
-
-    public void addTicket(Ticket ticket) {
-        if (ticket == null) {
-            throw new IllegalArgumentException("Ticket cannot be null.");
-        }
-        this.tickets.add(ticket);
-    }
-
-    @SuppressWarnings("Convert2Diamond")
-    public List<Ticket> getTickets() {
-        return new ArrayList<Ticket>(tickets);
     }
 
     @Override

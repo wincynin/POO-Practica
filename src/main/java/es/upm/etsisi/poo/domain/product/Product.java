@@ -10,7 +10,7 @@ public class Product {
     private double price;
     private int id;
     private ProductCategory category;
-    private static double MIN_PRICE = 0.0;        // E1 requirement: price must be > 0
+    private static final double MIN_PRICE = 0.0;        // E1 requirement: price must be > 0
     private static int nextId = 1;
     private static final int MAX_NAME_LENGTH = 100;     // E1 reqeuirement: name max length to be under 100 char
 
