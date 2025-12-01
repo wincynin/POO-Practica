@@ -169,7 +169,7 @@ public class Store {
     }
 
     // Helper to find which client owns a specific ticket
-    private String findClientIdByTicket(Ticket ticket) {
+    public String findClientIdByTicket(Ticket ticket) {
         for (Client client : clients) {
             if (client.hasTicket(ticket.getId())) {
                 return client.getId();
