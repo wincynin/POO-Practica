@@ -267,4 +267,4 @@ public class Ticket {
     public boolean isEmpty() {
         return lines.isEmpty();
     }
-}
+} //

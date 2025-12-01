@@ -47,6 +47,6 @@ public class TicketLine {
     }
 
     public double getLineTotal() {
-        return product.getLineTotal(quantity, customTexts);
+        return product.getLineTotal(quantity, this.customTexts);
     }
 }
