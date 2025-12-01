@@ -4,7 +4,6 @@ import java.util.Comparator;
 
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
-import es.upm.etsisi.poo.domain.user.Cashier;
 
 public class TicketCashierComparator implements Comparator<Ticket> {
     private final Store store;
@@ -15,18 +14,14 @@ public class TicketCashierComparator implements Comparator<Ticket> {
 
     @Override
     public int compare(Ticket t1, Ticket t2) {
-        String c1 = findCashierIdByTicket(t1);
-        String c2 = findCashierIdByTicket(t2);
+        String c1 = store.findCashierIdByTicket(t1);
+        String c2 = store.findCashierIdByTicket(t2);
 
-        return c1.compareToIgnoreCase(c2);
-    }
-
-    private String findCashierIdByTicket(Ticket ticket) {
-        for (Cashier c : store.getCashiers()) {
-            if (c.hasTicket(ticket.getId())) {
-                return c.getId();
-            }
+        int cashierCompare = c1.compareToIgnoreCase(c2);
+        if (cashierCompare != 0) {
+            return cashierCompare;
         }
-        return "Unknown";
+        // If cashier IDs are the same, sort by ticket ID as a secondary criterion.
+        return t1.getId().compareToIgnoreCase(t2.getId());
     }
 }

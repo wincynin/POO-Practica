@@ -178,6 +178,16 @@ public class Store {
         return "Unknown";
     }
 
+    // Helper to find which cashier owns a specific ticket
+    public String findCashierIdByTicket(Ticket ticket) {
+        for (Cashier cashier : cashiers) {
+            if (cashier.hasTicket(ticket.getId())) {
+                return cashier.getId();
+            }
+        }
+        return "Unknown";
+    }
+
     public Ticket getTicket(String ticketId) {
         for (Ticket ticket : tickets) {
             if (ticket.getId().equals(ticketId)) {
