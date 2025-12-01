@@ -287,7 +287,7 @@ public class CommandHandler {
                 System.out.println("Tickets:");
                 for (Ticket ticket : allTickets) {
                     // Find owners for printing
-                    String cId = findCashierIdByTicket(ticket);
+                    String cId = store.findCashierIdByTicket(ticket);
                     String uId = findClientIdByTicket(ticket);
                     
                     System.out.println("  ID: " + ticket.getId() + ", Cashier: " + cId + ", Client: "
