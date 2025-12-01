@@ -249,11 +249,13 @@ public class CommandHandler {
                 List<String> customTexts = new ArrayList<String>();
                 // Iterate through the remaining arguments to find custom text flags.
                 for (int i = 4; i < argList.size(); i++) {
-                    if ("--p".equals(argList.get(i)) && i + 1 < argList.size()) {
-                        // The argument after "--p" is the custom text.
-                        customTexts.add(argList.get(i + 1));
-                        // Skip the next argument since we've consumed it.
-                        i++;
+                    // Check if it STARTS with --p
+                    if (argList.get(i).startsWith("--p")) {
+                        // Extract the text after --p and add it to the customTexts list
+                        String text = argList.get(i).substring(3);
+                        if (!text.isEmpty()) {
+                            customTexts.add(text);
+                        }
                     }
                 }
 
