@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.time.format.DateTimeFormatter;
 
 import es.upm.etsisi.poo.application.Store;
@@ -12,6 +11,7 @@ import es.upm.etsisi.poo.domain.product.*;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.user.Cashier;
 import es.upm.etsisi.poo.domain.user.Client;
+
 
 // This class acts as the Controller. It parses user input and calls Store methods.
 public class CommandHandler {
@@ -243,10 +243,14 @@ public class CommandHandler {
 
                 // E2: Parse optional customization flags
                 @SuppressWarnings("Convert2Diamond")
-                List<String> customTexts = new ArrayList<>();
+                List<String> customTexts = new ArrayList<String>();
+                // Iterate through the remaining arguments to find custom text flags.
                 for (int i = 4; i < argList.size(); i++) {
-                    if (argList.get(i).startsWith("--p")) {
-                        customTexts.add(argList.get(i).substring(3)); // Get text after "--p"
+                    if ("--p".equals(argList.get(i)) && i + 1 < argList.size()) {
+                        // The argument after "--p" is the custom text.
+                        customTexts.add(argList.get(i + 1));
+                        // Skip the next argument since we've consumed it.
+                        i++;
                     }
                 }
 
