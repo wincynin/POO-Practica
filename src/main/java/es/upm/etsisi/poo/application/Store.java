@@ -99,8 +99,10 @@ public class Store {
         if (client == null) {
             throw new IllegalArgumentException("Error: Client with ID " + userId + " not found.");
         }
-        Ticket newTicket = new Ticket(id, cashierId, client);
+        Ticket newTicket = new Ticket(id, cashierId, userId);
         tickets.add(newTicket);
+        cashier.addTicket(newTicket);
+        client.addTicket(newTicket);
 
         return newTicket;
     }
@@ -167,16 +169,6 @@ public class Store {
     @SuppressWarnings("Convert2Diamond")
     public List<Ticket> getTickets() {
         return new ArrayList<Ticket>(tickets);
-    }
-
-    public List<Ticket> getTicketsByCashierId(String cashierId) {
-        List<Ticket> cashierTickets = new ArrayList<>();
-        for (Ticket ticket : tickets) {
-            if (ticket.getCashierId().equals(cashierId)) {
-                cashierTickets.add(ticket);
-            }
-        }
-        return cashierTickets;
     }
 
     public Catalog getCatalog() {
