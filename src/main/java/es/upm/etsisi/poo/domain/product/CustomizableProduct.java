@@ -16,6 +16,7 @@ public class CustomizableProduct extends Product {
         this.customTexts = new ArrayList<String>();
     }
 
+    @SuppressWarnings("Convert2Diamond")
     public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
         super(id, name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;

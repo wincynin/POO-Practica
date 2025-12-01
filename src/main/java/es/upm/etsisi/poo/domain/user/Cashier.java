@@ -50,6 +50,7 @@ public class Cashier extends User {
         return new ArrayList<>(tickets);
     }
 
+    // Method to check if this cashier owns a specific ticket
     public boolean hasTicket(String ticketId) {
         for (Ticket ticket : tickets) {
             if (ticket.getId().equals(ticketId)) {

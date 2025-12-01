@@ -99,7 +99,7 @@ public class CommandHandler {
             case "add":
                 Integer id = null;
                 try {
-                    id = Integer.parseInt(argList.get(0));
+                    id = Integer.valueOf(argList.get(0));
                     argList.remove(0);
                 } catch (NumberFormatException e) {
                     // It's a name, not an ID.
@@ -191,6 +191,7 @@ public class CommandHandler {
         }
     }
 
+    @SuppressWarnings("Convert2Lambda")
     private void handleTicket(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
@@ -203,7 +204,7 @@ public class CommandHandler {
             case "new":
                 String ticketId = null;
                 String cashierId;
-                String userId;
+                String clientId;
 
                 // E2: Check if optional Ticket ID is provided
                 if (argList.size() > 2) {
@@ -211,9 +212,9 @@ public class CommandHandler {
                     argList.remove(0);
                 }
                 cashierId = argList.get(0);
-                userId = argList.get(1);
+                clientId = argList.get(1);
 
-                store.createTicket(ticketId, cashierId, userId);
+                store.createTicket(ticketId, cashierId, clientId);
                 System.out.println("ticket new: ok");
                 break;
             case "add":
@@ -261,7 +262,11 @@ public class CommandHandler {
                 allTickets.sort(new Comparator<Ticket>() {
                     @Override
                     public int compare(Ticket t1, Ticket t2) {
-                        int cashierIdCompare = t1.getCashierId().compareToIgnoreCase(t2.getCashierId());
+                        // Since Ticket doesn't have getCashierId(), we find it via helper
+                        String c1 = findCashierIdByTicket(t1);
+                        String c2 = findCashierIdByTicket(t2);
+                        
+                        int cashierIdCompare = c1.compareToIgnoreCase(c2);
                         if (cashierIdCompare != 0) {
                             return cashierIdCompare;
                         }
@@ -270,8 +275,12 @@ public class CommandHandler {
                 });
                 System.out.println("Tickets:");
                 for (Ticket ticket : allTickets) {
-                    System.out.println("  ID: " + ticket.getId() + ", Cashier: " + ticket.getCashierId() + ", Client: "
-                            + ticket.getUserId() + ", State: " + ticket.getState());
+                    // Find owners for printing
+                    String cId = findCashierIdByTicket(ticket);
+                    String uId = findClientIdByTicket(ticket);
+                    
+                    System.out.println("  ID: " + ticket.getId() + ", Cashier: " + cId + ", Client: "
+                            + uId + ", State: " + ticket.getState());
                 }
                 System.out.println("ticket list: ok");
                 break;
@@ -279,8 +288,29 @@ public class CommandHandler {
                 System.out.println("Unknown ticket command.");
         }
     }
+    
+    // Helper to find cashier ID for a ticket
+    private String findCashierIdByTicket(Ticket ticket) {
+        for (Cashier c : store.getCashiers()) {
+            if (c.hasTicket(ticket.getId())) {
+                return c.getId();
+            }
+        }
+        return "Unknown";
+    }
+    
+    // Helper to find client ID for a ticket
+    private String findClientIdByTicket(Ticket ticket) {
+        for (Client c : store.getClients()) {
+            if (c.hasTicket(ticket.getId())) {
+                return c.getId();
+            }
+        }
+        return "Unknown";
+    }
 
     // Handles "client" sub-commands
+    @SuppressWarnings("Convert2Lambda")
     private void handleClient(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {
@@ -330,6 +360,7 @@ public class CommandHandler {
         }
     }
 
+    @SuppressWarnings("Convert2Lambda")
     private void handleCash(String args) {
         List<String> argList = parseArgs(args);
         if (argList.isEmpty()) {

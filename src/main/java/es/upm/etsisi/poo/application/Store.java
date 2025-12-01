@@ -100,7 +100,11 @@ public class Store {
         if (client == null) {
             throw new IllegalArgumentException("Error: Client with ID " + userId + " not found.");
         }
+        
+        // Ticket created WITHOUT user knowledge
         Ticket newTicket = new Ticket(id);
+        
+        // Store establishes the relationships
         tickets.add(newTicket);
         cashier.addTicket(newTicket);
         client.addTicket(newTicket);
@@ -117,6 +121,7 @@ public class Store {
         }
 
         Cashier cashier = findCashierById(cashierId);
+        // E2 requirement: only the cashier who created the ticket can modify it.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
@@ -136,6 +141,8 @@ public class Store {
         }
 
         Cashier cashier = findCashierById(cashierId);
+        
+        // E2 requirement: only the cashier who created the ticket can modify it.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
@@ -152,10 +159,23 @@ public class Store {
         }
         
         Cashier cashier = findCashierById(cashierId);
+        // E2 requirement: only the cashier who created the ticket can print it.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can print this ticket.");
         }
-        ticket.printAndClose();
+        
+        String clientId = findClientIdByTicket(ticket);
+        ticket.printAndClose(cashierId, clientId);
+    }
+
+    // Helper to find which client owns a specific ticket
+    private String findClientIdByTicket(Ticket ticket) {
+        for (Client client : clients) {
+            if (client.hasTicket(ticket.getId())) {
+                return client.getId();
+            }
+        }
+        return "Unknown";
     }
 
     public Ticket getTicket(String ticketId) {
@@ -170,6 +190,15 @@ public class Store {
     @SuppressWarnings("Convert2Diamond")
     public List<Ticket> getTickets() {
         return new ArrayList<Ticket>(tickets);
+    }
+    
+    // Needed for CommandHandler to list tickets for a cashier
+    public List<Ticket> getTicketsByCashierId(String cashierId) {
+        Cashier cashier = findCashierById(cashierId);
+        if(cashier != null) {
+            return cashier.getTickets();
+        }
+        return new ArrayList<>();
     }
 
     public Catalog getCatalog() {

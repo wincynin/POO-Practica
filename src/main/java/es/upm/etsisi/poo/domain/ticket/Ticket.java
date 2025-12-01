@@ -156,7 +156,7 @@ public class Ticket {
     }
 
     @SuppressWarnings("Convert2Lambda")
-    public void printAndClose() {
+    public void printAndClose(String cashierId, String clientId) {
         // Check for closed tickets as they are required to be immutable after closing.
         if (this.state == TicketState.CLOSED) {
             System.out.println("Warning: Ticket is already closed. Reprinting.");
@@ -178,6 +178,8 @@ public class Ticket {
 
         // Printing the ticket details in the order they were requested.
         System.out.println("Ticket ID: " + this.id);
+        System.out.println("Cashier ID: " + cashierId);
+        System.out.println("Client ID: " + clientId);
         System.out.println("--------------------");
 
         // We recalculate the discountable categories to know where to print the text "**discount".
@@ -214,11 +216,11 @@ public class Ticket {
         }
 
         System.out.println("--------------------");
+        // Printing total price, total discount and final price, each value with two decimal places.
         double totalPrice = getTotalPrice();
         double totalDiscount = getTotalDiscount();
         double finalPrice = totalPrice - totalDiscount;
 
-        // Printing total price, total discount and final price, each value with two decimal places.
         System.out.printf("Total price: %.2f%n", totalPrice);
         System.out.printf("Total discount: %.2f%n", totalDiscount);
         System.out.printf("Final Price: %.2f%n", finalPrice);
@@ -232,6 +234,7 @@ public class Ticket {
         System.out.println("ticket print: ok");
     }
 
+    // Identify categories eligible for discount, criteria being more than 1 item in the same category.
     private List<ProductCategory> getDiscountableCategories() {
         Map<ProductCategory, Integer> categoryCounts = new HashMap<>();
         for (TicketLine line : lines) {

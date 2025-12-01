@@ -5,7 +5,6 @@ import java.util.List;
 
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
-// Represents a client, as defined in E2.
 public class Client extends User {
     private final String cashierId;
     private final List<Ticket> tickets;
@@ -34,9 +33,17 @@ public class Client extends User {
         return new ArrayList<>(tickets);
     }
 
+    public boolean hasTicket(String ticketId) {
+        for (Ticket ticket : tickets) {
+            if (ticket.getId().equals(ticketId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
-        // Returns a string representation of the Client, including id, name, email and cashierId, in that order.
         return String.format("{class: Client, id: '%s', name: '%s', email: '%s', cashierId: '%s'}",
                 getId(), getName(), getEmail(), getCashierId());
     }

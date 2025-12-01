@@ -14,6 +14,7 @@ public class EventProduct extends BookableProduct {
         this.eventType = eventType;
     }
 
+    @Override
     public void validate() {
         if (!eventType.isPlanningTimeValid(expirationDate)) {
             throw new IllegalStateException("Error: Planning time for " + eventType + " is not met.");
