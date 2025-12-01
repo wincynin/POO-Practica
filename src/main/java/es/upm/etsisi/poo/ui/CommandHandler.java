@@ -139,6 +139,16 @@ public class CommandHandler {
                 break;
             case "addFood":
             case "addMeeting":
+                Integer eventId = null;
+                try {
+                    // Try to parse first arg as ID
+                    eventId = Integer.valueOf(argList.get(0));
+                    // If successful, it's an ID, so remove it from list
+                    argList.remove(0);
+                } catch (NumberFormatException e) {
+                    // It's a name, not an ID.
+                }
+
                 int maxPeople;
                 String eventName;
                 double eventPrice;
@@ -153,7 +163,14 @@ public class CommandHandler {
                 maxPeople = Integer.parseInt(argList.get(3));
 
                 EventType eventType = command.equals("addFood") ? EventType.FOOD : EventType.MEETING;
-                EventProduct eventProduct = new EventProduct(eventName, eventPrice, expirationDate.atStartOfDay(), maxPeople, eventType);
+                
+                EventProduct eventProduct;
+                if (eventId != null) {
+                    eventProduct = new EventProduct(eventId, eventName, eventPrice, expirationDate.atStartOfDay(), maxPeople, eventType);
+                } else {
+                    eventProduct = new EventProduct(eventName, eventPrice, expirationDate.atStartOfDay(), maxPeople, eventType);
+                }
+
                 eventProduct.validate();
                 
                 store.addProduct(eventProduct);

@@ -100,7 +100,7 @@ public class Product {
 
 
     public void validate() {
-        // By default, do nothing. Subclasses can override this.
+        // Does nothing. Subclasses can override this.
     }
 
     @Override
