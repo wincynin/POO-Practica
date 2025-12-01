@@ -1,8 +1,14 @@
 package es.upm.etsisi.poo.domain.user;
 
+import es.upm.etsisi.poo.domain.ticket.Ticket;
+
+import java.util.ArrayList;
+import java.util.List;
+
 // Represents a client, as defined in E2.
 public class Client extends User {
     private final String cashierId;
+    private final List<Ticket> tickets;
 
     public Client(String id, String name, String email, String cashierId) {
         super(id, name, email);
@@ -10,10 +16,22 @@ public class Client extends User {
             throw new IllegalArgumentException("Error: Cashier ID cannot be null or empty.");
         }
         this.cashierId = cashierId;
+        this.tickets = new ArrayList<>();
     }
 
     public String getCashierId() {
         return cashierId;
+    }
+
+    public void addTicket(Ticket ticket) {
+        if (ticket == null) {
+            throw new IllegalArgumentException("Ticket cannot be null.");
+        }
+        this.tickets.add(ticket);
+    }
+
+    public List<Ticket> getTickets() {
+        return new ArrayList<>(tickets);
     }
 
     @Override

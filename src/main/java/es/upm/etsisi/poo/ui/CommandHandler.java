@@ -97,6 +97,13 @@ public class CommandHandler {
 
         switch (command) {
             case "add":
+                Integer id = null;
+                try {
+                    id = Integer.parseInt(argList.get(0));
+                    argList.remove(0);
+                } catch (NumberFormatException e) {
+                    // It's a name, not an ID.
+                }
                 String name;
                 double price;
                 int maxPers = -1;           // -1 means not customizable
@@ -112,10 +119,18 @@ public class CommandHandler {
                 }
 
                 Product prod;
-                if (maxPers != -1) {
-                    prod = new CustomizableProduct(name, category, price, maxPers);
+                if (id != null) {
+                    if (maxPers != -1) {
+                        prod = new CustomizableProduct(id, name, category, price, maxPers);
+                    } else {
+                        prod = new Product(id, name, category, price);
+                    }
                 } else {
-                    prod = new Product(name, category, price);
+                    if (maxPers != -1) {
+                        prod = new CustomizableProduct(name, category, price, maxPers);
+                    } else {
+                        prod = new Product(name, category, price);
+                    }
                 }
 
                 store.addProduct(prod);
@@ -188,7 +203,7 @@ public class CommandHandler {
             case "new":
                 String ticketId = null;
                 String cashierId;
-                String clientId;
+                String userId;
 
                 // E2: Check if optional Ticket ID is provided
                 if (argList.size() > 2) {
@@ -196,9 +211,9 @@ public class CommandHandler {
                     argList.remove(0);
                 }
                 cashierId = argList.get(0);
-                clientId = argList.get(1);
+                userId = argList.get(1);
 
-                store.createTicket(ticketId, cashierId, clientId);
+                store.createTicket(ticketId, cashierId, userId);
                 System.out.println("ticket new: ok");
                 break;
             case "add":
@@ -256,7 +271,7 @@ public class CommandHandler {
                 System.out.println("Tickets:");
                 for (Ticket ticket : allTickets) {
                     System.out.println("  ID: " + ticket.getId() + ", Cashier: " + ticket.getCashierId() + ", Client: "
-                            + ticket.getClient().getId() + ", State: " + ticket.getState());
+                            + ticket.getUserId() + ", State: " + ticket.getState());
                 }
                 System.out.println("ticket list: ok");
                 break;
@@ -367,10 +382,11 @@ public class CommandHandler {
             case "tickets":
                 if (!argList.isEmpty()) {
                     String cashierId = argList.get(0);
-                    if (store.findCashierById(cashierId) == null) {
+                    Cashier cashier = store.findCashierById(cashierId);
+                    if (cashier == null) {
                         throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
                     }
-                    List<Ticket> cashierTickets = store.getTicketsByCashierId(cashierId);
+                    List<Ticket> cashierTickets = cashier.getTickets();
                     // E2 Requirement: Sort by ticket ID
                     cashierTickets.sort(new Comparator<Ticket>() {
                         @Override
@@ -402,7 +418,7 @@ public class CommandHandler {
         System.out.println("  prod list");
         System.out.println("  prod update <id> NAME|CATEGORY|PRICE <value>");
         System.out.println("  prod remove <id>");
-        System.out.println("  ticket new [id] <cashId> <clientId>");
+        System.out.println("  ticket new [id] <cashId> <userId>");
         System.out.println("  ticket add <ticketId> <cashId> <prodId> <amount> [--p <text>]");
         System.out.println("  ticket remove <ticketId> <cashId> <prodId>");
         System.out.println("  ticket print <ticketId> <cashId>");

@@ -27,6 +27,20 @@ public class Product {
         this.price = price;
     }
 
+    public Product(int id, String name, ProductCategory category, double price) {
+        if (name == null || name.length() > MAX_NAME_LENGTH) {
+            throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
+        }
+        if (price <= MIN_PRICE) {
+            throw new IllegalArgumentException("Error: Price must be greater than 0.");
+        }
+        this.id = id;
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        nextId = Math.max(nextId, id + 1);
+    }
+
 
     public int getId() {
         return id;
@@ -76,7 +90,7 @@ public class Product {
         throw new IllegalStateException("Error: This product is not customizable.");
     }
 
-    public double getLineTotal(int quantity) {
+    public double getLineTotal(int quantity, List<String> customTexts) {
         return getPrice() * quantity;
     }
 

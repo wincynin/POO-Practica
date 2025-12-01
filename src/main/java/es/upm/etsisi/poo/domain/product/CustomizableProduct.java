@@ -16,6 +16,12 @@ public class CustomizableProduct extends Product {
         this.customTexts = new ArrayList<String>();
     }
 
+    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
+        super(id, name, category, price);
+        this.maxCustomizableTexts = maxCustomizableTexts;
+        this.customTexts = new ArrayList<String>();
+    }
+
     public int getMaxCustomizableTexts() {
         return maxCustomizableTexts;
     }
@@ -35,7 +41,7 @@ public class CustomizableProduct extends Product {
     }
 
     @Override
-    public double getLineTotal(int quantity) {
+    public double getLineTotal(int quantity, List<String> customTexts) {
         return super.getPrice() * (1 + customTexts.size() * CUSTOM_SURCHARGE) * quantity;
     }
 
