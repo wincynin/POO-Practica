@@ -1,9 +1,9 @@
 package es.upm.etsisi.poo.domain.user;
 
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // Represents a client, as defined in E2.
 public class Client extends User {

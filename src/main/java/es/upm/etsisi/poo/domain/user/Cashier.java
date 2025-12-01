@@ -1,9 +1,9 @@
 package es.upm.etsisi.poo.domain.user;
 
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // Represents a cashier, as defined in E2.
 public class Cashier extends User {
