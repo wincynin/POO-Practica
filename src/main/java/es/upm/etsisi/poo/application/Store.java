@@ -217,6 +217,10 @@ public class Store {
     public Product removeProduct(int id) {
         return catalog.removeProduct(id);
     }
+
+    public Product getProduct(int id) {
+        return catalog.getProduct(id);
+    }
     // End of delegate methods
 
     @SuppressWarnings("Convert2Diamond")
