@@ -231,6 +231,16 @@ public class Store implements java.io.Serializable {
         return new ArrayList<>();
     }
 
+    public void refreshCounters() {
+        int maxProdId = 0;
+        for (es.upm.etsisi.poo.domain.product.Product p : getProducts()) {
+            if (p.getId() > maxProdId) {
+                maxProdId = p.getId();
+            }
+        }
+        es.upm.etsisi.poo.domain.product.Product.updateNextId(maxProdId);
+    }
+
     public Catalog getCatalog() {
         return catalog;
     }

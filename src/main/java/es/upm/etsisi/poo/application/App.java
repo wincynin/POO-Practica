@@ -13,6 +13,7 @@ public class App {
     public static void main(String[] args) throws FileNotFoundException {
         FilePersistenceHandler persistence = new FilePersistenceHandler();
         Store store = persistence.load(); // Load state
+        store.refreshCounters(); // Refresh static counters
 
         Scanner inputScanner;
 

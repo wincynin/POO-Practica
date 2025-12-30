@@ -75,6 +75,10 @@ public abstract class Product implements java.io.Serializable {
         }
     }
 
+    public static void updateNextId(int id) {
+        nextId = Math.max(nextId, id + 1);
+    }
+
     public abstract List<String> getCustomTexts();
     public abstract void addCustomText(List<String> customTexts, String text);
     public abstract double getLineTotal(int quantity, List<String> customTexts);
