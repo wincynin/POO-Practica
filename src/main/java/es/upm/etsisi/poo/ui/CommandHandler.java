@@ -98,6 +98,22 @@ public class CommandHandler {
 
         switch (command) {
             case "add":
+                // E3: prod add <expiration: yyyy-MM-dd> <category>
+                if (argList.size() == 2) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                        LocalDate expirationDate = LocalDate.parse(argList.get(0), formatter);
+                        ServiceType serviceType = ServiceType.valueOf(argList.get(1).toUpperCase());
+                        Service service = new Service(expirationDate.atStartOfDay(), serviceType);
+                        store.addProduct(service);
+                        System.out.println(service);
+                        System.out.println("prod add: ok");
+                        break;
+                    } catch (Exception e) {
+                        // Not a service, fall through to standard product creation
+                    }
+                }
+
                 Integer id = null;
                 try {
                     id = Integer.valueOf(argList.get(0));
@@ -223,6 +239,13 @@ public class CommandHandler {
                 String ticketId = null;
                 String cashierId;
                 String clientId;
+                char flag = 'p'; // Default flag
+
+                // Check for flag at the end
+                if (argList.size() > 2 && argList.get(argList.size() - 1).startsWith("-")) {
+                    flag = argList.get(argList.size() - 1).charAt(1);
+                    argList.remove(argList.size() - 1);
+                }
 
                 // E2: Check if optional Ticket ID is provided
                 if (argList.size() > 2) {
@@ -232,7 +255,7 @@ public class CommandHandler {
                 cashierId = argList.get(0);
                 clientId = argList.get(1);
 
-                store.createTicket(ticketId, cashierId, clientId);
+                store.createTicket(ticketId, cashierId, clientId, flag);
                 System.out.println("ticket new: ok");
                 break;
             case "add":

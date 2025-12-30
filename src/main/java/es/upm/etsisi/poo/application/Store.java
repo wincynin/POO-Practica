@@ -91,7 +91,7 @@ public class Store {
         }
     }
 
-    public Ticket<?> createTicket(String id, String cashierId, String userId) {
+    public Ticket<?> createTicket(String id, String cashierId, String userId, char flag) {
         // Find the associated cashier.
         Cashier cashier = findCashierById(cashierId);
         if (cashier == null) {
@@ -108,6 +108,18 @@ public class Store {
             newTicket = new CommonTicket(id, client, cashier);
         } else if (client instanceof CompanyClient) {
             newTicket = new CompanyTicket(id, client, cashier);
+            switch (flag) {
+                case 's':
+                    newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy());
+                    break;
+                case 'c':
+                    newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy());
+                    break;
+                case 'p':
+                default:
+                    newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy());
+                    break;
+            }
         } else {
             throw new IllegalStateException("Error: Unknown client type.");
         }
