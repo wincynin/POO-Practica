@@ -17,7 +17,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
     private final List<TicketLine<T>> lines;
     private final Client client;
     private final Cashier cashier;
-    private transient PrintStrategy printStrategy;
+    private PrintStrategy printStrategy;
     private static final int MAX_PRODUCT_LINES = 100;
 
     @SuppressWarnings("Convert2Diamond")
