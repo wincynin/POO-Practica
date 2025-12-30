@@ -124,13 +124,13 @@ public class CommandHandler {
                     if (maxPers != -1) {
                         prod = new CustomizableProduct(id, name, category, price, maxPers);
                     } else {
-                        prod = new Product(id, name, category, price);
+                        prod = new StandardProduct(id, name, category, price);
                     }
                 } else {
                     if (maxPers != -1) {
                         prod = new CustomizableProduct(name, category, price, maxPers);
                     } else {
-                        prod = new Product(name, category, price);
+                        prod = new StandardProduct(name, category, price);
                     }
                 }
 
@@ -282,12 +282,12 @@ public class CommandHandler {
                 break;
 
             case "list":
-                List<Ticket> allTickets = store.getTickets();
+                List<Ticket<?>> allTickets = store.getTickets();
                 // E2 Requirement: Sort by cashier ID, then by ticket ID
                 allTickets.sort(new TicketCashierComparator(store));
 
                 System.out.println("Tickets:");
-                for (Ticket ticket : allTickets) {
+                for (Ticket<?> ticket : allTickets) {
                     // Find owners for printing
                     String cId = store.findCashierIdByTicket(ticket);
                     String uId = findClientIdByTicket(ticket);
@@ -303,13 +303,30 @@ public class CommandHandler {
     }
     
     // Helper to find client ID for a ticket
-    private String findClientIdByTicket(Ticket ticket) {
+    private String findClientIdByTicket(Ticket<?> ticket) {
         for (Client c : store.getClients()) {
             if (c.hasTicket(ticket.getId())) {
                 return c.getId();
             }
         }
         return "Unknown";
+    }
+
+    private boolean isDNI(String id) {
+        if (id == null || id.length() != 9) return false;
+        for (int i = 0; i < 8; i++) {
+            if (!Character.isDigit(id.charAt(i))) return false;
+        }
+        return Character.isLetter(id.charAt(8));
+    }
+
+    private boolean isNIF(String id) {
+        if (id == null || id.length() != 9) return false;
+        if (!Character.isLetter(id.charAt(0))) return false;
+        for (int i = 1; i < 9; i++) {
+            if (!Character.isDigit(id.charAt(i))) return false;
+        }
+        return true;
     }
 
     // Handles "client" sub-commands
@@ -325,11 +342,19 @@ public class CommandHandler {
         switch (command) {
             case "add":
                 String name = argList.get(0);
-                String dni = argList.get(1);
+                String id = argList.get(1);
                 String email = argList.get(2);
                 String cashierId = argList.get(3);
 
-                store.addClient(new Client(dni, name, email, cashierId));
+                Client client;
+                if(isDNI(id)) {
+                    client = new es.upm.etsisi.poo.domain.user.IndividualClient(id, name, email, cashierId);
+                } else if (isNIF(id)) {
+                    client = new es.upm.etsisi.poo.domain.user.CompanyClient(id, name, email, cashierId);
+                } else {
+                    throw new IllegalArgumentException("Error: Invalid client ID format.");
+                }
+                store.addClient(client);
                 System.out.println("client add: ok");
 
                 break;
@@ -348,8 +373,8 @@ public class CommandHandler {
                 // E2 Requirement: Sort by name
                 Collections.sort(clientList);
                 System.out.println("Clients:");
-                for (Client client : clientList) {
-                    System.out.println("  " + client);
+                for (Client c : clientList) {
+                    System.out.println("  " + c);
                 }
                 System.out.println("client list: ok");
                 break;
@@ -410,11 +435,11 @@ public class CommandHandler {
                     if (cashier == null) {
                         throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
                     }
-                    List<Ticket> cashierTickets = cashier.getTickets();
+                    List<Ticket<?>> cashierTickets = cashier.getTickets();
                     // E2 Requirement: Sort by ticket ID
                     Collections.sort(cashierTickets);
                     System.out.println("Tickets for Cashier " + cashierId + ":");
-                    for (Ticket ticket : cashierTickets) {
+                    for (Ticket<?> ticket : cashierTickets) {
                         // E2 Requirement: Show only ID and state
                         System.out.println("  ID: " + ticket.getId() + ", State: " + ticket.getState());
                     }

@@ -1,6 +1,8 @@
 package es.upm.etsisi.poo.domain.product;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 // Represents an event product that can be booked, as defined in E2.
 public abstract class BookableProduct extends Product {
@@ -28,7 +30,27 @@ public abstract class BookableProduct extends Product {
     public int getMaxParticipants() {
         return maxParticipants;
     }
-    
+
+    @Override
+    public List<String> getCustomTexts() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void addCustomText(List<String> customTexts, String text) {
+        throw new UnsupportedOperationException("Bookable products do not support custom texts.");
+    }
+
+    @Override
+    public double getLineTotal(int quantity, List<String> customTexts) {
+        return getPrice() * quantity;
+    }
+
+    @Override
+    public boolean isBookable() {
+        return true;
+    }
+
     // Abstract method to be implemented by subclasses (Food/Meeting)
     @Override
     public abstract void validate();

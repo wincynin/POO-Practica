@@ -1,20 +1,18 @@
 package es.upm.etsisi.poo.domain.product;
 
-import java.util.Collections;
 import java.util.List;
 
-// Represents a standard product, as defined in E1 and E2.
-public class Product {
+public abstract class Product {
 
     private int id;
     private String name;
     private double price;
     private static int nextId = 1;
     private ProductCategory category;
-    private static final double MIN_PRICE = 0.0;        // E1 requirement: price must be > 0
-    private static final int MAX_NAME_LENGTH = 100;     // E1 reqeuirement: name max length to be under 100 char
+    private static final double MIN_PRICE = 0.0;
+    private static final int MAX_NAME_LENGTH = 100;
 
-    public Product(String name, ProductCategory category, double price) {
+    protected Product(String name, ProductCategory category, double price) {
         if (name == null || name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
         }
@@ -27,7 +25,7 @@ public class Product {
         this.price = price;
     }
 
-    public Product(int id, String name, ProductCategory category, double price) {
+    protected Product(int id, String name, ProductCategory category, double price) {
         if (name == null || name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
         }
@@ -40,7 +38,6 @@ public class Product {
         this.price = price;
         nextId = Math.max(nextId, id + 1);
     }
-
 
     public int getId() {
         return id;
@@ -58,12 +55,7 @@ public class Product {
         return price;
     }
 
-    public List<String> getCustomTexts() {
-        return Collections.emptyList();
-    }
-
     public void setName(String name) {
-        // Check new name cannot be empty or > 100 chars
         if (name == null || name.length() > MAX_NAME_LENGTH) {
             throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
         } else {
@@ -76,7 +68,6 @@ public class Product {
     }
 
     public void setPrice(double price) {
-        // Check new price > 0
         if (price <= MIN_PRICE) {
             throw new IllegalArgumentException("Error: Price must be greater than 0.");
         } else {
@@ -84,28 +75,14 @@ public class Product {
         }
     }
 
-
-
-    public void addCustomText(List<String> customTexts, String text) {
-        throw new IllegalStateException("Error: This product is not customizable.");
-    }
-
-    public double getLineTotal(int quantity, List<String> customTexts) {
-        return getPrice() * quantity;
-    }
-
-    public boolean isBookable() {
-        return false;
-    }
-
-
-    public void validate() {
-        // Does nothing. Subclasses can override this.
-    }
+    public abstract List<String> getCustomTexts();
+    public abstract void addCustomText(List<String> customTexts, String text);
+    public abstract double getLineTotal(int quantity, List<String> customTexts);
+    public abstract boolean isBookable();
+    public abstract void validate();
 
     @Override
     public String toString() {
-        // Returns a string representation of the Product, including id, name, category and price, in that order.
         return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f}",
                 this.getClass().getSimpleName(), id, name, category, price);
     }

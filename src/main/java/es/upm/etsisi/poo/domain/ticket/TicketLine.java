@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import es.upm.etsisi.poo.domain.product.*;
 
 // Represents a line in a ticket, as defined in E2.
-public class TicketLine implements Comparable<TicketLine> {
+public class TicketLine<T extends Product> implements Comparable<TicketLine<T>> {
     private int quantity;
-    private final Product product;
+    private final T product;
     private final List<String> customTexts;
 
     @SuppressWarnings("Convert2Diamond")
-    public TicketLine(Product product, int quantity) {
+    public TicketLine(T product, int quantity) {
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null.");
         }
@@ -23,7 +23,7 @@ public class TicketLine implements Comparable<TicketLine> {
         this.customTexts = new ArrayList<String>();
     }
 
-    public Product getProduct() {
+    public T getProduct() {
         return product;
     }
 
@@ -51,7 +51,7 @@ public class TicketLine implements Comparable<TicketLine> {
     }
 
     @Override
-    public int compareTo(TicketLine other) {
+    public int compareTo(TicketLine<T> other) {
         return this.getProduct().getName().compareToIgnoreCase(other.getProduct().getName());
     }
 }

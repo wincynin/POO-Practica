@@ -7,7 +7,7 @@ import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // Represents a cashier, as defined in E2.
 public class Cashier extends User implements Comparable<Cashier> {
-    private final List<Ticket> tickets;
+    private final List<Ticket<?>> tickets;
 
     public Cashier(String id, String name, String email) {
         super(id, name, email);
@@ -39,20 +39,20 @@ public class Cashier extends User implements Comparable<Cashier> {
         return false;
     }
 
-    public void addTicket(Ticket ticket) {
+    public void addTicket(Ticket<?> ticket) {
         if (ticket == null) {
             throw new IllegalArgumentException("Ticket cannot be null.");
         }
         this.tickets.add(ticket);
     }
 
-    public List<Ticket> getTickets() {
+    public List<Ticket<?>> getTickets() {
         return new ArrayList<>(tickets);
     }
 
     // Method to check if this cashier owns a specific ticket
     public boolean hasTicket(String ticketId) {
-        for (Ticket ticket : tickets) {
+        for (Ticket<?> ticket : tickets) {
             if (ticket.getId().equals(ticketId)) {
                 return true;
             }

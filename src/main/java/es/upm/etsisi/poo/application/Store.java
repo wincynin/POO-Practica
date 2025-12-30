@@ -1,7 +1,8 @@
 package es.upm.etsisi.poo.application;
 
-import es.upm.etsisi.poo.domain.user.Client;
-import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.user.*;
+import es.upm.etsisi.poo.domain.ticket.CommonTicket;
+import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Catalog;
 import es.upm.etsisi.poo.domain.product.Product;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 // Represents the store, acts as the model, holding all the application's data as per E2 requirements.
 public class Store {
     private final Catalog catalog;
-    private final List<Ticket> tickets;
+    private final List<Ticket<?>> tickets;
     private final List<Client> clients;
     private final List<Cashier> cashiers;
     
@@ -21,7 +22,7 @@ public class Store {
     @SuppressWarnings("Convert2Diamond")
     public Store() {
         this.catalog = new Catalog();
-        this.tickets = new ArrayList<Ticket>();
+        this.tickets = new ArrayList<Ticket<?>>();
         this.clients = new ArrayList<Client>();
         this.cashiers = new ArrayList<Cashier>();
     }
@@ -84,13 +85,13 @@ public class Store {
         Cashier cashierToRemove = findCashierById(id);
         if (cashierToRemove != null) {
             // Remove tickets associated with the cashier.
-            List<Ticket> ticketsToRemove = cashierToRemove.getTickets();
+            List<Ticket<?>> ticketsToRemove = cashierToRemove.getTickets();
             tickets.removeAll(ticketsToRemove);
             this.cashiers.remove(cashierToRemove);
         }
     }
 
-    public Ticket createTicket(String id, String cashierId, String userId) {
+    public Ticket<?> createTicket(String id, String cashierId, String userId) {
         // Find the associated cashier.
         Cashier cashier = findCashierById(cashierId);
         if (cashier == null) {
@@ -102,8 +103,14 @@ public class Store {
             throw new IllegalArgumentException("Error: Client with ID " + userId + " not found.");
         }
         
-        // Ticket created WITHOUT user knowledge
-        Ticket newTicket = new Ticket(id);
+        Ticket<?> newTicket;
+        if (client instanceof IndividualClient) {
+            newTicket = new CommonTicket(id, client, cashier);
+        } else if (client instanceof CompanyClient) {
+            newTicket = new CompanyTicket(id, client, cashier);
+        } else {
+            throw new IllegalStateException("Error: Unknown client type.");
+        }
         
         // Store establishes the relationships
         tickets.add(newTicket);
@@ -113,6 +120,7 @@ public class Store {
         return newTicket;
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount,
             List<String> customTexts) {
         // Find the ticket.
@@ -136,7 +144,7 @@ public class Store {
 
     public void removeProductFromTicket(String ticketId, String cashierId, int prodId) {
         // Find the ticket.
-        Ticket ticket = getTicket(ticketId);
+        Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
@@ -154,7 +162,7 @@ public class Store {
 
     public String printTicket(String ticketId, String cashierId) {
         // Find the ticket.
-        Ticket ticket = getTicket(ticketId);
+        Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
@@ -165,12 +173,11 @@ public class Store {
             throw new IllegalArgumentException("Error: Only the creating cashier can print this ticket.");
         }
         
-        String clientId = findClientIdByTicket(ticket);
-        return ticket.closeAndGetReceipt(cashierId, clientId);
+        return ticket.print();
     }
 
     // Helper to find which client owns a specific ticket
-    public String findClientIdByTicket(Ticket ticket) {
+    public String findClientIdByTicket(Ticket<?> ticket) {
         for (Client client : clients) {
             if (client.hasTicket(ticket.getId())) {
                 return client.getId();
@@ -180,7 +187,7 @@ public class Store {
     }
 
     // Helper to find which cashier owns a specific ticket
-    public String findCashierIdByTicket(Ticket ticket) {
+    public String findCashierIdByTicket(Ticket<?> ticket) {
         for (Cashier cashier : cashiers) {
             if (cashier.hasTicket(ticket.getId())) {
                 return cashier.getId();
@@ -189,8 +196,8 @@ public class Store {
         return "Unknown";
     }
 
-    public Ticket getTicket(String ticketId) {
-        for (Ticket ticket : tickets) {
+    public Ticket<?> getTicket(String ticketId) {
+        for (Ticket<?> ticket : tickets) {
             if (ticket.getId().equals(ticketId)) {
                 return ticket;
             }
@@ -199,12 +206,12 @@ public class Store {
     }
 
     @SuppressWarnings("Convert2Diamond")
-    public List<Ticket> getTickets() {
-        return new ArrayList<Ticket>(tickets);
+    public List<Ticket<?>> getTickets() {
+        return new ArrayList<Ticket<?>>(tickets);
     }
     
     // Needed for CommandHandler to list tickets for a cashier
-    public List<Ticket> getTicketsByCashierId(String cashierId) {
+    public List<Ticket<?>> getTicketsByCashierId(String cashierId) {
         Cashier cashier = findCashierById(cashierId);
         if(cashier != null) {
             return cashier.getTickets();

@@ -4,19 +4,29 @@ import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import es.upm.etsisi.poo.domain.product.*;
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.user.Client;
+import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
 
 // Represents a ticket, as defined in E1 and E2.
-public class Ticket implements Comparable<Ticket> {
+public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>> {
     private String id;
     private TicketState state;
-    private final List<TicketLine> lines;
+    private final List<TicketLine<T>> lines;
+    private final Client client;
+    private final Cashier cashier;
+    private PrintStrategy printStrategy;
     private static final int MAX_PRODUCT_LINES = 100;
 
     @SuppressWarnings("Convert2Diamond")
-    public Ticket(String id) {
+    public Ticket(String id, Client client, Cashier cashier) {
         this.state = TicketState.EMPTY;
-        this.lines = new ArrayList<TicketLine>();
+        this.lines = new ArrayList<TicketLine<T>>();
+        this.client = client;
+        this.cashier = cashier;
+        this.printStrategy = new StandardPrintStrategy(); // Default strategy
 
         if (id == null) {
             // If the ID is null, it is autogenerate, as requested.
@@ -42,16 +52,28 @@ public class Ticket implements Comparable<Ticket> {
         return state;
     }
 
-    @SuppressWarnings("Convert2Diamond")
-    public List<TicketLine> getLines() {
-        return new ArrayList<TicketLine>(lines);
+    public Client getClient() {
+        return client;
     }
 
-    public void addProduct(Product product, int quantity) {
+    public Cashier getCashier() {
+        return cashier;
+    }
+
+    public void setPrintStrategy(PrintStrategy printStrategy) {
+        this.printStrategy = printStrategy;
+    }
+
+    @SuppressWarnings("Convert2Diamond")
+    public List<TicketLine<T>> getLines() {
+        return new ArrayList<TicketLine<T>>(lines);
+    }
+
+    public void addProduct(T product, int quantity) {
         addProduct(product, quantity, null);
     }
 
-    public void addProduct(Product product, int quantity, List<String> customTexts) {
+    public void addProduct(T product, int quantity, List<String> customTexts) {
         if (product == null) {
             throw new IllegalArgumentException("Error: Product cannot be null.");
         }
@@ -67,7 +89,7 @@ public class Ticket implements Comparable<Ticket> {
         // Special rules for Bookable products.
         if (product.isBookable()) {
             // They can only be added once.
-            for (TicketLine line : lines) {
+            for (TicketLine<T> line : lines) {
                 if (line.getProduct().getId() == product.getId()) {
                     throw new IllegalStateException("Error: Bookable products can only be added once.");
                 }
@@ -77,7 +99,7 @@ public class Ticket implements Comparable<Ticket> {
         }
 
         // We now check for matching ID AND matching customizations, to merge quantities them as requested.
-        for (TicketLine currentLine : lines) {
+        for (TicketLine<T> currentLine : lines) {
             if (currentLine.getProduct().getId() == product.getId()) {
                 // Check if customizations also match
                 List<String> lineTexts = currentLine.getCustomTexts();      // This is never null, just empty
@@ -102,7 +124,7 @@ public class Ticket implements Comparable<Ticket> {
             throw new IllegalStateException("Error: Ticket cannot have more than " + MAX_PRODUCT_LINES + " product lines.");
         }
         // After all checks, we can add the new line.
-        TicketLine newLine = new TicketLine(product, quantity);
+        TicketLine<T> newLine = new TicketLine<>(product, quantity);
         if (customTexts != null) {
             for (String text : customTexts) {
                 newLine.addCustomText(text);
@@ -129,121 +151,20 @@ public class Ticket implements Comparable<Ticket> {
     public double getTotalPrice() {
         double total = 0.0;
 
-        for (TicketLine line : lines) {
+        for (TicketLine<T> line : lines) {
             // The total is based on getLineTotal(), which already includes the customization surcharges.
             total += line.getLineTotal();
         }
         return total;
     }
 
-    public double getTotalDiscount() {
-        double totalDiscount = 0.0;
-        @SuppressWarnings("Convert2Diamond")
-        List<ProductCategory> discountableCategories = getDiscountableCategories();
-
-        // Apply discount based on category's discount rate, if eligible, while iterating through all lines.
-        for (TicketLine line : lines) {
-            if (discountableCategories.contains(line.getProduct().getCategory())) {
-                totalDiscount += line.getLineTotal() * line.getProduct().getCategory().getDiscount();
-            }
-        }
-        return totalDiscount;
-    }
-
-    @SuppressWarnings("Convert2Lambda")
-    public String closeAndGetReceipt(String cashierId, String clientId) {
-        StringBuilder sb = new StringBuilder();
-
-        // UPDATE STATE & ID FIRST (Fixes the ID consistency issue)
+    public String print() {
         if (this.state != TicketState.CLOSED) {
             this.state = TicketState.CLOSED;
             this.id += "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
-        } else {
-            // Only add warning if it was ALREADY closed before this call
-            sb.append("Warning: Ticket is already closed. Reprinting.\n");
         }
-
-        // Mantaining E1 requirement of sorting by product name alphabetically when printing.
         Collections.sort(lines);
-
-        // Printing the ticket details in the order they were requested.
-        sb.append("Ticket ID: ").append(this.id).append("\n");
-        sb.append("Cashier ID: ").append(cashierId).append("\n");
-        sb.append("Client ID: ").append(clientId).append("\n");
-        sb.append("--------------------\n");
-
-        // We recalculate the discountable categories to know where to print the text "**discount".
-        List<ProductCategory> discountableCategories = getDiscountableCategories();
-
-        for (TicketLine line : lines) {
-            Product product = line.getProduct();
-            // Formatted string for the product details as requested, giving class name, id, name and price.
-            String productString = String.format("{class: %s, id:%d, name:'%s', price:%.1f}",
-                    product.getClass().getSimpleName(), product.getId(), product.getName(), product.getPrice());
-
-            // Calculate discount for this line if applicable while iterating.
-            double discount = 0.0;
-            if (discountableCategories.contains(product.getCategory())) {
-                discount = line.getLineTotal() * product.getCategory().getDiscount();
-            }
-
-            // Formatting the line output as requested, including discount and custom texts if any.
-            sb.append(String.format("  %s, Quantity: %d", productString, line.getQuantity()));
-            if (discount > 0) {
-                // Discount presented with two decimal places as requested.
-                sb.append(String.format(" **discount-%.2f", discount));
-            }
-            // If the line has custom texts, we print the prefix " --p" to match the input
-            // command format.
-            if (!line.getCustomTexts().isEmpty()) {
-                sb.append(" --p");
-                for (String text : line.getCustomTexts()) {
-                    sb.append(" ").append(text);
-                }
-            }
-            // New line after each product line.
-            sb.append("\n");
-        }
-
-        sb.append("--------------------\n");
-        
-        // Printing total price, total discount and final price, each value with two decimal places.
-        double totalPrice = getTotalPrice();
-        double totalDiscount = getTotalDiscount();
-        double finalPrice = totalPrice - totalDiscount;
-
-        // Final prices with two decimal places as requested.
-        sb.append(String.format("Total price: %.2f%n", totalPrice));
-        sb.append(String.format("Total discount: %.2f%n", totalDiscount));
-        sb.append(String.format("Final Price: %.2f%n", finalPrice));
-
-        // Closing the ticket and updating the ID after the printing as requested.
-        if (this.state != TicketState.CLOSED) {
-            this.state = TicketState.CLOSED;
-            this.id += "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
-        }
-
-        sb.append("ticket print: ok\n");
-        return sb.toString();
-    }
-
-    // Identify categories eligible for discount, criteria being more than 1 item in the same category.
-    private List<ProductCategory> getDiscountableCategories() {
-        Map<ProductCategory, Integer> categoryCounts = new HashMap<>();
-        for (TicketLine line : lines) {
-            ProductCategory category = line.getProduct().getCategory();
-            if (category != null) {
-                categoryCounts.put(category, categoryCounts.getOrDefault(category, 0) + line.getQuantity());
-            }
-        }
-
-        List<ProductCategory> discountableCategories = new ArrayList<>();
-        for (Map.Entry<ProductCategory, Integer> entry : categoryCounts.entrySet()) {
-            if (entry.getValue() > 1) {
-                discountableCategories.add(entry.getKey());
-            }
-        }
-        return discountableCategories;
+        return printStrategy.formatTicket(this);
     }
 
     public boolean isEmpty() {
@@ -251,7 +172,7 @@ public class Ticket implements Comparable<Ticket> {
     }
 
     @Override
-    public int compareTo(Ticket other) {
+    public int compareTo(Ticket<T> other) {
         return this.getId().compareToIgnoreCase(other.getId());
     }
 }

@@ -47,6 +47,16 @@ public class CustomizableProduct extends Product {
     }
 
     @Override
+    public boolean isBookable() {
+        return false;
+    }
+
+    @Override
+    public void validate() {
+        // No specific validation for customizable products.
+    }
+
+    @Override
     public String toString() {
         // Returns a string representation of the CustomizableProduct, including id, name, category, price and custom texts, in that order.
         return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f, customTexts:%s}",

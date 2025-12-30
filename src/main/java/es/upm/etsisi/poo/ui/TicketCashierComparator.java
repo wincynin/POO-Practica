@@ -5,7 +5,7 @@ import java.util.Comparator;
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
-public class TicketCashierComparator implements Comparator<Ticket> {
+public class TicketCashierComparator implements Comparator<Ticket<?>> {
     private final Store store;
 
     public TicketCashierComparator(Store store) {
@@ -13,7 +13,7 @@ public class TicketCashierComparator implements Comparator<Ticket> {
     }
 
     @Override
-    public int compare(Ticket t1, Ticket t2) {
+    public int compare(Ticket<?> t1, Ticket<?> t2) {
         String c1 = store.findCashierIdByTicket(t1);
         String c2 = store.findCashierIdByTicket(t2);
 
