@@ -1,9 +1,9 @@
 package es.upm.etsisi.poo.domain.user;
 
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 public class CompanyClient extends Client {
     private final String cashierId;
@@ -38,6 +38,7 @@ public class CompanyClient extends Client {
         return cashierId;
     }
 
+    @Override
     public void addTicket(Ticket<?> ticket) {
         if (ticket == null) {
             throw new IllegalArgumentException("Ticket cannot be null.");
@@ -49,6 +50,7 @@ public class CompanyClient extends Client {
         return new ArrayList<>(tickets);
     }
 
+    @Override
     public boolean hasTicket(String ticketId) {
         for (Ticket<?> ticket : tickets) {
             if (ticket.getId().equals(ticketId)) {

@@ -29,7 +29,7 @@ public class CompanyPrintStrategy implements PrintStrategy {
         double discountRate = Math.min(numServices * 0.15, 1.0);
         double totalDiscount = standardProductsTotal * discountRate;
         double finalPrice = standardProductsTotal - totalDiscount;
-
+        
         for (TicketLine<?> line : ticket.getLines()) {
             Product product = line.getProduct();
             if (!(product instanceof StandardProduct)) { // It's a service

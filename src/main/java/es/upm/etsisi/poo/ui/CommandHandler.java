@@ -459,8 +459,15 @@ public class CommandHandler {
                         throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
                     }
                     List<Ticket<?>> cashierTickets = cashier.getTickets();
-                    // E2 Requirement: Sort by ticket ID
-                    Collections.sort(cashierTickets);
+
+                    // --- NEW (Anonymous Inner Class - Professor Approved) ---
+                    Collections.sort(cashierTickets, new java.util.Comparator<Ticket<?>>() {
+                        @Override
+                        public int compare(Ticket<?> t1, Ticket<?> t2) {
+                            return t1.getId().compareToIgnoreCase(t2.getId());
+                        }
+                    });
+
                     System.out.println("Tickets for Cashier " + cashierId + ":");
                     for (Ticket<?> ticket : cashierTickets) {
                         // E2 Requirement: Show only ID and state
