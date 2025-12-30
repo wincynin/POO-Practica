@@ -1,0 +1,164 @@
+@startuml
+'--- STYLING ---
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+'--- PACKAGES ---
+
+package "es.upm.etsisi.poo.domain.product" {
+    abstract class Product {
+        # String id
+        + {abstract} double getPrice()
+        + String getId()
+    }
+
+    enum ProductCategory {
+        MERCH
+        STATIONERY
+        CLOTHES
+        BOOK
+        ELECTRONICS
+    }
+
+    enum ServiceType {
+        TRANSPORT
+        EVENT
+        INSURANCE
+    }
+
+    class StandardProduct {
+        - String name
+        - double price
+        - ProductCategory category
+        + StandardProduct(id, name, price, category)
+        + double getPrice()
+    }
+
+    class Service {
+        - LocalDate maxUsageDate
+        - ServiceType type
+        + Service(id, date, type)
+        + double getPrice() 
+        note right: Price is 0.0 initially (calculated a posteriori)
+    }
+
+    Product <|-- StandardProduct
+    Product <|-- Service
+    StandardProduct o-- ProductCategory
+    Service o-- ServiceType
+}
+
+package "es.upm.etsisi.poo.domain.user" {
+    abstract class User {
+        # String id
+        + String getId()
+    }
+
+    class Cashier {
+        - String name
+        + Cashier(id, name)
+    }
+
+    abstract class Client {
+        # String email
+        # String name
+        + {abstract} boolean validateId()
+    }
+
+    class IndividualClient {
+        + IndividualClient(dni, email, name)
+        + boolean validateId() 
+        note right: Validates DNI
+    }
+
+    class CompanyClient {
+        + CompanyClient(nif, email, name)
+        + boolean validateId()
+        note right: Validates NIF
+    }
+
+    User <|-- Cashier
+    User <|-- Client
+    Client <|-- IndividualClient
+    Client <|-- CompanyClient
+}
+
+package "es.upm.etsisi.poo.domain.ticket" {
+    interface PrintStrategy {
+        + String formatTicket(Ticket<?> ticket)
+    }
+
+    abstract class Ticket<T extends Product> {
+        # String id
+        # LocalDate date
+        # List<T> lines
+        # PrintStrategy printStrategy
+        + Ticket(id, PrintStrategy)
+        + void addLine(T item)
+        + String print()
+        + void close()
+    }
+
+    class CommonTicket {
+        + CommonTicket(id, strategy)
+    }
+
+    class CompanyTicket {
+        + CompanyTicket(id, strategy)
+    }
+
+    ' GENERICS NOTATION
+    note top of CommonTicket: extends Ticket<StandardProduct>\n(Only accepts physical goods)
+    note top of CompanyTicket: extends Ticket<Product>\n(Accepts Mixed: Services + Products)
+
+    Ticket <|-- CommonTicket
+    Ticket <|-- CompanyTicket
+    Ticket o-r- PrintStrategy : uses >
+}
+
+package "es.upm.etsisi.poo.infrastructure" {
+    package "printing" {
+        class StandardPrintStrategy {
+            + String formatTicket(Ticket<?> ticket)
+        }
+
+        class CompanyPrintStrategy {
+            + String formatTicket(Ticket<?> ticket)
+            note bottom: Applies 15% discount logic\nif Services are present
+        }
+
+        PrintStrategy <|.. StandardPrintStrategy
+        PrintStrategy <|.. CompanyPrintStrategy
+    }
+
+    package "persistence" {
+        class FilePersistenceHandler {
+            - String STORAGE_PATH
+            + void saveState(Store store)
+            + Store loadState()
+        }
+    }
+}
+
+package "es.upm.etsisi.poo.application" {
+    class Store {
+        - static Store instance
+        - Map<String, Product> catalog
+        - Map<String, User> users
+        - List<Ticket> tickets
+        + void registerTicket(Ticket t)
+        + void persist()
+    }
+}
+
+'--- RELATIONSHIPS ---
+Store o-- Product : catalog
+Store o-- User : users
+Store o-- Ticket : history
+Store ..> FilePersistenceHandler : uses for saving
+
+Ticket --> Client : belongs to
+Ticket --> Cashier : created by
+Ticket *-- Product : contains list of
+@enduml
