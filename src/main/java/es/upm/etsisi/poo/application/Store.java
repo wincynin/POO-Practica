@@ -105,9 +105,9 @@ public class Store implements java.io.Serializable {
         
         Ticket<?> newTicket;
         if (client instanceof IndividualClient) {
-            newTicket = new CommonTicket(id, client, cashier);
+            newTicket = new CommonTicket(id);
         } else if (client instanceof CompanyClient) {
-            newTicket = new CompanyTicket(id, client, cashier);
+            newTicket = new CompanyTicket(id);
             switch (flag) {
                 case 's':
                     newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy());

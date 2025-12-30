@@ -4,8 +4,6 @@ import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import es.upm.etsisi.poo.domain.product.*;
-import es.upm.etsisi.poo.domain.user.Cashier;
-import es.upm.etsisi.poo.domain.user.Client;
 import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
@@ -15,17 +13,13 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
     private String id;
     private TicketState state;
     private final List<TicketLine<T>> lines;
-    private final Client client;
-    private final Cashier cashier;
     private PrintStrategy printStrategy;
     private static final int MAX_PRODUCT_LINES = 100;
 
     @SuppressWarnings("Convert2Diamond")
-    public Ticket(String id, Client client, Cashier cashier) {
+    public Ticket(String id) {
         this.state = TicketState.EMPTY;
         this.lines = new ArrayList<TicketLine<T>>();
-        this.client = client;
-        this.cashier = cashier;
         this.printStrategy = new StandardPrintStrategy(); // Default strategy
 
         if (id == null) {
@@ -50,14 +44,6 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
 
     public TicketState getState() {
         return state;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public Cashier getCashier() {
-        return cashier;
     }
 
     public void setPrintStrategy(PrintStrategy printStrategy) {
