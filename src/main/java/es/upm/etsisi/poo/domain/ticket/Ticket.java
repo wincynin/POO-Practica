@@ -11,13 +11,13 @@ import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
 
 // Represents a ticket, as defined in E1 and E2.
-public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>> {
+public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>, java.io.Serializable {
     private String id;
     private TicketState state;
     private final List<TicketLine<T>> lines;
     private final Client client;
     private final Cashier cashier;
-    private PrintStrategy printStrategy;
+    private transient PrintStrategy printStrategy;
     private static final int MAX_PRODUCT_LINES = 100;
 
     @SuppressWarnings("Convert2Diamond")
@@ -62,6 +62,10 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
 
     public void setPrintStrategy(PrintStrategy printStrategy) {
         this.printStrategy = printStrategy;
+    }
+
+    public PrintStrategy getPrintStrategy() {
+        return printStrategy;
     }
 
     @SuppressWarnings("Convert2Diamond")

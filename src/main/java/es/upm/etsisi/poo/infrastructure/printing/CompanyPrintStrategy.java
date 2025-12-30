@@ -36,6 +36,8 @@ public class CompanyPrintStrategy implements PrintStrategy {
                 sb.append(String.format("Name: %s", product.getName()));
                 if (product instanceof BookableProduct) {
                     sb.append(String.format(", Date: %s", ((BookableProduct) product).getExpirationDate()));
+                } else if (product instanceof es.upm.etsisi.poo.domain.product.Service) {
+                    sb.append(String.format(", Date: %s", ((es.upm.etsisi.poo.domain.product.Service) product).getExpirationDate()));
                 }
                 sb.append(", Price: HIDDEN\n");
             } else { // It's a standard product

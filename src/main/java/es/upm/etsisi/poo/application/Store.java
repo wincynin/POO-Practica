@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 
 // Represents the store, acts as the model, holding all the application's data as per E2 requirements.
-public class Store {
+public class Store implements java.io.Serializable {
     private final Catalog catalog;
     private final List<Ticket<?>> tickets;
     private final List<Client> clients;

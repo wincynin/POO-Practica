@@ -2,14 +2,14 @@ package es.upm.etsisi.poo.domain.product;
 
 import java.util.List;
 
-public abstract class Product {
+public abstract class Product implements java.io.Serializable {
 
     private int id;
     private String name;
     private double price;
     private static int nextId = 1;
     private ProductCategory category;
-    private static final double MIN_PRICE = 0.0;
+    private static final double MIN_PRICE = -0.001;
     private static final int MAX_NAME_LENGTH = 100;
 
     protected Product(String name, ProductCategory category, double price) {

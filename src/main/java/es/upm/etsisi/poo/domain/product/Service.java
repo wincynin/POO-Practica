@@ -9,7 +9,7 @@ public class Service extends Product {
     private final ServiceType serviceType;
 
     public Service(LocalDateTime expirationDate, ServiceType serviceType) {
-        super(String.format("Service-%s", serviceType.name()), null, 0.01); // Price cannot be 0
+        super(String.format("Service-%s", serviceType.name()), null, 0.0); // Price is 0.0
         this.expirationDate = expirationDate;
         this.serviceType = serviceType;
     }
