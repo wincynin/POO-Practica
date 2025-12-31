@@ -3,6 +3,7 @@ package es.upm.etsisi.poo.infrastructure.printing;
 import es.upm.etsisi.poo.domain.product.BookableProduct;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
+
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.ticket.TicketLine;
 

@@ -6,6 +6,7 @@ import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Catalog;
 import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.product.StandardProduct;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -132,11 +133,10 @@ public class Store implements java.io.Serializable {
         return newTicket;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount,
             List<String> customTexts) {
         // Find the ticket.
-        Ticket ticket = getTicket(ticketId);
+        Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
@@ -151,7 +151,21 @@ public class Store implements java.io.Serializable {
         if (product == null) {
             throw new IllegalArgumentException("Error: Product with ID " + prodId + " not found.");
         }
-        ticket.addProduct(product, amount, customTexts);
+
+        if (ticket instanceof CommonTicket) {
+            if (!(product instanceof StandardProduct)) {
+                throw new IllegalArgumentException("Error: Cannot add this product type to a Common Ticket.");
+            }
+            @SuppressWarnings("unchecked")
+            Ticket<StandardProduct> commonTicket = (Ticket<StandardProduct>) ticket;
+            commonTicket.addProduct((StandardProduct) product, amount, customTexts);
+        } else if (ticket instanceof CompanyTicket) {
+            @SuppressWarnings("unchecked")
+            Ticket<Product> companyTicket = (Ticket<Product>) ticket;
+            companyTicket.addProduct(product, amount, customTexts);
+        } else {
+            throw new IllegalStateException("Error: Unknown ticket type, cannot add product.");
+        }
     }
 
     public void removeProductFromTicket(String ticketId, String cashierId, int prodId) {
