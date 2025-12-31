@@ -3,7 +3,6 @@ package es.upm.etsisi.poo.infrastructure.printing;
 import es.upm.etsisi.poo.domain.product.BookableProduct;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
-
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.ticket.TicketLine;
 
@@ -37,10 +36,10 @@ public class CompanyPrintStrategy implements PrintStrategy {
             Product product = line.getProduct();
             if (!(product instanceof StandardProduct)) { // It's a service
                 sb.append(String.format("Name: %s", product.getName()));
-                if (product instanceof BookableProduct) {
-                    sb.append(String.format(", Date: %s", ((BookableProduct) product).getExpirationDate()));
-                } else if (product instanceof es.upm.etsisi.poo.domain.product.Service) {
-                    sb.append(String.format(", Date: %s", ((es.upm.etsisi.poo.domain.product.Service) product).getExpirationDate()));
+                if (product instanceof BookableProduct bookableProduct) {
+                    sb.append(String.format(", Date: %s", bookableProduct.getExpirationDate()));
+                } else if (product instanceof es.upm.etsisi.poo.domain.product.Service service) {
+                    sb.append(String.format(", Date: %s", service.getExpirationDate()));
                 }
                 sb.append(", Price: HIDDEN\n");
             } else { // It's a standard product
