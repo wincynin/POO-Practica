@@ -325,7 +325,7 @@ public class CommandHandler {
         }
     }
     
-
+    private boolean isDNI(String id) {
         if (id == null || id.length() != 9) return false;
         for (int i = 0; i < 8; i++) {
             if (!Character.isDigit(id.charAt(i))) return false;
