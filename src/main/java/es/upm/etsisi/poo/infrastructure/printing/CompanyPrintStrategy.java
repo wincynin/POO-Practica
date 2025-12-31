@@ -9,6 +9,8 @@ import es.upm.etsisi.poo.domain.ticket.TicketLine;
 
 public class CompanyPrintStrategy implements PrintStrategy {
 
+    private static final double DISCOUNT_RATE_PER_SERVICE = 0.15;
+
     @Override
     public String formatTicket(Ticket<?> ticket) {
         StringBuilder sb = new StringBuilder();
@@ -27,7 +29,7 @@ public class CompanyPrintStrategy implements PrintStrategy {
             }
         }
 
-        double discountRate = Math.min(numServices * 0.15, 1.0);
+        double discountRate = Math.min(numServices * DISCOUNT_RATE_PER_SERVICE, 1.0);
         double totalDiscount = standardProductsTotal * discountRate;
         double finalPrice = standardProductsTotal - totalDiscount;
         
