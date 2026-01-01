@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import es.upm.etsisi.poo.application.Store;
 
-// Abstract base class for commands, providing common functionality.
+// [Class] Common code for all commands.
 abstract class AbstractCommand implements Command {
     protected final Store store;
 
@@ -12,6 +12,7 @@ abstract class AbstractCommand implements Command {
         this.store = store;
     }
 
+    // Helper: Split string but keep quotes.
     protected List<String> parseArgs(String args) {
         @SuppressWarnings("Convert2Diamond")
         List<String> argList = new ArrayList<String>();

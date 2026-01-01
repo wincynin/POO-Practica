@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
-// Represents an individual client in the system.
+// [Entity] Individual (DNI-based) Client.
 public class IndividualClient extends Client {
     private final String cashierId;
     private final List<Ticket<?>> tickets;

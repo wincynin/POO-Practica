@@ -6,7 +6,7 @@ import es.upm.etsisi.poo.domain.user.Client;
 import java.util.List;
 import java.util.Collections;
 
-// Handles client-related commands such as add, remove, and list.
+// [Command] Client CRUD operations.
 class ClientCommand extends AbstractCommand {
 
     public ClientCommand(Store store) {
@@ -34,6 +34,7 @@ class ClientCommand extends AbstractCommand {
                 String cashierId = argList.get(3);
 
                 Client client;
+                // Logic: Discriminator (DNI vs NIF).
                 if(isDNI(id)) {
                     client = new es.upm.etsisi.poo.domain.user.IndividualClient(id, name, email, cashierId);
                 } else if (isNIF(id)) {

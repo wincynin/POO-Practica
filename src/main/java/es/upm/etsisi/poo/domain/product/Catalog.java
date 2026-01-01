@@ -3,7 +3,7 @@ package es.upm.etsisi.poo.domain.product;
 import java.util.List;
 import java.util.ArrayList;
 
-// Represents a catalog of products, as defined in E1 and E2, manages adding, removing, updating, and retrieving products.
+// [Class] Manages the list of Products.
 public class Catalog implements java.io.Serializable {
     private final List<Product> products;
     private static final int MAX_PRODUCTS = 200;    // E1 requirement: max products cannot exceed 200

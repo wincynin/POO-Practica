@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import es.upm.etsisi.poo.domain.product.*;
 
-// Represents a line in a ticket, as defined in E2.
+// [Class] Stores a product and its quantity.
 public class TicketLine<T extends Product> implements Comparable<TicketLine<T>>, java.io.Serializable {
     private int quantity;
     private final T product;

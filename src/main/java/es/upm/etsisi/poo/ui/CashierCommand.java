@@ -7,7 +7,7 @@ import es.upm.etsisi.poo.domain.ticket.Ticket;
 import java.util.List;
 import java.util.Collections;
 
-// Handles cashier-related commands such as add, remove, list, and tickets.
+// [Command] Cashier CRUD operations.
 class CashierCommand extends AbstractCommand {
     public CashierCommand(Store store) {
         super(store);

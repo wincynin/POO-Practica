@@ -3,7 +3,7 @@ package es.upm.etsisi.poo.infrastructure.persistence;
 import java.io.*;
 import es.upm.etsisi.poo.application.Store;
 
-// Handles persistence of the system state to and from a file.
+// [Class] Saves/Loads data to a file.
 public class FilePersistenceHandler {
     private static final String FILE_NAME = "store_data.dat";
 
@@ -19,7 +19,8 @@ public class FilePersistenceHandler {
     public Store load() {
         File file = new File(FILE_NAME);
         if (!file.exists()) {
-            return new Store(); // Return empty store if no file exists
+            // If file doesn't exist, create empty Store.
+            return new Store(); 
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             return (Store) ois.readObject();

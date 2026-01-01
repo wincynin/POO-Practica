@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Collections;
 import java.time.LocalDateTime;
 
-// Represents an event product that can be booked, as defined in E2.
+// [Class] Product type: Bookable.
 public abstract class BookableProduct extends Product {
     private final int maxParticipants;
     private final LocalDateTime expirationDate;

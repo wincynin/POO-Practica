@@ -1,6 +1,6 @@
 package es.upm.etsisi.poo.domain.user;
 
-// Represents a user in the system, as defined in E2.
+// [Abstract Class] Base class for Users.
 public abstract class User implements java.io.Serializable {
     private String id;
     private String name;

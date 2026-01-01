@@ -8,7 +8,7 @@ import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
 
-// Represents a ticket, as defined in E1 and E2.
+// [Class] Represents a Ticket (E1).
 public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>, java.io.Serializable {
     private String id;
     private TicketState state;
@@ -23,7 +23,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
         this.printStrategy = new StandardPrintStrategy(); // Default strategy
 
         if (id == null) {
-            // If the ID is null, it is autogenerate, as requested.
+            // Generate a random ID if null.
             this.id = generateId();
         } else {
             this.id = id;
@@ -31,7 +31,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
     }
 
     private String generateId() {
-        // The ID format must be "YY-MM-dd-HH:mm-" + 5 random digits as requested.
+        // Format: YY-MM-dd + random numbers.
         String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
         Random random = new Random();
         int randomNumber = random.nextInt(90000) + 10000;
@@ -67,16 +67,16 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
         if (product == null) {
             throw new IllegalArgumentException("Error: Product cannot be null.");
         }
-        // Check for closed tickets as they are required to be immutable after closing.
+        // Rule: Cannot change a closed ticket.
         if (this.state == TicketState.CLOSED) {
             throw new IllegalStateException("Error: Cannot add products to a closed ticket.");
         }
-        // Check for empty tickets and set to active when adding the first product.
+        // Change state to ACTIVE when adding first product.
         if (this.state == TicketState.EMPTY) {
             this.state = TicketState.ACTIVE;
         }
 
-        // Special rules for Bookable products.
+        // Rule: Bookable products can only be added once.
         if (product.isBookable()) {
             // They can only be added once.
             for (TicketLine<T> line : lines) {
@@ -88,7 +88,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
             product.validate();
         }
 
-        // We now check for matching ID AND matching customizations, to merge quantities them as requested.
+        // Logic: If product and text are same, increase quantity.
         for (TicketLine<T> currentLine : lines) {
             if (currentLine.getProduct().getId() == product.getId()) {
                 // Check if customizations also match
@@ -109,7 +109,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
             }
         }
 
-        // We respect the E1 rule of max 100 items per ticket.
+        // Limit: Max 100 lines (E1).
         if (lines.size() >= MAX_PRODUCT_LINES) {
             throw new IllegalStateException("Error: Ticket cannot have more than " + MAX_PRODUCT_LINES + " product lines.");
         }
@@ -124,7 +124,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
     }
 
     public boolean removeProduct(int productId) {
-        // Check for closed tickets as they are required to be immutable after closing.
+        // Rule: Cannot modify closed ticket.
         if (this.state == TicketState.CLOSED) {
             throw new IllegalStateException("Error: Cannot remove products from a closed ticket.");
         }
@@ -142,7 +142,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
         double total = 0.0;
 
         for (TicketLine<T> line : lines) {
-            // The total is based on getLineTotal(), which already includes the customization surcharges.
+            // Calculate total price of all lines.
             total += line.getLineTotal();
         }
         return total;

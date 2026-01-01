@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-// Repository class for managing Ticket entities.
+// [Class] Manages the list of Tickets.
 public class TicketRepository implements Serializable {
     private final List<Ticket<?>> tickets;
 

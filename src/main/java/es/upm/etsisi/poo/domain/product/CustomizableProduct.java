@@ -3,7 +3,7 @@ package es.upm.etsisi.poo.domain.product;
 import java.util.List;
 import java.util.ArrayList;
 
-// Represents a product that can be customized with texts, as defined in E2
+// [Class] Product type: Customizable.
 public class CustomizableProduct extends Product {
     private final int maxCustomizableTexts;
     private final List<String> customTexts;

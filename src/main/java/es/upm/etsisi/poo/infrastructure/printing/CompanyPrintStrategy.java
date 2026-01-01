@@ -6,7 +6,7 @@ import es.upm.etsisi.poo.domain.ticket.TicketLine;
 import es.upm.etsisi.poo.domain.product.BookableProduct;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
 
-// Implements the print strategy for company tickets as required by E3.
+// [Class] Prints ticket in company format.
 public class CompanyPrintStrategy implements PrintStrategy {
 
     private static final double DISCOUNT_RATE_PER_SERVICE = 0.15;

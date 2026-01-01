@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Collections;
 import java.time.LocalDateTime;
 
-// Represents a service in the system as defined by E3.
+// [Class] Product type: Service.
 public class Service extends Product {
     private final ServiceType serviceType;
     private final LocalDateTime expirationDate;

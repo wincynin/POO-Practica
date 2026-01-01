@@ -17,7 +17,7 @@ public class App {
 
         Scanner inputScanner;
 
-        // E1 Requirement: Check if a file path is provided as an argument.
+        // Check if we need to read from a file.
         if (args.length > 0) {
             inputScanner = new Scanner(new File(args[0]));
         } else {
@@ -27,36 +27,34 @@ public class App {
         System.out.println("Welcome to the ticket module App.");
         System.out.println("Ticket module. Type 'help' to see commands.");
 
-        // Create the command handler.
+        // Create the main controller.
         CommandHandler handler = new CommandHandler(store);
 
         boolean running = true;
         while (running) {
             String inputLine;
             if (args.length > 0) {
-                // Reading from file
+                // Logic: Read commands from file.
                 if (inputScanner.hasNextLine()) {
                     inputLine = inputScanner.nextLine().trim();
                     System.out.println("tUPM> " + inputLine);
                 } else {
-                    // End of file reached
                     running = false;
                     continue;
                 }
             } else {
-                // Interactive mode
+                // Logic: Read commands from keyboard.
                 System.out.print("tUPM> ");
                 inputLine = inputScanner.nextLine().trim();
             }
 
             if (inputLine.equalsIgnoreCase("exit")) {
-                // Input of "exit" triggers application closure.
+                // Exit the loop when user types 'exit'.
                 System.out.println("Closing application.");
                 persistence.save(store); // Save state
                 System.out.println("Goodbye!");
                 running = false;
             } else if (!inputLine.isEmpty()) {
-                // Pass the raw command string to the handler to be processed
                 handler.handle(inputLine);
             }
         }

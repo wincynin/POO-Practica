@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+// [Class] Manages the list of Cashiers.
 public class CashierRepository implements Serializable {
     private final List<Cashier> cashiers;
 

@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 import es.upm.etsisi.poo.application.Store;
 
-// This class acts as the Controller. It parses user input and calls Store methods.
+// [Controller] Reads input and calls Store methods.
 public class CommandHandler {
     private final Map<String, Command> commands;
 
@@ -21,7 +21,6 @@ public class CommandHandler {
             return;
         }
 
-        // Take first word as command, and the second word (if any) as the argument.
         String[] parts = input.split(" ", 2);
         String commandName = parts[0];
         String[] args = parts.length > 1 ? new String[]{parts[1]} : new String[0];
@@ -40,12 +39,11 @@ public class CommandHandler {
                 }
             }
         } catch (IllegalArgumentException | IllegalStateException e) {
+            // Catch errors (like invalid ID or state).
             System.out.println(e.getMessage());
         }
-        // IllegalStateException catches the exception thrown by EventProduct validation and Ticket state checks
     }
 
-    // Prints all available commands
     private void printHelp() {
         System.out.println("Commands:");
         System.out.println("  prod add \"<name>\" <category> <price> [<maxPers>]");

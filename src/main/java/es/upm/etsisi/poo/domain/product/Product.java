@@ -2,12 +2,13 @@ package es.upm.etsisi.poo.domain.product;
 
 import java.util.List;
 
-// Represents a concept of product used for the system.
+// [Abstract Class] Base class for all products.
 public abstract class Product implements java.io.Serializable {
 
     private int id;
     private String name;
     private double price;
+    // Static counter for IDs.
     private static int nextId = 1;
     private ProductCategory category;
     private static final double MIN_PRICE = -0.001;

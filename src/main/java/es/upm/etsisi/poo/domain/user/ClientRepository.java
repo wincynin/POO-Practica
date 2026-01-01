@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
 
-// Repository class for managing Client entities.
+// [Class] Manages the list of Clients.
 public class ClientRepository implements Serializable {
     private final List<Client> clients;
 

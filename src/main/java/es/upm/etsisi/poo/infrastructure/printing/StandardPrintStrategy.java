@@ -4,7 +4,7 @@ import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.ticket.TicketLine;
 
-// Implements the standard print strategy for tickets as required by E3.
+// [Class] Prints ticket in standard format.
 public class StandardPrintStrategy implements PrintStrategy {
 
     @Override

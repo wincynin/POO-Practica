@@ -2,6 +2,7 @@ package es.upm.etsisi.poo.domain.user;
 
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
+// [Abstract Class] Base class for Clients.
 public abstract class Client extends User implements Comparable<Client> {
 
     public Client(String id, String name, String email) {

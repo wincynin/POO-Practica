@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-// Represents the store, acts as the model, holding all the application's data as per E2 requirements.
+// [Model] Central class that manages all data.
 public class Store implements java.io.Serializable {
     private final Catalog catalog;
     private final TicketRepository ticketRepository;
@@ -34,7 +34,7 @@ public class Store implements java.io.Serializable {
     }
 
     public void addClient(Client client) throws IllegalArgumentException {
-        // If findClientById doesn't return null, the client exists.
+        // Check: Client ID must be unique.
         clientRepository.add(client);
     }
 
@@ -47,11 +47,11 @@ public class Store implements java.io.Serializable {
     }
 
     public void addCashier(Cashier cashier) throws IllegalArgumentException {
-        // If findCashierByID doesn't return null, the cashier exists.
+        // Check: Cashier ID must be unique.
         cashierRepository.add(cashier);
     }
 
-    // Overloaded method to handle automatic ID generation for cashiers, this one is called by the handler.
+    // Helper: Generate an ID if the user didn't provide one.
     public void addCashier(String id, String name, String email) {
         String cashierId = id;
         if (cashierId == null || cashierId.isEmpty()) {
@@ -77,12 +77,10 @@ public class Store implements java.io.Serializable {
     }
 
     public Ticket<?> createTicket(String id, String cashierId, String userId, char flag) {
-        // Find the associated cashier.
         Cashier cashier = findCashierById(cashierId);
         if (cashier == null) {
             throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
         }
-        // Find the associated client.
         Client client = findClientById(userId);
         if (client == null) {
             throw new IllegalArgumentException("Error: Client with ID " + userId + " not found.");
@@ -109,7 +107,7 @@ public class Store implements java.io.Serializable {
             throw new IllegalStateException("Error: Unknown client type.");
         }
         
-        // Store establishes the relationships
+        // Link the ticket to the cashier and client.
         ticketRepository.add(newTicket);
         cashier.addTicket(newTicket);
         client.addTicket(newTicket);
@@ -119,14 +117,13 @@ public class Store implements java.io.Serializable {
 
     public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount,
             List<String> customTexts) {
-        // Find the ticket.
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
 
         Cashier cashier = findCashierById(cashierId);
-        // E2 requirement: only the cashier who created the ticket can modify it.
+        // Rule: Only the creator can modify the ticket.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
@@ -153,7 +150,6 @@ public class Store implements java.io.Serializable {
     }
 
     public void removeProductFromTicket(String ticketId, String cashierId, int prodId) {
-        // Find the ticket.
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new IllegalArgumentException("Error: Ticket not found.");
@@ -161,7 +157,7 @@ public class Store implements java.io.Serializable {
 
         Cashier cashier = findCashierById(cashierId);
         
-        // E2 requirement: only the cashier who created the ticket can modify it.
+        // Rule: Only the creator can remove items.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
         }
@@ -171,14 +167,13 @@ public class Store implements java.io.Serializable {
     }
 
     public String printTicket(String ticketId, String cashierId) {
-        // Find the ticket.
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new IllegalArgumentException("Error: Ticket not found.");
         }
         
         Cashier cashier = findCashierById(cashierId);
-        // E2 requirement: only the cashier who created the ticket can print it.
+        // Rule: Only the creator can print.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new IllegalArgumentException("Error: Only the creating cashier can print this ticket.");
         }
@@ -186,7 +181,7 @@ public class Store implements java.io.Serializable {
         return ticket.print();
     }
 
-    // Helper to find which client owns a specific ticket
+    // Helper: Find which client owns a ticket.
     public String findClientIdByTicket(Ticket<?> ticket) {
         for (Client client : clientRepository.getAll()) {
             if (client.hasTicket(ticket.getId())) {
@@ -196,7 +191,7 @@ public class Store implements java.io.Serializable {
         return "Unknown";
     }
 
-    // Helper to find which cashier owns a specific ticket
+    // Helper: Find which cashier owns a ticket.
     public String findCashierIdByTicket(Ticket<?> ticket) {
         for (Cashier cashier : cashierRepository.getAll()) {
             if (cashier.hasTicket(ticket.getId())) {
@@ -215,7 +210,7 @@ public class Store implements java.io.Serializable {
         return ticketRepository.getAll();
     }
     
-    // Needed for CommandHandler to list tickets for a cashier
+    // Helper: Get all tickets for a specific cashier.
     public List<Ticket<?>> getTicketsByCashierId(String cashierId) {
         Cashier cashier = findCashierById(cashierId);
         if(cashier != null) {
@@ -238,7 +233,7 @@ public class Store implements java.io.Serializable {
         return catalog;
     }
 
-    // Delegate methods to keep Store as the main interface for product management
+    // Catalog methods (Delegation).
     public List<Product> getProducts() {
         return catalog.getProducts();
     }

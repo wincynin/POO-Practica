@@ -6,6 +6,7 @@ import es.upm.etsisi.poo.domain.product.*;
 import es.upm.etsisi.poo.application.Store;
 import java.time.format.DateTimeFormatter;
 
+// [Command] Product CRUD operations.
 class ProductCommand extends AbstractCommand {
 
     public ProductCommand(Store store) {
@@ -87,9 +88,7 @@ class ProductCommand extends AbstractCommand {
             case "addMeeting":
                 Integer eventId = null;
                 try {
-                    // Try to parse first arg as ID
                     eventId = Integer.valueOf(argList.get(0));
-                    // If successful, it's an ID, so remove it from list
                     argList.remove(0);
                 } catch (NumberFormatException e) {
                     // It's a name, not an ID.

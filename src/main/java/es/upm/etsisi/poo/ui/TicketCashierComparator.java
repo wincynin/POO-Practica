@@ -21,7 +21,7 @@ public class TicketCashierComparator implements Comparator<Ticket<?>> {
         if (cashierCompare != 0) {
             return cashierCompare;
         }
-        // If cashier IDs are the same, sort by ticket ID as a secondary criterion.
+        // If Cashier is same, sort by Ticket ID.
         return t1.getId().compareToIgnoreCase(t2.getId());
     }
 }

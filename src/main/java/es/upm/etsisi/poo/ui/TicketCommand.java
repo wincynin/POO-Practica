@@ -31,13 +31,13 @@ class TicketCommand extends AbstractCommand {
                 String clientId;
                 char flag = 'p'; // Default flag
 
-                // Check for flag at the end
+                // Check for print flags (-c, -s).
                 if (argList.size() > 2 && argList.get(argList.size() - 1).startsWith("-")) {
                     flag = argList.get(argList.size() - 1).charAt(1);
                     argList.remove(argList.size() - 1);
                 }
 
-                // E2: Check if optional Ticket ID is provided
+                // Check if user provided a Ticket ID.
                 if (argList.size() > 2) {
                     ticketId = argList.get(0);
                     argList.remove(0);
@@ -54,14 +54,11 @@ class TicketCommand extends AbstractCommand {
                 int prodId = Integer.parseInt(argList.get(2));
                 int amount = Integer.parseInt(argList.get(3));
 
-                // E2: Parse optional customization flags
+                // Check for custom text (--p).
                 @SuppressWarnings("Convert2Diamond")
                 List<String> customTexts = new ArrayList<String>();
-                // Iterate through the remaining arguments to find custom text flags.
                 for (int i = 4; i < argList.size(); i++) {
-                    // Check if it STARTS with --p
                     if (argList.get(i).startsWith("--p")) {
-                        // Extract the text after --p and add it to the customTexts list
                         String text = argList.get(i).substring(3);
                         if (!text.isEmpty()) {
                             customTexts.add(text);
@@ -96,12 +93,12 @@ class TicketCommand extends AbstractCommand {
 
             case "list":
                 List<Ticket<?>> allTickets = store.getTickets();
-                // E2 Requirement: Sort by cashier ID, then by ticket ID
+                // Sorting: Cashier Name first, then Ticket ID.
                 allTickets.sort(new TicketCashierComparator(store));
 
                 System.out.println("Tickets:");
                 for (Ticket<?> ticket : allTickets) {
-                    // Find owners for printing
+                    // Find names for display.
                     String cId = store.findCashierIdByTicket(ticket);
                     String uId = store.findClientIdByTicket(ticket);
                     

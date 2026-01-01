@@ -5,7 +5,7 @@ import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.ticket.TicketLine;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
 
-// Implements the service print strategy for tickets containing only services.
+// [Class] Prints ticket in service format.
 public class ServicePrintStrategy implements PrintStrategy {
     @Override
     public String formatTicket(Ticket<?> ticket) {
