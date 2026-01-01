@@ -10,7 +10,7 @@ import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 
 public abstract class Ticket<T extends Product> implements Serializable, Comparable<Ticket<?>> {
-    private String id;
+    private final String id;
     private TicketState state;
     private final List<TicketLine<T>> lines;
     private PrintStrategy printStrategy;
@@ -31,6 +31,10 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
 
     public void setPrintStrategy(PrintStrategy printStrategy) {
         this.printStrategy = printStrategy;
+    }
+
+    public PrintStrategy getPrintStrategy() {
+        return printStrategy;
     }
 
     public void addProduct(T product, int quantity, List<String> customTexts) {
@@ -101,6 +105,14 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
 
     public List<TicketLine<T>> getLines() {
         return lines;
+    }
+
+    public double getTotalPrice() {
+        double total = 0.0;
+        for (TicketLine<T> line : lines) {
+            total += line.getLineTotal();
+        }
+        return total;
     }
 
     @Override
