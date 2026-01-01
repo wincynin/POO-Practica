@@ -2,6 +2,7 @@ package es.upm.etsisi.poo.domain.ticket;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,7 +86,15 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
             throw new TicketRuleViolationException("Cannot remove items from CLOSED ticket.");
         }
 
-        boolean removed = lines.removeIf(line -> line.getProduct().getId().equals(productId));
+        boolean removed = false;
+        Iterator<TicketLine<T>> iterator = lines.iterator();
+        while (iterator.hasNext()) {
+            TicketLine<T> line = iterator.next();
+            if (line.getProduct().getId().equals(productId)) {
+                iterator.remove();
+                removed = true;
+            }
+        }
         if (lines.isEmpty()) {
             this.state = TicketState.EMPTY;
         }

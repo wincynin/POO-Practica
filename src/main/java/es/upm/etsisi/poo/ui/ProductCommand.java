@@ -166,7 +166,13 @@ class ProductCommand extends AbstractCommand {
             return true;
         } catch (NumberFormatException e) {
             if (s.endsWith("S") && s.length() > 1) {
-                return s.substring(0, s.length() - 1).chars().allMatch(Character::isDigit);
+                String prefix = s.substring(0, s.length() - 1);
+                for (int i = 0; i < prefix.length(); i++) {
+                    if (!Character.isDigit(prefix.charAt(i))) {
+                        return false;
+                    }
+                }
+                return true;
             }
         }
         return false;

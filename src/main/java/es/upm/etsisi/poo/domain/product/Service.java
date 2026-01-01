@@ -49,4 +49,9 @@ public class Service extends Product {
     public void validate() {
         // No specific validation for generic services.
     }
+
+    @Override
+    public boolean isService() {
+        return true;
+    }
 }

@@ -45,16 +45,16 @@ public abstract class Product implements java.io.Serializable {
     }
 
     private void updateCounters(String id) {
-        try {
-            int val = Integer.parseInt(id);
-            nextId = Math.max(nextId, val + 1);
-        } catch (NumberFormatException e) {
-            if (id != null && id.endsWith("S")) {
-                try {
-                    int val = Integer.parseInt(id.substring(0, id.length() - 1));
-                    nextServiceId = Math.max(nextServiceId, val + 1);
-                } catch (NumberFormatException ignored) {}
-            }
+        if (isService()) {
+            try {
+                int val = Integer.parseInt(id.substring(0, id.length() - 1));
+                nextServiceId = Math.max(nextServiceId, val + 1);
+            } catch (NumberFormatException ignored) {}
+        } else {
+            try {
+                int val = Integer.parseInt(id);
+                nextId = Math.max(nextId, val + 1);
+            } catch (NumberFormatException ignored) {}
         }
     }
 
@@ -107,6 +107,10 @@ public abstract class Product implements java.io.Serializable {
     public abstract double getLineTotal(int quantity, List<String> customTexts);
     public abstract boolean isBookable();
     public abstract void validate();
+    
+    public boolean isService() {
+        return false;
+    }
 
     @Override
     public String toString() {

@@ -129,8 +129,7 @@ public class Store implements java.io.Serializable {
         ticket.validateProduct(product);
 
         // Unchecked cast is safe because validation passed.
-        @SuppressWarnings("unchecked")
-        Ticket<Product> t = (Ticket<Product>) ticket;
+        Ticket t = ticket;
         t.addProduct(product, amount, customTexts);
     }
 
@@ -209,16 +208,16 @@ public class Store implements java.io.Serializable {
         int maxServiceId = 0;
         for (es.upm.etsisi.poo.domain.product.Product p : getProducts()) {
             String pid = p.getId();
-            try {
-                int val = Integer.parseInt(pid);
-                if (val > maxProdId) maxProdId = val;
-            } catch (NumberFormatException e) {
-                if (pid.endsWith("S")) {
-                    try {
-                        int val = Integer.parseInt(pid.substring(0, pid.length() - 1));
-                        if (val > maxServiceId) maxServiceId = val;
-                    } catch (NumberFormatException ignored) {}
-                }
+            if (p.isService()) {
+                try {
+                    int val = Integer.parseInt(pid.substring(0, pid.length() - 1));
+                    if (val > maxServiceId) maxServiceId = val;
+                } catch (NumberFormatException ignored) {}
+            } else {
+                try {
+                    int val = Integer.parseInt(pid);
+                    if (val > maxProdId) maxProdId = val;
+                } catch (NumberFormatException ignored) {}
             }
         }
         es.upm.etsisi.poo.domain.product.Product.updateNextId(maxProdId);

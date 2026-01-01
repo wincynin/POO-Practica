@@ -1,5 +1,7 @@
 package es.upm.etsisi.poo.domain.ticket;
 
+import java.time.LocalDateTime;
+
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.product.Service;
@@ -99,6 +101,13 @@ public class CompanyTicket extends Ticket<Product> {
 
     @Override
     public void validateProduct(Product p) throws TicketRuleViolationException {
+        // E3: Service Usage Limit - Check expiration date.
+        if (p instanceof Service) {
+            Service s = (Service) p;
+            if (s.getExpirationDate().isBefore(LocalDateTime.now())) {
+                throw new TicketRuleViolationException("Error: Service " + s.getName() + " has expired.");
+            }
+        }
         if (getPrintStrategy() instanceof ServicePrintStrategy) {
             if (!(p instanceof Service)) {
                 throw new TicketRuleViolationException("Error: Service-only tickets cannot contain StandardProducts.");
@@ -108,5 +117,26 @@ public class CompanyTicket extends Ticket<Product> {
                 throw new TicketRuleViolationException("Error: Product-only tickets cannot contain Services.");
             }
         }
+    }
+
+    @Override
+    public double getTotalPrice() {
+        double total = 0.0;
+        // E3: Mixed Ticket Logic - 15% discount on products for EACH service.
+        boolean isMixed = (productCount > 0 && serviceCount > 0);
+        double discount = 0.0;
+
+        if (isMixed) {
+            discount = Math.min(0.15 * serviceCount, 1.0); // Cap at 100%
+        }
+
+        for (TicketLine<Product> line : getLines()) {
+            double lineTotal = line.getLineTotal();
+            if (isMixed && line.getProduct() instanceof StandardProduct) {
+                lineTotal *= (1.0 - discount);
+            }
+            total += lineTotal;
+        }
+        return total;
     }
 }
