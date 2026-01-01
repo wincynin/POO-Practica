@@ -123,20 +123,21 @@ public class CompanyTicket extends Ticket<Product> {
     public double getTotalPrice() {
         double productTotal = 0.0;
         double serviceTotal = 0.0;
-        int currentServiceCount = 0;
+        int serviceCount = 0;
 
         for (TicketLine<Product> line : getLines()) {
             Product p = line.getProduct();
-            if (p.isService()) {
+            // Use instanceof to detect Service
+            if (p instanceof Service) {
                 serviceTotal += line.getLineTotal();
-                currentServiceCount += line.getQuantity();
+                serviceCount += line.getQuantity();
             } else {
                 productTotal += line.getLineTotal();
             }
         }
 
         // E3 Rule: 15% discount on PRODUCTS for EACH service.
-        double discountFactor = 0.15 * currentServiceCount;
+        double discountFactor = 0.15 * serviceCount;
         if (discountFactor > 1.0) discountFactor = 1.0; // Cap at 100%
 
         return serviceTotal + (productTotal * (1.0 - discountFactor));

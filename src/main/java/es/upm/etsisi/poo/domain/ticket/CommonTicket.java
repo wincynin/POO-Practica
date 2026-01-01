@@ -28,25 +28,27 @@ public class CommonTicket extends Ticket<StandardProduct> {
     @Override
     public double getTotalPrice() {
         double total = 0.0;
+        // Map to count items per category
         Map<ProductCategory, Integer> categoryCounts = new HashMap<>();
 
-        // E1: Count items per category to determine eligibility for discount.
+        // Pass 1: Count quantities per category
         for (TicketLine<StandardProduct> line : getLines()) {
             StandardProduct p = line.getProduct();
             if (p.getCategory() != null) {
                 ProductCategory cat = p.getCategory();
-                int quantity = line.getQuantity();
                 if (categoryCounts.containsKey(cat)) {
-                    categoryCounts.put(cat, categoryCounts.get(cat) + quantity);
+                    categoryCounts.put(cat, categoryCounts.get(cat) + line.getQuantity());
                 } else {
-                    categoryCounts.put(cat, quantity);
+                    categoryCounts.put(cat, line.getQuantity());
                 }
             }
         }
 
+        // Pass 2: Calculate price with discounts
         for (TicketLine<StandardProduct> line : getLines()) {
             double lineTotal = line.getLineTotal();
             StandardProduct p = line.getProduct();
+            // APPLY DISCOUNT ONLY IF COUNT >= 2
             if (p.getCategory() != null && categoryCounts.containsKey(p.getCategory()) && categoryCounts.get(p.getCategory()) >= 2) {
                 lineTotal *= (1.0 - p.getCategory().getDiscount());
             }
