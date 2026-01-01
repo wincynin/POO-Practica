@@ -32,10 +32,4 @@ public class TicketRepository implements Serializable {
     public void remove(Ticket<?> ticket) {
         tickets.remove(ticket);
     }
-
-    public List<Ticket<?>> findAllByCashierId(String cashierId) {
-        return tickets.stream()
-                .filter(ticket -> ticket.getCashier() != null && ticket.getCashier().getId().equals(cashierId))
-                .collect(Collectors.toList());
-    }
 }

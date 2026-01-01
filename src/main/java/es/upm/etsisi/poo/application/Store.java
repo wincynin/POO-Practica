@@ -217,7 +217,11 @@ public class Store implements java.io.Serializable {
     
     // Needed for CommandHandler to list tickets for a cashier
     public List<Ticket<?>> getTicketsByCashierId(String cashierId) {
-        return ticketRepository.findAllByCashierId(cashierId);
+        Cashier cashier = findCashierById(cashierId);
+        if(cashier != null) {
+            return cashier.getTickets();
+        }
+        return new ArrayList<>();
     }
 
     public void refreshCounters() {
