@@ -41,6 +41,9 @@ public class CommandHandler {
         } catch (es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException e) {
             // Catch errors (like invalid ID or state).
             System.out.println("ERROR: " + e.getMessage());
+        } catch (Exception e) {
+            // Catch all other unexpected errors.
+            System.out.println("General Error: " + e.getMessage());
         }
     }
 

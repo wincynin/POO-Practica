@@ -9,13 +9,13 @@ public class EventProduct extends BookableProduct {
 
     private final EventType type;
 
-    public EventProduct(String name, double price, LocalDateTime expirationDate, int maxParticipants, EventType type) {
+    public EventProduct(String name, double price, LocalDateTime expirationDate, int maxParticipants, EventType type) throws InvalidProductDataException {
         super(name, price, expirationDate, maxParticipants);
         this.type = type;
     }
 
     // Constructor that accepts ID
-    public EventProduct(int id, String name, double price, LocalDateTime expirationDate, int maxParticipants, EventType type) {
+    public EventProduct(int id, String name, double price, LocalDateTime expirationDate, int maxParticipants, EventType type) throws InvalidProductDataException {
         super(id, name, price, expirationDate, maxParticipants);
         this.type = type;
     }

@@ -29,7 +29,7 @@ public class CompanyPrintStrategy implements PrintStrategy {
             }
         }
 
-        double discountRate = Math.min(numServices * DISCOUNT_RATE_PER_SERVICE, 1.0);
+        double discountRate = Math.min(numServices * MIXED_TICKET_DISCOUNT_RATE, 1.0);
         double totalDiscount = standardProductsTotal * discountRate;
         double finalPrice = standardProductsTotal - totalDiscount;
         

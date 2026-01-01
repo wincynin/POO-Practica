@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.product;
 
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import java.util.List;
 import java.util.Collections;
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ public class Service extends Product {
     private final ServiceType serviceType;
     private final LocalDateTime expirationDate;
 
-    public Service(LocalDateTime expirationDate, ServiceType serviceType) {
+    public Service(LocalDateTime expirationDate, ServiceType serviceType) throws InvalidProductDataException {
         super(String.format("Service-%s", serviceType.name()), null, 0.0); // Price is 0.0
         this.expirationDate = expirationDate;
         this.serviceType = serviceType;

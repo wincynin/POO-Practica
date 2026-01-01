@@ -54,7 +54,7 @@ public class Store implements java.io.Serializable {
     }
 
     // Helper: Generate an ID if the user didn't provide one.
-    public void addCashier(String id, String name, String email) {
+    public void addCashier(String id, String name, String email) throws UPMStoreDomainException {
         String cashierId = id;
         if (cashierId == null || cashierId.isEmpty()) {
             cashierId = Cashier.generateCashierId(this.cashierRepository.getAll());

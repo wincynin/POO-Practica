@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.product;
 
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -10,14 +11,14 @@ public class CustomizableProduct extends Product {
     private static final double CUSTOM_SURCHARGE = 0.1;     //E2 Requirement: 10% surcharge per custom text
 
     @SuppressWarnings("Convert2Diamond")
-    public CustomizableProduct(String name, ProductCategory category, double price, int maxCustomizableTexts) {
+    public CustomizableProduct(String name, ProductCategory category, double price, int maxCustomizableTexts) throws InvalidProductDataException {
         super(name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;
         this.customTexts = new ArrayList<String>();
     }
 
     @SuppressWarnings("Convert2Diamond")
-    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) {
+    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) throws InvalidProductDataException {
         super(id, name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;
         this.customTexts = new ArrayList<String>();
