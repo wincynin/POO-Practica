@@ -7,6 +7,7 @@ import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.ticket.CommonTicket;
 import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
+import es.upm.etsisi.poo.domain.ticket.TicketRepository;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -15,17 +16,17 @@ import java.util.ArrayList;
 // Represents the store, acts as the model, holding all the application's data as per E2 requirements.
 public class Store implements java.io.Serializable {
     private final Catalog catalog;
-    private final List<Ticket<?>> tickets;
-    private final List<Client> clients;
-    private final List<Cashier> cashiers;
+    private final TicketRepository ticketRepository;
+    private final ClientRepository clientRepository;
+    private final CashierRepository cashierRepository;
     
 
     @SuppressWarnings("Convert2Diamond")
     public Store() {
         this.catalog = new Catalog();
-        this.tickets = new ArrayList<Ticket<?>>();
-        this.clients = new ArrayList<Client>();
-        this.cashiers = new ArrayList<Cashier>();
+        this.ticketRepository = new TicketRepository();
+        this.clientRepository = new ClientRepository();
+        this.cashierRepository = new CashierRepository();
     }
 
     public void addProduct(Product product) {
@@ -34,52 +35,33 @@ public class Store implements java.io.Serializable {
 
     public void addClient(Client client) throws IllegalArgumentException {
         // If findClientById doesn't return null, the client exists.
-        if (findClientById(client.getId()) != null) {
-            throw new IllegalArgumentException("Error: A client with that ID already exists.");
-        }
-        this.clients.add(client);
+        clientRepository.add(client);
     }
 
     public Client findClientById(String id) {
-        for (Client client : clients) {
-            if (client.getId().equals(id)) {
-                return client;
-            }
-        }
-        return null;
+        return clientRepository.findById(id);
     }
 
     public void removeClient(String id) {
-        Client clientToRemove = findClientById(id);
-        if (clientToRemove != null) {
-            this.clients.remove(clientToRemove);
-        }
+        clientRepository.remove(id);
     }
 
     public void addCashier(Cashier cashier) throws IllegalArgumentException {
         // If findCashierByID doesn't return null, the cashier exists.
-        if (findCashierById(cashier.getId()) != null) {
-            throw new IllegalArgumentException("Error: A cashier with that ID already exists.");
-        }
-        this.cashiers.add(cashier);
+        cashierRepository.add(cashier);
     }
 
     // Overloaded method to handle automatic ID generation for cashiers, this one is called by the handler.
     public void addCashier(String id, String name, String email) {
         String cashierId = id;
         if (cashierId == null || cashierId.isEmpty()) {
-            cashierId = Cashier.generateCashierId(this.cashiers);
+            cashierId = Cashier.generateCashierId(this.cashierRepository.getAll());
         }
         addCashier(new Cashier(cashierId, name, email));
     }
 
     public Cashier findCashierById(String id) {
-        for (Cashier cashier : cashiers) {
-            if (cashier.getId().equals(id)) {
-                return cashier;
-            }
-        }
-        return null;
+        return cashierRepository.findById(id);
     }
 
     public void removeCashier(String id) {
@@ -87,8 +69,10 @@ public class Store implements java.io.Serializable {
         if (cashierToRemove != null) {
             // Remove tickets associated with the cashier.
             List<Ticket<?>> ticketsToRemove = cashierToRemove.getTickets();
-            tickets.removeAll(ticketsToRemove);
-            this.cashiers.remove(cashierToRemove);
+            for(Ticket<?> ticket : ticketsToRemove) {
+                ticketRepository.remove(ticket);
+            }
+            this.cashierRepository.remove(id);
         }
     }
 
@@ -126,7 +110,7 @@ public class Store implements java.io.Serializable {
         }
         
         // Store establishes the relationships
-        tickets.add(newTicket);
+        ticketRepository.add(newTicket);
         cashier.addTicket(newTicket);
         client.addTicket(newTicket);
 
@@ -204,7 +188,7 @@ public class Store implements java.io.Serializable {
 
     // Helper to find which client owns a specific ticket
     public String findClientIdByTicket(Ticket<?> ticket) {
-        for (Client client : clients) {
+        for (Client client : clientRepository.getAll()) {
             if (client.hasTicket(ticket.getId())) {
                 return client.getId();
             }
@@ -214,7 +198,7 @@ public class Store implements java.io.Serializable {
 
     // Helper to find which cashier owns a specific ticket
     public String findCashierIdByTicket(Ticket<?> ticket) {
-        for (Cashier cashier : cashiers) {
+        for (Cashier cashier : cashierRepository.getAll()) {
             if (cashier.hasTicket(ticket.getId())) {
                 return cashier.getId();
             }
@@ -223,26 +207,17 @@ public class Store implements java.io.Serializable {
     }
 
     public Ticket<?> getTicket(String ticketId) {
-        for (Ticket<?> ticket : tickets) {
-            if (ticket.getId().equals(ticketId)) {
-                return ticket;
-            }
-        }
-        return null;
+        return ticketRepository.findById(ticketId);
     }
 
     @SuppressWarnings("Convert2Diamond")
     public List<Ticket<?>> getTickets() {
-        return new ArrayList<Ticket<?>>(tickets);
+        return ticketRepository.getAll();
     }
     
     // Needed for CommandHandler to list tickets for a cashier
     public List<Ticket<?>> getTicketsByCashierId(String cashierId) {
-        Cashier cashier = findCashierById(cashierId);
-        if(cashier != null) {
-            return cashier.getTickets();
-        }
-        return new ArrayList<>();
+        return ticketRepository.findAllByCashierId(cashierId);
     }
 
     public void refreshCounters() {
@@ -279,11 +254,11 @@ public class Store implements java.io.Serializable {
 
     @SuppressWarnings("Convert2Diamond")
     public List<Client> getClients() {
-        return new ArrayList<Client>(clients);
+        return clientRepository.getAll();
     }
 
     @SuppressWarnings("Convert2Diamond")
     public List<Cashier> getCashiers() {
-        return new ArrayList<Cashier>(cashiers);
+        return cashierRepository.getAll();
     }
 }
