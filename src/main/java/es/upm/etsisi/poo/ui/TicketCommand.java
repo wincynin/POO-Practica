@@ -55,7 +55,7 @@ class TicketCommand extends AbstractCommand {
             case "add":
                 String addTicketId = argList.get(0);
                 String addCashierId = argList.get(1);
-                int prodId = Integer.parseInt(argList.get(2));
+                String prodId = argList.get(2);
                 int amount = Integer.parseInt(argList.get(3));
 
                 // Check for custom text (--p).
@@ -79,7 +79,7 @@ class TicketCommand extends AbstractCommand {
                 }
                 String removeTicketId = argList.get(0);
                 String removeCashierId = argList.get(1);
-                int removeProdId = Integer.parseInt(argList.get(2));
+                String removeProdId = argList.get(2);
 
                 store.removeProductFromTicket(removeTicketId, removeCashierId, removeProdId);
                 System.out.println("ticket remove: ok");

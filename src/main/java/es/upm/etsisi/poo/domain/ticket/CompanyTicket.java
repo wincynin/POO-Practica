@@ -33,10 +33,10 @@ public class CompanyTicket extends Ticket<Product> {
     }
 
     @Override
-    public boolean removeProduct(int productId) throws TicketRuleViolationException {
+    public boolean removeProduct(String productId) throws TicketRuleViolationException {
         Product productToRemove = null;
         for (TicketLine<Product> line : getLines()) {
-            if (line.getProduct().getId() == productId) {
+            if (line.getProduct().getId().equals(productId)) {
                 productToRemove = line.getProduct();
                 break;
             }
@@ -92,5 +92,11 @@ public class CompanyTicket extends Ticket<Product> {
     @Override
     public boolean accepts(es.upm.etsisi.poo.domain.product.Product p) {
         return true;
+    }
+
+    @Override
+    public void validateProductAddition(Product p) throws TicketRuleViolationException {
+        // Company tickets accept all products (Standard and Service).
+        // No specific validation needed for now.
     }
 }

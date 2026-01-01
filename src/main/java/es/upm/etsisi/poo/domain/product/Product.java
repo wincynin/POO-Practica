@@ -1,16 +1,18 @@
 package es.upm.etsisi.poo.domain.product;
 
-import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import java.util.List;
+
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
 // [Abstract Class] Base class for all products.
 public abstract class Product implements java.io.Serializable {
 
-    private int id;
+    private String id;
     private String name;
     private double price;
     // Static counter for IDs.
     private static int nextId = 1;
+    protected static int nextServiceId = 1;
     private ProductCategory category;
     private static final double MIN_PRICE = -0.001;
     private static final int MAX_NAME_LENGTH = 100;
@@ -22,13 +24,13 @@ public abstract class Product implements java.io.Serializable {
         if (price <= MIN_PRICE) {
             throw new InvalidProductDataException("Error: Price must be greater than 0.");
         }
-        this.id = nextId++;
+        this.id = String.valueOf(nextId++);
         this.name = name;
         this.category = category;
         this.price = price;
     }
 
-    protected Product(int id, String name, ProductCategory category, double price) throws InvalidProductDataException {
+    protected Product(String id, String name, ProductCategory category, double price) throws InvalidProductDataException {
         if (name == null || name.length() > MAX_NAME_LENGTH) {
             throw new InvalidProductDataException("Error: Name cannot be empty or exceed 100 characters.");
         }
@@ -39,10 +41,24 @@ public abstract class Product implements java.io.Serializable {
         this.name = name;
         this.category = category;
         this.price = price;
-        nextId = Math.max(nextId, id + 1);
+        updateCounters(id);
     }
 
-    public int getId() {
+    private void updateCounters(String id) {
+        try {
+            int val = Integer.parseInt(id);
+            nextId = Math.max(nextId, val + 1);
+        } catch (NumberFormatException e) {
+            if (id != null && id.endsWith("S")) {
+                try {
+                    int val = Integer.parseInt(id.substring(0, id.length() - 1));
+                    nextServiceId = Math.max(nextServiceId, val + 1);
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -82,6 +98,10 @@ public abstract class Product implements java.io.Serializable {
         nextId = Math.max(nextId, id + 1);
     }
 
+    public static void updateNextServiceId(int id) {
+        nextServiceId = Math.max(nextServiceId, id + 1);
+    }
+
     public abstract List<String> getCustomTexts();
     public abstract void addCustomText(List<String> customTexts, String text);
     public abstract double getLineTotal(int quantity, List<String> customTexts);
@@ -90,7 +110,7 @@ public abstract class Product implements java.io.Serializable {
 
     @Override
     public String toString() {
-        return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f}",
+        return String.format("{class: %s, id:%s, name:'%s', category:%s, price:%.1f}",
                 this.getClass().getSimpleName(), id, name, category, price);
     }
 }

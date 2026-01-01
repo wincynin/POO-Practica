@@ -104,27 +104,7 @@ public class Store implements java.io.Serializable {
             throw new ResourceNotFoundException("Client with ID " + userId + " not found.");
         }
         
-        Ticket<?> newTicket;
-        if (client instanceof IndividualClient) {
-            newTicket = new CommonTicket(id);
-        } else if (client instanceof CompanyClient) {
-            newTicket = new CompanyTicket(id);
-            switch (printType) {
-                case SERVICE:
-                    newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy());
-                    break;
-                case COMPANY:
-                    newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy());
-                    break;
-                case STANDARD:
-                default:
-                    newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy());
-                    break;
-            }
-        } else {
-            // Error: Client type must match Ticket type.
-            throw new TicketTypeMismatchException("Error: Unknown client type.");
-        }
+        Ticket<?> newTicket = client.createTicket(id, printType.getFlag());
         
         // Link the ticket to the cashier and client.
         ticketRepository.add(newTicket);
@@ -134,7 +114,7 @@ public class Store implements java.io.Serializable {
         return newTicket;
     }
 
-    public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount,
+    public void addProductToTicket(String ticketId, String cashierId, String prodId, int amount,
             List<String> customTexts) throws UPMStoreDomainException {
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
@@ -152,26 +132,16 @@ public class Store implements java.io.Serializable {
             throw new ResourceNotFoundException("Product with ID " + prodId + " not found.");
         }
 
-        // Check: Ensure product is compatible with ticket.
-        if (!ticket.accepts(product)) {
-            throw new TicketTypeMismatchException("Error: Product type " + product.getClass().getSimpleName() + " not accepted by ticket type " + ticket.getClass().getSimpleName() + ".");
-        }
+        // Refactored: Trust the ticket to validate.
+        ticket.validateProductAddition(product);
 
-        // Now that we know the product is accepted, we can safely cast the ticket and product.
-        if (ticket instanceof CommonTicket) {
-            @SuppressWarnings("unchecked")
-            Ticket<StandardProduct> commonTicket = (Ticket<StandardProduct>) ticket;
-            commonTicket.addProduct((StandardProduct) product, amount, customTexts);
-        } else if (ticket instanceof CompanyTicket) {
-            @SuppressWarnings("unchecked")
-            Ticket<Product> companyTicket = (Ticket<Product>) ticket;
-            companyTicket.addProduct(product, amount, customTexts);
-        } else {
-            throw new UPMStoreDomainException("Error: Unhandled ticket type during product addition.");
-        }
+        // Unchecked cast is safe because validation passed.
+        @SuppressWarnings("unchecked")
+        Ticket<Product> t = (Ticket<Product>) ticket;
+        t.addProduct(product, amount, customTexts);
     }
 
-    public void removeProductFromTicket(String ticketId, String cashierId, int prodId) throws UPMStoreDomainException {
+    public void removeProductFromTicket(String ticketId, String cashierId, String prodId) throws UPMStoreDomainException {
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
             throw new ResourceNotFoundException("Ticket with ID " + ticketId + " not found.");
@@ -243,12 +213,23 @@ public class Store implements java.io.Serializable {
 
     public void refreshCounters() {
         int maxProdId = 0;
+        int maxServiceId = 0;
         for (es.upm.etsisi.poo.domain.product.Product p : getProducts()) {
-            if (p.getId() > maxProdId) {
-                maxProdId = p.getId();
+            String pid = p.getId();
+            try {
+                int val = Integer.parseInt(pid);
+                if (val > maxProdId) maxProdId = val;
+            } catch (NumberFormatException e) {
+                if (pid.endsWith("S")) {
+                    try {
+                        int val = Integer.parseInt(pid.substring(0, pid.length() - 1));
+                        if (val > maxServiceId) maxServiceId = val;
+                    } catch (NumberFormatException ignored) {}
+                }
             }
         }
         es.upm.etsisi.poo.domain.product.Product.updateNextId(maxProdId);
+        es.upm.etsisi.poo.domain.product.Product.updateNextServiceId(maxServiceId);
     }
 
     public Catalog getCatalog() {
@@ -260,15 +241,15 @@ public class Store implements java.io.Serializable {
         return catalog.getProducts();
     }
 
-    public void updateProduct(int productId, String field, String updateValue) throws InvalidProductDataException {
+    public void updateProduct(String productId, String field, String updateValue) throws InvalidProductDataException {
         catalog.updateProduct(productId, field, updateValue);
     }
 
-    public Product removeProduct(int id) {
+    public Product removeProduct(String id) {
         return catalog.removeProduct(id);
     }
 
-    public Product getProduct(int id) {
+    public Product getProduct(String id) {
         return catalog.getProduct(id);
     }
     // End of delegate methods

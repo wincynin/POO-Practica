@@ -45,12 +45,11 @@ class ProductCommand extends AbstractCommand {
                     }
                 }
 
-                Integer id = null;
-                try {
-                    id = Integer.valueOf(argList.get(0));
+                String id = null;
+                // Check if first arg is an ID (numeric or ends with 'S')
+                if (isId(argList.get(0))) {
+                    id = argList.get(0);
                     argList.remove(0);
-                } catch (NumberFormatException e) {
-                    // It's a name, not an ID.
                 }
                 String name;
                 double price;
@@ -87,12 +86,10 @@ class ProductCommand extends AbstractCommand {
                 break;
             case "addFood":
             case "addMeeting":
-                Integer eventId = null;
-                try {
-                    eventId = Integer.valueOf(argList.get(0));
+                String eventId = null;
+                if (isId(argList.get(0))) {
+                    eventId = argList.get(0);
                     argList.remove(0);
-                } catch (NumberFormatException e) {
-                    // It's a name, not an ID.
                 }
 
                 int maxPeople;
@@ -133,7 +130,7 @@ class ProductCommand extends AbstractCommand {
                 break;
             case "update":
                 if (argList.size() >= 3) {
-                    int productId = Integer.parseInt(argList.get(0));
+                    String productId = argList.get(0);
                     String field = argList.get(1);
                     String updateValue = argList.get(2);
                     store.updateProduct(productId, field, updateValue);
@@ -143,7 +140,7 @@ class ProductCommand extends AbstractCommand {
                 break;
             case "remove":
                 if (!argList.isEmpty()) {
-                    int removeId = Integer.parseInt(argList.get(0));
+                    String removeId = argList.get(0);
                     Product removedProduct = store.removeProduct(removeId);
                     System.out.println(removedProduct);
                     System.out.println("prod remove: ok");
@@ -152,5 +149,17 @@ class ProductCommand extends AbstractCommand {
             default:
                 System.out.println("Usage: prod add | addFood | addMeeting | list | update | remove");
         }
+    }
+
+    private boolean isId(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            if (s.endsWith("S") && s.length() > 1) {
+                return s.substring(0, s.length() - 1).chars().allMatch(Character::isDigit);
+            }
+        }
+        return false;
     }
 }

@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.domain.user;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // [Entity] Corporate (NIF-based) Client.
@@ -59,6 +60,24 @@ public class CompanyClient extends Client {
             }
         }
         return false;
+    }
+
+    @Override
+    public Ticket<?> createTicket(String ticketId, char printFlag) {
+        CompanyTicket newTicket = new CompanyTicket(ticketId);
+        switch (printFlag) {
+            case 's':
+                newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy());
+                break;
+            case 'c':
+                newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy());
+                break;
+            case 'p':
+            default:
+                newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy());
+                break;
+        }
+        return newTicket;
     }
 
     @Override

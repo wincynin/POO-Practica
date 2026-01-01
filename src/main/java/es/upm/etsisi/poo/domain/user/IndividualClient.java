@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.domain.user;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
+import es.upm.etsisi.poo.domain.ticket.CommonTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 // [Entity] Individual (DNI-based) Client.
@@ -56,6 +57,11 @@ public class IndividualClient extends Client {
             }
         }
         return false;
+    }
+
+    @Override
+    public Ticket<?> createTicket(String ticketId, char printFlag) {
+        return new CommonTicket(ticketId);
     }
 
     @Override

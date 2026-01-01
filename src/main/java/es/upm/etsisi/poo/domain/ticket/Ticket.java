@@ -47,7 +47,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
         // Rule: Prevent duplicate Bookable items.
         if (product.isBookable()) {
             for (TicketLine<T> line : lines) {
-                if (line.getProduct().getId() == product.getId()) {
+                if (line.getProduct().getId().equals(product.getId())) {
                     throw new TicketRuleViolationException("Bookable products cannot be duplicated in a ticket.");
                 }
             }
@@ -62,7 +62,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
         boolean merged = false;
         if (!product.isBookable()) {
             for (TicketLine<T> line : lines) {
-                if (line.getProduct().getId() == product.getId() && Objects.equals(line.getCustomTexts(), customTexts)) {
+                if (line.getProduct().getId().equals(product.getId()) && Objects.equals(line.getCustomTexts(), customTexts)) {
                     line.setQuantity(line.getQuantity() + quantity);
                     merged = true;
                     break;
@@ -79,13 +79,13 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
         }
     }
 
-    public boolean removeProduct(int productId) {
+    public boolean removeProduct(String productId) {
         // Rule: Cannot remove items from CLOSED ticket.
         if (this.state == TicketState.CLOSED) {
             throw new TicketRuleViolationException("Cannot remove items from CLOSED ticket.");
         }
 
-        boolean removed = lines.removeIf(line -> line.getProduct().getId() == productId);
+        boolean removed = lines.removeIf(line -> line.getProduct().getId().equals(productId));
         if (lines.isEmpty()) {
             this.state = TicketState.EMPTY;
         }
@@ -102,6 +102,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     }
 
     public abstract boolean accepts(Product p);
+    public abstract void validateProductAddition(Product p) throws TicketRuleViolationException;
 
     public List<TicketLine<T>> getLines() {
         return lines;
