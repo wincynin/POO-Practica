@@ -42,13 +42,12 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     }
 
     public void addProduct(T product, int quantity, List<String> customTexts) {
-        // Rule: Cannot modify a CLOSED ticket.
+        // Rule: CLOSED tickets are read-only.
         if (this.state == TicketState.CLOSED) {
             throw new TicketRuleViolationException("Cannot modify a CLOSED ticket.");
         }
 
-        // Rule: Bookable products...
-        // Rule: Prevent duplicate Bookable items.
+        // Rule: No duplicate Bookable items.
         if (product.isBookable()) {
             for (TicketLine<T> line : lines) {
                 if (line.getProduct().getId().equals(product.getId())) {
@@ -57,8 +56,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
             }
         }
 
-        // Limit: Max 100 lines (E1).
-        // Constraint: Max 100 items (throws if exceeded).
+        // Constraint: Max 100 lines (E1).
         if (lines.size() >= MAX_TICKET_LINES) {
             throw new TicketRuleViolationException("Ticket cannot exceed " + MAX_TICKET_LINES + " lines.");
         }
@@ -84,7 +82,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     }
 
     public boolean removeProduct(String productId) {
-        // Rule: Cannot remove items from CLOSED ticket.
+        // Rule: CLOSED tickets are read-only.
         if (this.state == TicketState.CLOSED) {
             throw new TicketRuleViolationException("Cannot remove items from CLOSED ticket.");
         }
@@ -109,7 +107,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
             return "Error: No print strategy set.";
         }
         String result = printStrategy.formatTicket(this);
-        // Requirement: ID updates on close.
+        // Logic: Generate new ID and close ticket.
         this.id = generateTicketId();
         this.state = TicketState.CLOSED;
         return result;
@@ -125,7 +123,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     public abstract double getTotalPrice();
 
     private String generateTicketId() {
-        // Requirement: "YY-MM-dd-HH:mm-" + 5 random digits.
+        // Format: YY-MM-dd-HH:mm + random digits.
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm");
         int randomDigits = (int) (Math.random() * 100000);
         return LocalDateTime.now().format(dtf) + "-" + String.format("%05d", randomDigits);

@@ -1,15 +1,14 @@
 package es.upm.etsisi.poo.application;
 
 import java.io.File;
-import java.util.Scanner;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 
-
-import es.upm.etsisi.poo.ui.CommandHandler;
-import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
 import es.upm.etsisi.poo.domain.exceptions.PersistenceException;
+import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
+import es.upm.etsisi.poo.ui.CommandHandler;
 
-// Main application class for the ticket module.
+// [Main] Entry point for the application.
 public class App {
     public static void main(String[] args) throws FileNotFoundException {
         FilePersistenceHandler persistence = new FilePersistenceHandler();
@@ -25,7 +24,7 @@ public class App {
 
         Scanner inputScanner;
 
-        // Check if we need to read from a file.
+        // Logic: Check for input file argument.
         if (args.length > 0) {
             inputScanner = new Scanner(new File(args[0]));
         } else {
@@ -35,14 +34,14 @@ public class App {
         System.out.println("Welcome to the ticket module App.");
         System.out.println("Ticket module. Type 'help' to see commands.");
 
-        // Create the main controller.
+        // Init: Create the CommandHandler.
         CommandHandler handler = new CommandHandler(store);
 
         boolean running = true;
         while (running) {
             String inputLine;
             if (args.length > 0) {
-                // Logic: Read commands from file.
+                // Mode: Read from file.
                 if (inputScanner.hasNextLine()) {
                     inputLine = inputScanner.nextLine().trim();
                     System.out.println("tUPM> " + inputLine);
@@ -51,13 +50,13 @@ public class App {
                     continue;
                 }
             } else {
-                // Logic: Read commands from keyboard.
+                // Mode: Interactive.
                 System.out.print("tUPM> ");
                 inputLine = inputScanner.nextLine().trim();
             }
 
             if (inputLine.equalsIgnoreCase("exit")) {
-                // Exit the loop when user types 'exit'.
+                // Shutdown: Save and exit.
                 System.out.println("Closing application.");
                 try {
                     persistence.save(store); // Save state

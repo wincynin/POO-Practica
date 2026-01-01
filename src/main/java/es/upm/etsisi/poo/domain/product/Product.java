@@ -4,7 +4,7 @@ import java.util.List;
 
 import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
-// [Abstract Class] Base class for all products.
+// [Abstract Class] Base Product.
 public abstract class Product implements java.io.Serializable {
 
     private String name;

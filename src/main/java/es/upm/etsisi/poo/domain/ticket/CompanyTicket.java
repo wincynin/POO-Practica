@@ -11,7 +11,7 @@ import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
-// [Class] Ticket type for Company Clients.
+// [Class] Ticket implementation for specific Client types.
 public class CompanyTicket extends Ticket<Product> {
     private int productCount;
     private int serviceCount;

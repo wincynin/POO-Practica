@@ -18,7 +18,7 @@ import es.upm.etsisi.poo.domain.user.CashierRepository;
 import es.upm.etsisi.poo.domain.user.Client;
 import es.upm.etsisi.poo.domain.user.ClientRepository;
 
-// [Model] Central class that manages all data.
+// [Model] Central class managing data and logic.
 public class Store implements java.io.Serializable {
     private final Catalog catalog;
     private final TicketRepository ticketRepository;
@@ -39,7 +39,7 @@ public class Store implements java.io.Serializable {
     }
 
     public void addClient(Client client) throws DuplicateEntryException {
-        // Validation: Throws error if ID is duplicate.
+        // Check: Client ID must be unique.
         clientRepository.add(client);
     }
 
@@ -56,13 +56,13 @@ public class Store implements java.io.Serializable {
         cashierRepository.add(cashier);
     }
 
-    // Helper: Generate an ID if the user didn't provide one.
+    // Helper: Auto-generate ID if null.
     public void addCashier(String id, String name, String email) throws UPMStoreDomainException {
         String cashierId = id;
         if (cashierId == null || cashierId.isEmpty()) {
             cashierId = Cashier.generateCashierId(this.cashierRepository.getAll());
         }
-        // Handler: Catch duplicate error and re-throw as domain error.
+        // Error Handling: Re-throw as domain exception.
         try {
             addCashier(new Cashier(cashierId, name, email));
         } catch (DuplicateEntryException e) {
@@ -88,7 +88,7 @@ public class Store implements java.io.Serializable {
 
     public Ticket<?> createTicket(String id, String cashierId, String userId, TicketPrintType printType) throws UPMStoreDomainException {
         Cashier cashier = findCashierById(cashierId);
-        // Validation: Ensure Cashier exists.
+        // Check: Cashier must exist.
         if (cashier == null) {
             throw new ResourceNotFoundException("Cashier with ID " + cashierId + " not found.");
         }
@@ -99,7 +99,7 @@ public class Store implements java.io.Serializable {
         
         Ticket<?> newTicket = client.createTicket(id, printType.getFlag());
         
-        // Link the ticket to the cashier and client.
+        // Logic: Add ticket to lists.
         ticketRepository.add(newTicket);
         cashier.addTicket(newTicket);
         client.addTicket(newTicket);
@@ -116,7 +116,7 @@ public class Store implements java.io.Serializable {
         }
 
         Cashier cashier = findCashierById(cashierId);
-        // Security: Verify that the cashier owns this ticket.
+        // Security: Only the owner can modify.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -126,7 +126,7 @@ public class Store implements java.io.Serializable {
             throw new ResourceNotFoundException("Product with ID " + prodId + " not found.");
         }
 
-        // Refactored: Trust the ticket to validate.
+        // Validation: Delegate check to Ticket class.
         ticket.validateProduct(product);
 
         // Unchecked cast is safe because validation passed.
@@ -142,7 +142,7 @@ public class Store implements java.io.Serializable {
 
         Cashier cashier = findCashierById(cashierId);
         
-        // Security: Enforce ownership before removal.
+        // Security: Only the owner can remove items.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -158,7 +158,7 @@ public class Store implements java.io.Serializable {
         }
         
         Cashier cashier = findCashierById(cashierId);
-        // Security: Enforce ownership before printing.
+        // Security: Only the owner can print.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -166,7 +166,7 @@ public class Store implements java.io.Serializable {
         return ticket.print();
     }
 
-    // Helper: Find which client owns a ticket.
+    // Search: Find Client by Ticket.
     public String findClientIdByTicket(Ticket<?> ticket) {
         for (Client client : clientRepository.getAll()) {
             if (client.hasTicket(ticket.getId())) {
@@ -176,7 +176,7 @@ public class Store implements java.io.Serializable {
         return "Unknown";
     }
 
-    // Helper: Find which cashier owns a ticket.
+    // Search: Find Cashier by Ticket.
     public String findCashierIdByTicket(Ticket<?> ticket) {
         for (Cashier cashier : cashierRepository.getAll()) {
             if (cashier.hasTicket(ticket.getId())) {
@@ -195,7 +195,7 @@ public class Store implements java.io.Serializable {
         return ticketRepository.getAll();
     }
     
-    // Helper: Get all tickets for a specific cashier.
+    // Search: Get tickets for a cashier.
     public List<Ticket<?>> getTicketsByCashierId(String cashierId) {
         Cashier cashier = findCashierById(cashierId);
         if(cashier != null) {
@@ -229,7 +229,7 @@ public class Store implements java.io.Serializable {
         return catalog;
     }
 
-    // Catalog methods (Delegation).
+    // Delegation: Call Catalog methods.
     public List<Product> getProducts() {
         return catalog.getProducts();
     }

@@ -4,7 +4,7 @@ import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import java.util.List;
 import java.util.ArrayList;
 
-// [Class] Product type: Customizable.
+// [Class] Product subtype.
 public class CustomizableProduct extends Product {
     private final int maxCustomizableTexts;
     private final List<String> customTexts;

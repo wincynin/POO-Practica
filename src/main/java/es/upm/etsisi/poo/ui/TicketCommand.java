@@ -33,13 +33,13 @@ class TicketCommand extends AbstractCommand {
                 String clientId;
                 char flag = 'p'; // Default flag
 
-                // Check for print flags (-c, -s).
+                // Logic: Check flags (-c, -s).
                 if (argList.size() > 2 && argList.get(argList.size() - 1).startsWith("-")) {
                     flag = argList.get(argList.size() - 1).charAt(1);
                     argList.remove(argList.size() - 1);
                 }
 
-                // Check if user provided a Ticket ID.
+                // Logic: Optional Ticket ID.
                 if (argList.size() > 2) {
                     ticketId = argList.get(0);
                     argList.remove(0);
@@ -58,7 +58,7 @@ class TicketCommand extends AbstractCommand {
                 String prodId = argList.get(2);
                 int amount = Integer.parseInt(argList.get(3));
 
-                // Check for custom text (--p).
+                // Logic: Parse custom text (--p).
                 @SuppressWarnings("Convert2Diamond")
                 List<String> customTexts = new ArrayList<String>();
                 for (int i = 4; i < argList.size(); i++) {
@@ -97,12 +97,12 @@ class TicketCommand extends AbstractCommand {
 
             case "list":
                 List<Ticket<?>> allTickets = store.getTickets();
-                // Sorting: Cashier Name first, then Ticket ID.
+                // Sort: Cashier name, then ID.
                 allTickets.sort(new TicketCashierComparator(store));
 
                 System.out.println("Tickets:");
                 for (Ticket<?> ticket : allTickets) {
-                    // Find names for display.
+                    // Display: Resolve IDs to names.
                     String cId = store.findCashierIdByTicket(ticket);
                     String uId = store.findClientIdByTicket(ticket);
                     

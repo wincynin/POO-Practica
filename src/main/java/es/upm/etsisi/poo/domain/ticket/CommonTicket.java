@@ -7,7 +7,7 @@ import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.product.ProductCategory;
 
-// [Class] Ticket type for Individual Clients.
+// [Class] Ticket implementation for specific Client types.
 public class CommonTicket extends Ticket<Product> {
     public CommonTicket(String id) {
         super(id);

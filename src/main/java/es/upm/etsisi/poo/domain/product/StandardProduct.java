@@ -5,7 +5,7 @@ import java.util.List;
 
 import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
-// Represents a standard product in the system.
+// [Class] Product subtype.
 public class StandardProduct extends Product {
 
     public StandardProduct(String name, ProductCategory category, double price) throws InvalidProductDataException {
