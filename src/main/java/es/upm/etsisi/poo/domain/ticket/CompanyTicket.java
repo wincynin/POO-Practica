@@ -121,22 +121,24 @@ public class CompanyTicket extends Ticket<Product> {
 
     @Override
     public double getTotalPrice() {
-        double total = 0.0;
-        // E3: Mixed Ticket Logic - 15% discount on products for EACH service.
-        boolean isMixed = (productCount > 0 && serviceCount > 0);
-        double discount = 0.0;
-
-        if (isMixed) {
-            discount = Math.min(0.15 * serviceCount, 1.0); // Cap at 100%
-        }
+        double productTotal = 0.0;
+        double serviceTotal = 0.0;
+        int currentServiceCount = 0;
 
         for (TicketLine<Product> line : getLines()) {
-            double lineTotal = line.getLineTotal();
-            if (isMixed && line.getProduct() instanceof StandardProduct) {
-                lineTotal *= (1.0 - discount);
+            Product p = line.getProduct();
+            if (p.isService()) {
+                serviceTotal += line.getLineTotal();
+                currentServiceCount += line.getQuantity();
+            } else {
+                productTotal += line.getLineTotal();
             }
-            total += lineTotal;
         }
-        return total;
+
+        // E3 Rule: 15% discount on PRODUCTS for EACH service.
+        double discountFactor = 0.15 * currentServiceCount;
+        if (discountFactor > 1.0) discountFactor = 1.0; // Cap at 100%
+
+        return serviceTotal + (productTotal * (1.0 - discountFactor));
     }
 }

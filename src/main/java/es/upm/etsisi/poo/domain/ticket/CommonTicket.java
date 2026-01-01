@@ -34,14 +34,20 @@ public class CommonTicket extends Ticket<StandardProduct> {
         for (TicketLine<StandardProduct> line : getLines()) {
             StandardProduct p = line.getProduct();
             if (p.getCategory() != null) {
-                categoryCounts.put(p.getCategory(), categoryCounts.getOrDefault(p.getCategory(), 0) + line.getQuantity());
+                ProductCategory cat = p.getCategory();
+                int quantity = line.getQuantity();
+                if (categoryCounts.containsKey(cat)) {
+                    categoryCounts.put(cat, categoryCounts.get(cat) + quantity);
+                } else {
+                    categoryCounts.put(cat, quantity);
+                }
             }
         }
 
         for (TicketLine<StandardProduct> line : getLines()) {
             double lineTotal = line.getLineTotal();
             StandardProduct p = line.getProduct();
-            if (p.getCategory() != null && categoryCounts.getOrDefault(p.getCategory(), 0) >= 2) {
+            if (p.getCategory() != null && categoryCounts.containsKey(p.getCategory()) && categoryCounts.get(p.getCategory()) >= 2) {
                 lineTotal *= (1.0 - p.getCategory().getDiscount());
             }
             total += lineTotal;
