@@ -10,10 +10,21 @@ public class StandardProduct extends Product {
 
     public StandardProduct(String name, ProductCategory category, double price) throws InvalidProductDataException {
         super(name, category, price);
+        validateStandardProduct(name, price);
     }
 
     public StandardProduct(String id, String name, ProductCategory category, double price) throws InvalidProductDataException {
         super(id, name, category, price);
+        validateStandardProduct(name, price);
+    }
+
+    private void validateStandardProduct(String name, double price) {
+        if (name == null || name.trim().isEmpty() || name.length() > MAX_NAME_LENGTH) {
+            throw new InvalidProductDataException("Error: Name cannot be empty or exceed " + MAX_NAME_LENGTH + " characters.");
+        }
+        if (price <= 0) {
+            throw new InvalidProductDataException("Error: Price must be greater than 0.");
+        }
     }
 
     @Override

@@ -1,11 +1,11 @@
 package es.upm.etsisi.poo.domain.ticket;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
@@ -13,13 +13,16 @@ import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 
 public abstract class Ticket<T extends Product> implements Serializable, Comparable<Ticket<?>> {
+    private static final int MAX_TICKET_LINES = 100;
     private final String id;
+    private String id;
     private TicketState state;
     private final List<TicketLine<T>> lines;
     private PrintStrategy printStrategy;
 
     public Ticket(String id) {
         this.id = id;
+        this.id = (id != null) ? id : generateTicketId();
         this.state = TicketState.EMPTY;
         this.lines = new ArrayList<>();
     }
@@ -58,8 +61,8 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
 
         // Limit: Max 100 lines (E1).
         // Constraint: Max 100 items (throws if exceeded).
-        if (lines.size() >= 100) {
-            throw new TicketRuleViolationException("Ticket cannot exceed 100 lines.");
+        if (lines.size() >= MAX_TICKET_LINES) {
+            throw new TicketRuleViolationException("Ticket cannot exceed " + MAX_TICKET_LINES + " lines.");
         }
 
         boolean merged = false;
@@ -108,6 +111,8 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
             return "Error: No print strategy set.";
         }
         String result = printStrategy.formatTicket(this);
+        // Requirement: ID updates on close.
+        this.id = generateTicketId();
         this.state = TicketState.CLOSED;
         return result;
     }
@@ -119,30 +124,13 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
         return lines;
     }
 
-    public double getTotalPrice() {
-        double total = 0.0;
-        // Map to count items per category
-        Map<es.upm.etsisi.poo.domain.product.ProductCategory, Integer> categoryCounts = new HashMap<>();
+    public abstract double getTotalPrice();
 
-        // Pass 1: Count quantities per category
-        for (TicketLine<T> line : lines) {
-            Product p = line.getProduct();
-            if (p.getCategory() != null) {
-                categoryCounts.put(p.getCategory(), categoryCounts.getOrDefault(p.getCategory(), 0) + line.getQuantity());
-            }
-        }
-
-        // Pass 2: Calculate price with discounts
-        for (TicketLine<T> line : lines) {
-            double lineTotal = line.getLineTotal();
-            Product p = line.getProduct();
-            // APPLY DISCOUNT ONLY IF COUNT >= 2
-            if (p.getCategory() != null && categoryCounts.getOrDefault(p.getCategory(), 0) >= 2) {
-                lineTotal *= (1.0 - p.getCategory().getDiscount());
-            }
-            total += lineTotal;
-        }
-        return total;
+    private String generateTicketId() {
+        // Requirement: "YY-MM-dd-HH:mm-" + 5 random digits.
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm");
+        int randomDigits = (int) (Math.random() * 100000);
+        return LocalDateTime.now().format(dtf) + "-" + String.format("%05d", randomDigits);
     }
 
     @Override

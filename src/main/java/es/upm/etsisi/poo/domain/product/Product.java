@@ -14,16 +14,12 @@ public abstract class Product implements java.io.Serializable {
     private static int nextId = 1;
     protected static int nextServiceId = 1;
     private ProductCategory category;
-    private static final double MIN_PRICE = -0.001;
-    private static final int MAX_NAME_LENGTH = 100;
+    protected static final double MIN_PRICE = -0.001;
+    protected static final int MAX_NAME_LENGTH = 100;
 
     protected Product(String name, ProductCategory category, double price) throws InvalidProductDataException {
-        if (name == null || name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidProductDataException("Error: Name cannot be empty or exceed 100 characters.");
-        }
-        if (price <= MIN_PRICE) {
-            throw new InvalidProductDataException("Error: Price must be greater than 0.");
-        }
+        // Validation removed to allow Services (which may have no price/name initially).
+        // Subclasses (like StandardProduct) must enforce their own rules.
         this.id = String.valueOf(nextId++);
         this.name = name;
         this.category = category;
@@ -31,12 +27,7 @@ public abstract class Product implements java.io.Serializable {
     }
 
     protected Product(String id, String name, ProductCategory category, double price) throws InvalidProductDataException {
-        if (name == null || name.length() > MAX_NAME_LENGTH) {
-            throw new InvalidProductDataException("Error: Name cannot be empty or exceed 100 characters.");
-        }
-        if (price <= MIN_PRICE) {
-            throw new InvalidProductDataException("Error: Price must be greater than 0.");
-        }
+        // Validation removed to allow Services.
         this.id = id;
         this.name = name;
         this.category = category;
