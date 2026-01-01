@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.ui;
 
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.user.Cashier;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
@@ -15,7 +16,7 @@ class CashierCommand extends AbstractCommand {
 
     @Override
     @SuppressWarnings("Convert2Lambda")
-    public void execute(String[] args) throws IllegalArgumentException {
+    public void execute(String[] args) throws IllegalArgumentException, UPMStoreDomainException {
         if (args.length == 0) {
             throw new IllegalArgumentException("Usage: cash add | remove | list | tickets");
         }

@@ -1,5 +1,7 @@
 package es.upm.etsisi.poo.domain.user;
 
+import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
@@ -12,9 +14,9 @@ public class ClientRepository implements Serializable {
         this.clients = new ArrayList<>();
     }
 
-    public void add(Client client) {
+    public void add(Client client) throws DuplicateEntryException {
         if (findById(client.getId()) != null) {
-            throw new IllegalArgumentException("Client with ID " + client.getId() + " already exists.");
+            throw new DuplicateEntryException("Client with ID " + client.getId() + " already exists.");
         }
         clients.add(client);
     }

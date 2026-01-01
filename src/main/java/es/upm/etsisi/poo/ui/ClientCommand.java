@@ -1,6 +1,7 @@
 package es.upm.etsisi.poo.ui;
 
 import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.domain.user.Client;
 
 import java.util.List;
@@ -15,7 +16,7 @@ class ClientCommand extends AbstractCommand {
 
     @Override
     @SuppressWarnings("Convert2Lambda")
-    public void execute(String[] args) throws IllegalArgumentException {
+    public void execute(String[] args) throws IllegalArgumentException, UPMStoreDomainException {
         if (args.length == 0) {
             throw new IllegalArgumentException("Usage: client add | remove | list");
         }

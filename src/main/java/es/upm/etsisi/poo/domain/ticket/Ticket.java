@@ -4,6 +4,7 @@ import java.util.*;
 import java.time.LocalDateTime;
 import es.upm.etsisi.poo.domain.product.*;
 import java.time.format.DateTimeFormatter;
+import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
@@ -59,17 +60,17 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
         return new ArrayList<TicketLine<T>>(lines);
     }
 
-    public void addProduct(T product, int quantity) {
+    public void addProduct(T product, int quantity) throws TicketRuleViolationException {
         addProduct(product, quantity, null);
     }
 
-    public void addProduct(T product, int quantity, List<String> customTexts) {
+    public void addProduct(T product, int quantity, List<String> customTexts) throws TicketRuleViolationException {
         if (product == null) {
             throw new IllegalArgumentException("Error: Product cannot be null.");
         }
         // Rule: Cannot change a closed ticket.
         if (this.state == TicketState.CLOSED) {
-            throw new IllegalStateException("Error: Cannot add products to a closed ticket.");
+            throw new TicketRuleViolationException("Error: Cannot add products to a closed ticket.");
         }
         // Change state to ACTIVE when adding first product.
         if (this.state == TicketState.EMPTY) {
@@ -81,7 +82,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
             // They can only be added once.
             for (TicketLine<T> line : lines) {
                 if (line.getProduct().getId() == product.getId()) {
-                    throw new IllegalStateException("Error: Bookable products can only be added once.");
+                    throw new TicketRuleViolationException("Error: Bookable products can only be added once.");
                 }
             }
             // Check planning time constraints
@@ -111,7 +112,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
 
         // Limit: Max 100 lines (E1).
         if (lines.size() >= MAX_PRODUCT_LINES) {
-            throw new IllegalStateException("Error: Ticket cannot have more than " + MAX_PRODUCT_LINES + " product lines.");
+            throw new TicketRuleViolationException("Error: Ticket cannot have more than " + MAX_PRODUCT_LINES + " product lines.");
         }
         // After all checks, we can add the new line.
         TicketLine<T> newLine = new TicketLine<>(product, quantity);
@@ -123,10 +124,10 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
         lines.add(newLine);
     }
 
-    public boolean removeProduct(int productId) {
+    public boolean removeProduct(int productId) throws TicketRuleViolationException {
         // Rule: Cannot modify closed ticket.
         if (this.state == TicketState.CLOSED) {
-            throw new IllegalStateException("Error: Cannot remove products from a closed ticket.");
+            throw new TicketRuleViolationException("Error: Cannot remove products from a closed ticket.");
         }
 
         for (int i = lines.size() - 1; i >= 0; i--) {
@@ -148,7 +149,7 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
         return total;
     }
 
-    public String print() {
+    public String print() throws TicketRuleViolationException {
         if (this.state != TicketState.CLOSED) {
             this.state = TicketState.CLOSED;
             this.id += "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));

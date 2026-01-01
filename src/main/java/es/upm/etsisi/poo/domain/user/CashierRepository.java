@@ -1,5 +1,7 @@
 package es.upm.etsisi.poo.domain.user;
 
+import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +14,9 @@ public class CashierRepository implements Serializable {
         this.cashiers = new ArrayList<>();
     }
 
-    public void add(Cashier cashier) {
+    public void add(Cashier cashier) throws DuplicateEntryException {
         if (findById(cashier.getId()) != null) {
-            throw new IllegalArgumentException("Cashier with ID " + cashier.getId() + " already exists.");
+            throw new DuplicateEntryException("Cashier with ID " + cashier.getId() + " already exists.");
         }
         cashiers.add(cashier);
     }

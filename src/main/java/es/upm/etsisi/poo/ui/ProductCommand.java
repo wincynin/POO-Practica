@@ -4,6 +4,7 @@ import java.util.List;
 import java.time.LocalDate;
 import es.upm.etsisi.poo.domain.product.*;
 import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import java.time.format.DateTimeFormatter;
 
 // [Command] Product CRUD operations.
@@ -14,7 +15,7 @@ class ProductCommand extends AbstractCommand {
     }
 
     @Override
-    public void execute(String[] args) throws IllegalArgumentException {
+    public void execute(String[] args) throws IllegalArgumentException, UPMStoreDomainException {
         if (args.length == 0) {
             throw new IllegalArgumentException("Usage: prod add | addFood | addMeeting | list | update | remove");
         }

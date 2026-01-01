@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.product;
 
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import java.util.List;
 
 // [Abstract Class] Base class for all products.
@@ -14,12 +15,12 @@ public abstract class Product implements java.io.Serializable {
     private static final double MIN_PRICE = -0.001;
     private static final int MAX_NAME_LENGTH = 100;
 
-    protected Product(String name, ProductCategory category, double price) {
+    protected Product(String name, ProductCategory category, double price) throws InvalidProductDataException {
         if (name == null || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
+            throw new InvalidProductDataException("Error: Name cannot be empty or exceed 100 characters.");
         }
         if (price <= MIN_PRICE) {
-            throw new IllegalArgumentException("Error: Price must be greater than 0.");
+            throw new InvalidProductDataException("Error: Price must be greater than 0.");
         }
         this.id = nextId++;
         this.name = name;
@@ -27,12 +28,12 @@ public abstract class Product implements java.io.Serializable {
         this.price = price;
     }
 
-    protected Product(int id, String name, ProductCategory category, double price) {
+    protected Product(int id, String name, ProductCategory category, double price) throws InvalidProductDataException {
         if (name == null || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
+            throw new InvalidProductDataException("Error: Name cannot be empty or exceed 100 characters.");
         }
         if (price <= MIN_PRICE) {
-            throw new IllegalArgumentException("Error: Price must be greater than 0.");
+            throw new InvalidProductDataException("Error: Price must be greater than 0.");
         }
         this.id = id;
         this.name = name;
@@ -57,9 +58,9 @@ public abstract class Product implements java.io.Serializable {
         return price;
     }
 
-    public void setName(String name) {
+    public void setName(String name) throws InvalidProductDataException {
         if (name == null || name.length() > MAX_NAME_LENGTH) {
-            throw new IllegalArgumentException("Error: Name cannot be empty or exceed 100 characters.");
+            throw new InvalidProductDataException("Error: Name cannot be empty or exceed 100 characters.");
         } else {
             this.name = name;
         }
@@ -69,9 +70,9 @@ public abstract class Product implements java.io.Serializable {
         this.category = category;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(double price) throws InvalidProductDataException {
         if (price <= MIN_PRICE) {
-            throw new IllegalArgumentException("Error: Price must be greater than 0.");
+            throw new InvalidProductDataException("Error: Price must be greater than 0.");
         } else {
             this.price = price;
         }

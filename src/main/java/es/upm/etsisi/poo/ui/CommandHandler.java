@@ -38,9 +38,9 @@ public class CommandHandler {
                     System.out.println("Command not recognized. Type 'help' for a list of commands.");
                 }
             }
-        } catch (IllegalArgumentException | IllegalStateException e) {
+        } catch (IllegalArgumentException | IllegalStateException | es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException e) {
             // Catch errors (like invalid ID or state).
-            System.out.println(e.getMessage());
+            System.out.println("ERROR: " + e.getMessage());
         }
     }
 

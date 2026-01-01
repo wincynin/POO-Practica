@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.application;
 
+import es.upm.etsisi.poo.domain.exceptions.*;
 import es.upm.etsisi.poo.domain.user.*;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Catalog;
@@ -19,7 +20,7 @@ public class Store implements java.io.Serializable {
     private final TicketRepository ticketRepository;
     private final ClientRepository clientRepository;
     private final CashierRepository cashierRepository;
-    
+
 
     @SuppressWarnings("Convert2Diamond")
     public Store() {
@@ -33,7 +34,7 @@ public class Store implements java.io.Serializable {
         catalog.addProduct(product);
     }
 
-    public void addClient(Client client) throws IllegalArgumentException {
+    public void addClient(Client client) throws DuplicateEntryException {
         // Check: Client ID must be unique.
         clientRepository.add(client);
     }
@@ -46,7 +47,7 @@ public class Store implements java.io.Serializable {
         clientRepository.remove(id);
     }
 
-    public void addCashier(Cashier cashier) throws IllegalArgumentException {
+    public void addCashier(Cashier cashier) throws DuplicateEntryException {
         // Check: Cashier ID must be unique.
         cashierRepository.add(cashier);
     }
@@ -57,7 +58,11 @@ public class Store implements java.io.Serializable {
         if (cashierId == null || cashierId.isEmpty()) {
             cashierId = Cashier.generateCashierId(this.cashierRepository.getAll());
         }
-        addCashier(new Cashier(cashierId, name, email));
+        try {
+            addCashier(new Cashier(cashierId, name, email));
+        } catch (DuplicateEntryException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     public Cashier findCashierById(String id) {
@@ -76,14 +81,14 @@ public class Store implements java.io.Serializable {
         }
     }
 
-    public Ticket<?> createTicket(String id, String cashierId, String userId, char flag) {
+    public Ticket<?> createTicket(String id, String cashierId, String userId, char flag) throws UPMStoreDomainException {
         Cashier cashier = findCashierById(cashierId);
         if (cashier == null) {
-            throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
+            throw new ResourceNotFoundException("Cashier with ID " + cashierId + " not found.");
         }
         Client client = findClientById(userId);
         if (client == null) {
-            throw new IllegalArgumentException("Error: Client with ID " + userId + " not found.");
+            throw new ResourceNotFoundException("Client with ID " + userId + " not found.");
         }
         
         Ticket<?> newTicket;
@@ -116,26 +121,26 @@ public class Store implements java.io.Serializable {
     }
 
     public void addProductToTicket(String ticketId, String cashierId, int prodId, int amount,
-            List<String> customTexts) {
+            List<String> customTexts) throws UPMStoreDomainException {
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
-            throw new IllegalArgumentException("Error: Ticket not found.");
+            throw new ResourceNotFoundException("Ticket with ID " + ticketId + " not found.");
         }
 
         Cashier cashier = findCashierById(cashierId);
         // Rule: Only the creator can modify the ticket.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
-            throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
+            throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
         
         Product product = catalog.getProduct(prodId);
         if (product == null) {
-            throw new IllegalArgumentException("Error: Product with ID " + prodId + " not found.");
+            throw new ResourceNotFoundException("Product with ID " + prodId + " not found.");
         }
 
         if (ticket instanceof CommonTicket) {
             if (!(product instanceof StandardProduct)) {
-                throw new IllegalArgumentException("Error: Cannot add this product type to a Common Ticket.");
+                throw new TicketTypeMismatchException("Common Tickets can only hold Standard Products.");
             }
             @SuppressWarnings("unchecked")
             Ticket<StandardProduct> commonTicket = (Ticket<StandardProduct>) ticket;
@@ -149,33 +154,33 @@ public class Store implements java.io.Serializable {
         }
     }
 
-    public void removeProductFromTicket(String ticketId, String cashierId, int prodId) {
+    public void removeProductFromTicket(String ticketId, String cashierId, int prodId) throws UPMStoreDomainException {
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
-            throw new IllegalArgumentException("Error: Ticket not found.");
+            throw new ResourceNotFoundException("Ticket with ID " + ticketId + " not found.");
         }
 
         Cashier cashier = findCashierById(cashierId);
         
         // Rule: Only the creator can remove items.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
-            throw new IllegalArgumentException("Error: Only the creating cashier can modify this ticket.");
+            throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
         if (!ticket.removeProduct(prodId)) {
-            throw new IllegalArgumentException("Error: Product not found in ticket.");
+            throw new ResourceNotFoundException("Product with ID " + prodId + " not found in ticket " + ticketId);
         }
     }
 
-    public String printTicket(String ticketId, String cashierId) {
+    public String printTicket(String ticketId, String cashierId) throws UPMStoreDomainException {
         Ticket<?> ticket = getTicket(ticketId);
         if (ticket == null) {
-            throw new IllegalArgumentException("Error: Ticket not found.");
+            throw new ResourceNotFoundException("Ticket with ID " + ticketId + " not found.");
         }
         
         Cashier cashier = findCashierById(cashierId);
         // Rule: Only the creator can print.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
-            throw new IllegalArgumentException("Error: Only the creating cashier can print this ticket.");
+            throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
         
         return ticket.print();

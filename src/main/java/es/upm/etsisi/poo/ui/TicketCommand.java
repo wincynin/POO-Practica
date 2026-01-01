@@ -3,6 +3,7 @@ package es.upm.etsisi.poo.ui;
 import java.util.List;
 import java.util.ArrayList;
 import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
 class TicketCommand extends AbstractCommand {
@@ -13,7 +14,7 @@ class TicketCommand extends AbstractCommand {
 
     @Override
     @SuppressWarnings("Convert2Lambda")
-    public void execute(String[] args) throws IllegalArgumentException {
+    public void execute(String[] args) throws IllegalArgumentException, UPMStoreDomainException {
         if (args.length == 0) {
             throw new IllegalArgumentException("Usage: ticket new | add | remove | print | list");
         }

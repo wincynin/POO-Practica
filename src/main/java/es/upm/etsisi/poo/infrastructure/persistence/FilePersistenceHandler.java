@@ -2,21 +2,22 @@ package es.upm.etsisi.poo.infrastructure.persistence;
 
 import java.io.*;
 import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.exceptions.PersistenceException;
 
 // [Class] Saves/Loads data to a file.
 public class FilePersistenceHandler {
     private static final String FILE_NAME = "store_data.dat";
 
-    public void save(Store store) {
+    public void save(Store store) throws PersistenceException {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
             oos.writeObject(store);
             System.out.println("System state saved successfully.");
         } catch (IOException e) {
-            System.err.println("Error saving state: " + e.getMessage());
+            throw new PersistenceException("Failed to save data: " + e.getMessage(), e);
         }
     }
 
-    public Store load() {
+    public Store load() throws PersistenceException {
         File file = new File(FILE_NAME);
         if (!file.exists()) {
             // If file doesn't exist, create empty Store.
@@ -24,9 +25,10 @@ public class FilePersistenceHandler {
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             return (Store) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error loading state (starting fresh): " + e.getMessage());
-            return new Store();
+        } catch (IOException e) {
+            throw new PersistenceException("Error loading state: " + e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            throw new PersistenceException("Error loading state (class not found): " + e.getMessage(), e);
         }
     }
 }
