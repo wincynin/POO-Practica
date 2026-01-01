@@ -12,7 +12,7 @@ public class Service extends Product {
     private final LocalDateTime expirationDate;
 
     public Service(LocalDateTime expirationDate, ServiceType serviceType) throws InvalidProductDataException {
-        super((nextServiceId++) + "S", String.format("Service-%s", serviceType.name()), null, 0.0); // Price is 0.0
+        super((nextServiceId++) + "S", "Service " + serviceType.name(), null, 0.0); // Price is 0.0
         this.expirationDate = expirationDate;
         this.serviceType = serviceType;
     }
