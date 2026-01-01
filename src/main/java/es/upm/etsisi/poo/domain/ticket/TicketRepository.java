@@ -1,10 +1,10 @@
 package es.upm.etsisi.poo.domain.ticket;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.io.Serializable;
 
+// Repository class for managing Ticket entities.
 public class TicketRepository implements Serializable {
     private final List<Ticket<?>> tickets;
 
