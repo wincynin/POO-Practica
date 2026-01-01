@@ -14,14 +14,12 @@ import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 
 public abstract class Ticket<T extends Product> implements Serializable, Comparable<Ticket<?>> {
     private static final int MAX_TICKET_LINES = 100;
-    private final String id;
     private String id;
     private TicketState state;
     private final List<TicketLine<T>> lines;
     private PrintStrategy printStrategy;
 
     public Ticket(String id) {
-        this.id = id;
         this.id = (id != null) ? id : generateTicketId();
         this.state = TicketState.EMPTY;
         this.lines = new ArrayList<>();
