@@ -31,11 +31,14 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
         }
     }
 
+    private static final int RANDOM_ID_BOUND = 90000;
+    private static final int RANDOM_ID_OFFSET = 10000;
+
     private String generateId() {
         // Format: YY-MM-dd + random numbers.
         String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm"));
         Random random = new Random();
-        int randomNumber = random.nextInt(90000) + 10000;
+        int randomNumber = random.nextInt(RANDOM_ID_BOUND) + RANDOM_ID_OFFSET;
         return datePart + "-" + randomNumber;
     }
 
@@ -161,6 +164,8 @@ public abstract class Ticket<T extends Product> implements Comparable<Ticket<T>>
     public boolean isEmpty() {
         return lines.isEmpty();
     }
+
+    public abstract boolean accepts(Product p);
 
     @Override
     public int compareTo(Ticket<T> other) {

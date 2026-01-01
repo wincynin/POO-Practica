@@ -56,16 +56,41 @@ public class CompanyTicket extends Ticket<Product> {
 
     @Override
     public String print() throws TicketRuleViolationException {
+        // Check for rules before calling super.print(), which closes the ticket.
         if (getPrintStrategy() instanceof CompanyPrintStrategy) {
-            if (productCount > 0 && serviceCount == 0 || productCount == 0 && serviceCount > 0) {
-                // This is not a mixed ticket, so it's valid.
-            } else if (productCount == 0 && serviceCount == 0) {
-                 throw new TicketRuleViolationException("Error: Cannot print an empty company ticket.");
+            // This is the "Mixed" strategy. It must have at least one Product and one Service.
+            if (productCount == 0 || serviceCount == 0) {
+                if (productCount == 0 && serviceCount == 0) {
+                    throw new TicketRuleViolationException("Error: Cannot print an empty company ticket.");
+                } else {
+                    // It's not empty, but it's not mixed. It's either product-only or service-only with CompanyPrintStrategy.
+                    // This is a violation of the "Mixed" rule for CompanyPrintStrategy.
+                    throw new TicketRuleViolationException("Error: Mixed ticket must contain at least one StandardProduct and one Service.");
+                }
             }
-            else if (productCount > 0 && serviceCount > 0) {
-                // This is a mixed ticket, which is fine
+        } else if (getPrintStrategy() instanceof es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy) {
+            // This is a Service-only strategy.
+            if (productCount > 0) {
+                throw new TicketRuleViolationException("Error: Service-only ticket cannot contain StandardProducts.");
+            }
+            if (serviceCount == 0) {
+                throw new TicketRuleViolationException("Error: Service-only ticket must contain at least one Service.");
+            }
+        } else if (getPrintStrategy() instanceof es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy) {
+            // This is a Product-only strategy.
+            if (serviceCount > 0) {
+                throw new TicketRuleViolationException("Error: Product-only ticket cannot contain Services.");
+            }
+            if (productCount == 0) {
+                throw new TicketRuleViolationException("Error: Product-only ticket must contain at least one StandardProduct.");
             }
         }
+
         return super.print();
+    }
+
+    @Override
+    public boolean accepts(es.upm.etsisi.poo.domain.product.Product p) {
+        return true;
     }
 }

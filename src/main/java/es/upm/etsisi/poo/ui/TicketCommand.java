@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.ui;
 
+import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
 import java.util.List;
 import java.util.ArrayList;
 import es.upm.etsisi.poo.application.Store;
@@ -46,7 +47,9 @@ class TicketCommand extends AbstractCommand {
                 cashierId = argList.get(0);
                 clientId = argList.get(1);
 
-                store.createTicket(ticketId, cashierId, clientId, flag);
+                TicketPrintType printType = TicketPrintType.fromFlag(flag);
+
+                store.createTicket(ticketId, cashierId, clientId, printType);
                 System.out.println("ticket new: ok");
                 break;
             case "add":

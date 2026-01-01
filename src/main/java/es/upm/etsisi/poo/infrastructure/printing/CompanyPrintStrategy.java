@@ -9,7 +9,7 @@ import es.upm.etsisi.poo.domain.product.StandardProduct;
 // [Class] Prints ticket in company format.
 public class CompanyPrintStrategy implements PrintStrategy {
 
-    private static final double DISCOUNT_RATE_PER_SERVICE = 0.15;
+    private static final double MIXED_TICKET_DISCOUNT_RATE = 0.15;
 
     @Override
     public String formatTicket(Ticket<?> ticket) {

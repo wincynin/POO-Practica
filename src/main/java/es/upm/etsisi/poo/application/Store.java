@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.application;
 
+import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
 import es.upm.etsisi.poo.domain.exceptions.*;
 import es.upm.etsisi.poo.domain.user.*;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
@@ -61,7 +62,7 @@ public class Store implements java.io.Serializable {
         try {
             addCashier(new Cashier(cashierId, name, email));
         } catch (DuplicateEntryException e) {
-            throw new IllegalArgumentException(e.getMessage());
+            throw new UPMStoreDomainException(e.getMessage());
         }
     }
 
@@ -81,7 +82,7 @@ public class Store implements java.io.Serializable {
         }
     }
 
-    public Ticket<?> createTicket(String id, String cashierId, String userId, char flag) throws UPMStoreDomainException {
+    public Ticket<?> createTicket(String id, String cashierId, String userId, TicketPrintType printType) throws UPMStoreDomainException {
         Cashier cashier = findCashierById(cashierId);
         if (cashier == null) {
             throw new ResourceNotFoundException("Cashier with ID " + cashierId + " not found.");
@@ -96,14 +97,14 @@ public class Store implements java.io.Serializable {
             newTicket = new CommonTicket(id);
         } else if (client instanceof CompanyClient) {
             newTicket = new CompanyTicket(id);
-            switch (flag) {
-                case 's':
+            switch (printType) {
+                case SERVICE:
                     newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy());
                     break;
-                case 'c':
+                case COMPANY:
                     newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy());
                     break;
-                case 'p':
+                case STANDARD:
                 default:
                     newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy());
                     break;
@@ -138,10 +139,13 @@ public class Store implements java.io.Serializable {
             throw new ResourceNotFoundException("Product with ID " + prodId + " not found.");
         }
 
+        // Use the polymorphic accepts method to check compatibility.
+        if (!ticket.accepts(product)) {
+            throw new TicketTypeMismatchException("Error: Product type " + product.getClass().getSimpleName() + " not accepted by ticket type " + ticket.getClass().getSimpleName() + ".");
+        }
+
+        // Now that we know the product is accepted, we can safely cast the ticket and product.
         if (ticket instanceof CommonTicket) {
-            if (!(product instanceof StandardProduct)) {
-                throw new TicketTypeMismatchException("Common Tickets can only hold Standard Products.");
-            }
             @SuppressWarnings("unchecked")
             Ticket<StandardProduct> commonTicket = (Ticket<StandardProduct>) ticket;
             commonTicket.addProduct((StandardProduct) product, amount, customTexts);
@@ -150,7 +154,7 @@ public class Store implements java.io.Serializable {
             Ticket<Product> companyTicket = (Ticket<Product>) ticket;
             companyTicket.addProduct(product, amount, customTexts);
         } else {
-            throw new IllegalStateException("Error: Unknown ticket type, cannot add product.");
+            throw new UPMStoreDomainException("Error: Unhandled ticket type during product addition.");
         }
     }
 
