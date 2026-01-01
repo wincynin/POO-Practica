@@ -5,6 +5,9 @@ import java.util.List;
 
 import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
 // [Entity] Corporate (NIF-based) Client.
 public class CompanyClient extends Client {
@@ -63,18 +66,18 @@ public class CompanyClient extends Client {
     }
 
     @Override
-    public Ticket<?> createTicket(String ticketId, char printFlag) {
+    public Ticket<?> createTicket(String ticketId, char flag) {
         CompanyTicket newTicket = new CompanyTicket(ticketId);
-        switch (printFlag) {
+        switch (flag) {
             case 's':
-                newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy());
+                newTicket.setPrintStrategy(new ServicePrintStrategy());
                 break;
             case 'c':
-                newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy());
+                newTicket.setPrintStrategy(new CompanyPrintStrategy());
                 break;
             case 'p':
             default:
-                newTicket.setPrintStrategy(new es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy());
+                newTicket.setPrintStrategy(new StandardPrintStrategy());
                 break;
         }
         return newTicket;

@@ -15,7 +15,7 @@ public class CommonTicket extends Ticket<StandardProduct> {
     }
 
     @Override
-    public void validateProductAddition(Product p) throws TicketRuleViolationException {
+    public void validateProduct(Product p) throws TicketRuleViolationException {
         if (!(p instanceof StandardProduct)) {
             throw new TicketRuleViolationException("Common tickets only accept Standard Products.");
         }

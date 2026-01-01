@@ -60,7 +60,7 @@ public class IndividualClient extends Client {
     }
 
     @Override
-    public Ticket<?> createTicket(String ticketId, char printFlag) {
+    public Ticket<?> createTicket(String ticketId, char flag) {
         return new CommonTicket(ticketId);
     }
 

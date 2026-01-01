@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.domain.product;
 
-import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
+
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
 // Represents a standard product in the system.
 public class StandardProduct extends Product {
@@ -11,7 +12,7 @@ public class StandardProduct extends Product {
         super(name, category, price);
     }
 
-    public StandardProduct(int id, String name, ProductCategory category, double price) throws InvalidProductDataException {
+    public StandardProduct(String id, String name, ProductCategory category, double price) throws InvalidProductDataException {
         super(id, name, category, price);
     }
 

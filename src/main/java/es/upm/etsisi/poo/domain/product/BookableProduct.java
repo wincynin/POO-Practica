@@ -1,9 +1,10 @@
 package es.upm.etsisi.poo.domain.product;
 
-import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
-import java.util.List;
-import java.util.Collections;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
 // [Class] Product type: Bookable.
 public abstract class BookableProduct extends Product {
@@ -17,7 +18,7 @@ public abstract class BookableProduct extends Product {
         this.maxParticipants = maxParticipants;
     }
 
-    public BookableProduct(int id, String name, double price, LocalDateTime expirationDate, int maxParticipants) throws InvalidProductDataException {
+    public BookableProduct(String id, String name, double price, LocalDateTime expirationDate, int maxParticipants) throws InvalidProductDataException {
         // E2 Requirement: These products do not have a category, so we pass null.
         super(id, name, null, price);
         this.expirationDate = expirationDate;

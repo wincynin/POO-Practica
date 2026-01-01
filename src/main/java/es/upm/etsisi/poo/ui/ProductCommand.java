@@ -1,11 +1,20 @@
 package es.upm.etsisi.poo.ui;
 
-import java.util.List;
 import java.time.LocalDate;
-import es.upm.etsisi.poo.domain.product.*;
-import es.upm.etsisi.poo.application.Store;
-import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
+import es.upm.etsisi.poo.domain.product.CustomizableProduct;
+import es.upm.etsisi.poo.domain.product.EventProduct;
+import es.upm.etsisi.poo.domain.product.EventType;
+import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.product.ProductCategory;
+import es.upm.etsisi.poo.domain.product.Service;
+import es.upm.etsisi.poo.domain.product.ServiceType;
+import es.upm.etsisi.poo.domain.product.StandardProduct;
 
 // [Command] Product CRUD operations.
 class ProductCommand extends AbstractCommand {
@@ -40,7 +49,7 @@ class ProductCommand extends AbstractCommand {
                         System.out.println(service);
                         System.out.println("prod add: ok");
                         break;
-                    } catch (Exception e) {
+                    } catch (InvalidProductDataException e) {
                         // Not a service, fall through to standard product creation
                     }
                 }
@@ -153,7 +162,7 @@ class ProductCommand extends AbstractCommand {
 
     private boolean isId(String s) {
         try {
-            Integer.parseInt(s);
+            Integer.valueOf(s);
             return true;
         } catch (NumberFormatException e) {
             if (s.endsWith("S") && s.length() > 1) {

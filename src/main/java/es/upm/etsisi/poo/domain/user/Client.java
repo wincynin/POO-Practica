@@ -12,7 +12,7 @@ public abstract class Client extends User implements Comparable<Client> {
     public abstract boolean validateId(String id);
     public abstract void addTicket(Ticket<?> ticket);
     public abstract boolean hasTicket(String ticketId);
-    public abstract Ticket<?> createTicket(String ticketId, char printFlag);
+    public abstract Ticket<?> createTicket(String ticketId, char flag);
 
     @Override
     public String toString() {

@@ -18,7 +18,7 @@ public class CustomizableProduct extends Product {
     }
 
     @SuppressWarnings("Convert2Diamond")
-    public CustomizableProduct(int id, String name, ProductCategory category, double price, int maxCustomizableTexts) throws InvalidProductDataException {
+    public CustomizableProduct(String id, String name, ProductCategory category, double price, int maxCustomizableTexts) throws InvalidProductDataException {
         super(id, name, category, price);
         this.maxCustomizableTexts = maxCustomizableTexts;
         this.customTexts = new ArrayList<String>();
@@ -60,7 +60,7 @@ public class CustomizableProduct extends Product {
     @Override
     public String toString() {
         // Returns a string representation of the CustomizableProduct, including id, name, category, price and custom texts, in that order.
-        return String.format("{class: %s, id:%d, name:'%s', category:%s, price:%.1f, customTexts:%s}",
+        return String.format("{class: %s, id:%s, name:'%s', category:%s, price:%.1f, customTexts:%s}",
                 this.getClass().getSimpleName(), getId(), getName(), getCategory(), getPrice(), customTexts);
     }
 }

@@ -2,8 +2,11 @@ package es.upm.etsisi.poo.domain.ticket;
 
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.product.Service;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
 import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
 // [Class] Ticket type for Company Clients.
 public class CompanyTicket extends Ticket<Product> {
@@ -68,7 +71,7 @@ public class CompanyTicket extends Ticket<Product> {
                     throw new TicketRuleViolationException("Error: Mixed ticket must contain at least one StandardProduct and one Service.");
                 }
             }
-        } else if (getPrintStrategy() instanceof es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy) {
+        } else if (getPrintStrategy() instanceof ServicePrintStrategy) {
             // This is a Service-only strategy.
             if (productCount > 0) {
                 throw new TicketRuleViolationException("Error: Service-only ticket cannot contain StandardProducts.");
@@ -76,7 +79,7 @@ public class CompanyTicket extends Ticket<Product> {
             if (serviceCount == 0) {
                 throw new TicketRuleViolationException("Error: Service-only ticket must contain at least one Service.");
             }
-        } else if (getPrintStrategy() instanceof es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy) {
+        } else if (getPrintStrategy() instanceof StandardPrintStrategy) {
             // This is a Product-only strategy.
             if (serviceCount > 0) {
                 throw new TicketRuleViolationException("Error: Product-only ticket cannot contain Services.");
@@ -95,8 +98,15 @@ public class CompanyTicket extends Ticket<Product> {
     }
 
     @Override
-    public void validateProductAddition(Product p) throws TicketRuleViolationException {
-        // Company tickets accept all products (Standard and Service).
-        // No specific validation needed for now.
+    public void validateProduct(Product p) throws TicketRuleViolationException {
+        if (getPrintStrategy() instanceof ServicePrintStrategy) {
+            if (!(p instanceof Service)) {
+                throw new TicketRuleViolationException("Error: Service-only tickets cannot contain StandardProducts.");
+            }
+        } else if (getPrintStrategy() instanceof StandardPrintStrategy) {
+            if (p instanceof Service) {
+                throw new TicketRuleViolationException("Error: Product-only tickets cannot contain Services.");
+            }
+        }
     }
 }

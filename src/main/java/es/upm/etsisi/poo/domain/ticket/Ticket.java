@@ -102,7 +102,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     }
 
     public abstract boolean accepts(Product p);
-    public abstract void validateProductAddition(Product p) throws TicketRuleViolationException;
+    public abstract void validateProduct(Product p) throws TicketRuleViolationException;
 
     public List<TicketLine<T>> getLines() {
         return lines;

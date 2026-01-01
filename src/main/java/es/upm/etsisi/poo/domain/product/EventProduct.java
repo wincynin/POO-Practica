@@ -1,6 +1,7 @@
 package es.upm.etsisi.poo.domain.product;
 
 import java.time.LocalDateTime;
+
 import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
 // [Class] Product type: Event.
@@ -16,7 +17,7 @@ public class EventProduct extends BookableProduct {
     }
 
     // Constructor that accepts ID
-    public EventProduct(int id, String name, double price, LocalDateTime expirationDate, int maxParticipants, EventType type) throws InvalidProductDataException {
+    public EventProduct(String id, String name, double price, LocalDateTime expirationDate, int maxParticipants, EventType type) throws InvalidProductDataException {
         super(id, name, price, expirationDate, maxParticipants);
         this.type = type;
     }
@@ -54,7 +55,7 @@ public class EventProduct extends BookableProduct {
     
     @Override
     public String toString() {
-        return String.format("{class: %s, id:%d, name:'%s', price:%.1f, type:%s, expiration:%s}", 
+        return String.format("{class: %s, id:%s, name:'%s', price:%.1f, type:%s, expiration:%s}",
             getClass().getSimpleName(), getId(), getName(), getPrice(), type, getExpirationDate().toString());
     }
 }

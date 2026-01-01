@@ -22,7 +22,7 @@ public class Catalog implements java.io.Serializable {
         products.add(prod);
     }
 
-    public Product removeProduct(int id) {
+    public Product removeProduct(String id) {
         Product productToRemove = getProduct(id);
         if (productToRemove != null) {
             products.remove(productToRemove);
@@ -30,7 +30,7 @@ public class Catalog implements java.io.Serializable {
         return productToRemove;
     }
 
-    public void updateProduct(int id, String field, String value) throws IllegalArgumentException, InvalidProductDataException {
+    public void updateProduct(String id, String field, String value) throws IllegalArgumentException, InvalidProductDataException {
         Product prod = getProduct(id);
         if (prod == null) {
             throw new IllegalArgumentException("Error: Product with ID " + id + " not found.");
@@ -69,9 +69,9 @@ public class Catalog implements java.io.Serializable {
         return products.size();
     }
 
-    public Product getProduct(int id) {
+    public Product getProduct(String id) {
         for (Product product : products) {
-            if (product.getId() == id) {
+            if (product.getId().equals(id)) {
                 return product;
             }
         }

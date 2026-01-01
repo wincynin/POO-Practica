@@ -6,6 +6,8 @@ import java.util.List;
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.domain.user.Client;
+import es.upm.etsisi.poo.domain.user.CompanyClient;
+import es.upm.etsisi.poo.domain.user.IndividualClient;
 
 // [Command] Client CRUD operations.
 class ClientCommand extends AbstractCommand {
@@ -38,9 +40,9 @@ class ClientCommand extends AbstractCommand {
                 // Logic: Discriminator (DNI vs NIF).
                 boolean isCompany = id.matches("^[A-Za-z].*");
                 if (isCompany) {
-                    client = new es.upm.etsisi.poo.domain.user.CompanyClient(id, name, email, cashierId);
+                    client = new CompanyClient(id, name, email, cashierId);
                 } else {
-                    client = new es.upm.etsisi.poo.domain.user.IndividualClient(id, name, email, cashierId);
+                    client = new IndividualClient(id, name, email, cashierId);
                 }
                 if (!client.validateId(id)) {
                     throw new IllegalArgumentException("Error: Invalid client ID format.");

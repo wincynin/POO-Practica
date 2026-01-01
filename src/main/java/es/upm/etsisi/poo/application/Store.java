@@ -6,14 +6,10 @@ import java.util.List;
 import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
 import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import es.upm.etsisi.poo.domain.exceptions.ResourceNotFoundException;
-import es.upm.etsisi.poo.domain.exceptions.TicketTypeMismatchException;
 import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.domain.exceptions.UnauthorizedAccessException;
 import es.upm.etsisi.poo.domain.product.Catalog;
 import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.domain.product.StandardProduct;
-import es.upm.etsisi.poo.domain.ticket.CommonTicket;
-import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
 import es.upm.etsisi.poo.domain.ticket.TicketRepository;
@@ -21,9 +17,6 @@ import es.upm.etsisi.poo.domain.user.Cashier;
 import es.upm.etsisi.poo.domain.user.CashierRepository;
 import es.upm.etsisi.poo.domain.user.Client;
 import es.upm.etsisi.poo.domain.user.ClientRepository;
-import es.upm.etsisi.poo.domain.user.CompanyClient;
-import es.upm.etsisi.poo.domain.user.IndividualClient;
-
 
 // [Model] Central class that manages all data.
 public class Store implements java.io.Serializable {
@@ -133,7 +126,7 @@ public class Store implements java.io.Serializable {
         }
 
         // Refactored: Trust the ticket to validate.
-        ticket.validateProductAddition(product);
+        ticket.validateProduct(product);
 
         // Unchecked cast is safe because validation passed.
         @SuppressWarnings("unchecked")
