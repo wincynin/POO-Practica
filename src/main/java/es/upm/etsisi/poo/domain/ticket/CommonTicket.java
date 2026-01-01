@@ -6,6 +6,7 @@ import es.upm.etsisi.poo.domain.product.StandardProduct;
 public class CommonTicket extends Ticket<StandardProduct> {
     public CommonTicket(String id) {
         super(id);
+    }
     @Override
     public boolean accepts(es.upm.etsisi.poo.domain.product.Product p) {
         return p instanceof StandardProduct;

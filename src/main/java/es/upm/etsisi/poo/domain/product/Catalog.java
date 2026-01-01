@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.product;
 
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -29,7 +30,7 @@ public class Catalog implements java.io.Serializable {
         return productToRemove;
     }
 
-    public void updateProduct(int id, String field, String value) throws IllegalArgumentException {
+    public void updateProduct(int id, String field, String value) throws IllegalArgumentException, InvalidProductDataException {
         Product prod = getProduct(id);
         if (prod == null) {
             throw new IllegalArgumentException("Error: Product with ID " + id + " not found.");

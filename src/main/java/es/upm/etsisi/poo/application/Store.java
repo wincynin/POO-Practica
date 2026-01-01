@@ -247,7 +247,7 @@ public class Store implements java.io.Serializable {
         return catalog.getProducts();
     }
 
-    public void updateProduct(int productId, String field, String updateValue) {
+    public void updateProduct(int productId, String field, String updateValue) throws InvalidProductDataException {
         catalog.updateProduct(productId, field, updateValue);
     }
 

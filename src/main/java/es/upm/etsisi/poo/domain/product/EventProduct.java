@@ -1,6 +1,7 @@
 package es.upm.etsisi.poo.domain.product;
 
 import java.time.LocalDateTime;
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
 // [Class] Product type: Event.
 public class EventProduct extends BookableProduct {
