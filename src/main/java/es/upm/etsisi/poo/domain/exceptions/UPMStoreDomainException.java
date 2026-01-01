@@ -1,6 +1,7 @@
 package es.upm.etsisi.poo.domain.exceptions;
 
-public class UPMStoreDomainException extends Exception {
+// [Exception] Base class for all custom project errors.
+public class UPMStoreDomainException extends RuntimeException {
     public UPMStoreDomainException(String message) {
         super(message);
     }

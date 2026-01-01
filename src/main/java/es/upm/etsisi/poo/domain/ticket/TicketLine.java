@@ -1,30 +1,19 @@
 package es.upm.etsisi.poo.domain.ticket;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.ArrayList;
-import es.upm.etsisi.poo.domain.product.*;
 
-// [Class] Stores a product and its quantity.
-public class TicketLine<T extends Product> implements Comparable<TicketLine<T>>, java.io.Serializable {
+import es.upm.etsisi.poo.domain.product.Product;
+
+public class TicketLine<T extends Product> implements Serializable {
     private int quantity;
     private final T product;
     private final List<String> customTexts;
 
-    @SuppressWarnings("Convert2Diamond")
-    public TicketLine(T product, int quantity) {
-        if (product == null) {
-            throw new IllegalArgumentException("Product cannot be null.");
-        }
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be positive.");
-        }
-        this.product = product;
+    public TicketLine(int quantity, T product, List<String> customTexts) {
         this.quantity = quantity;
-        this.customTexts = new ArrayList<String>();
-    }
-
-    public T getProduct() {
-        return product;
+        this.product = product;
+        this.customTexts = customTexts;
     }
 
     public int getQuantity() {
@@ -32,26 +21,18 @@ public class TicketLine<T extends Product> implements Comparable<TicketLine<T>>,
     }
 
     public void setQuantity(int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be positive.");
-        }
         this.quantity = quantity;
+    }
+
+    public T getProduct() {
+        return product;
     }
 
     public List<String> getCustomTexts() {
         return customTexts;
     }
 
-    public void addCustomText(String text) {
-        product.addCustomText(customTexts, text);
-    }
-
     public double getLineTotal() {
-        return product.getLineTotal(quantity, this.customTexts);
-    }
-
-    @Override
-    public int compareTo(TicketLine<T> other) {
-        return this.getProduct().getName().compareToIgnoreCase(other.getProduct().getName());
+        return product.getLineTotal(quantity, customTexts);
     }
 }

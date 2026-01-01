@@ -1,20 +1,16 @@
 package es.upm.etsisi.poo.domain.user;
 
-import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-// [Class] Manages the list of Cashiers.
+import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
+
 public class CashierRepository implements Serializable {
-    private final List<Cashier> cashiers;
+    private final List<Cashier> cashiers = new ArrayList<>();
 
-    public CashierRepository() {
-        this.cashiers = new ArrayList<>();
-    }
-
-    public void add(Cashier cashier) throws DuplicateEntryException {
+    public void add(Cashier cashier) {
+        // Check: Throw exception if ID is taken.
         if (findById(cashier.getId()) != null) {
             throw new DuplicateEntryException("Cashier with ID " + cashier.getId() + " already exists.");
         }
@@ -30,14 +26,11 @@ public class CashierRepository implements Serializable {
         return null;
     }
 
-    public void remove(String id) {
-        Cashier cashierToRemove = findById(id);
-        if (cashierToRemove != null) {
-            cashiers.remove(cashierToRemove);
-        }
-    }
-
     public List<Cashier> getAll() {
         return new ArrayList<>(cashiers);
+    }
+
+    public void remove(String id) {
+        cashiers.removeIf(c -> c.getId().equals(id));
     }
 }

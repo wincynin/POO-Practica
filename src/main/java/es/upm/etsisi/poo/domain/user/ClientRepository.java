@@ -1,20 +1,16 @@
 package es.upm.etsisi.poo.domain.user;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.io.Serializable;
-
-// [Class] Manages the list of Clients.
 public class ClientRepository implements Serializable {
-    private final List<Client> clients;
+    private final List<Client> clients = new ArrayList<>();
 
-    public ClientRepository() {
-        this.clients = new ArrayList<>();
-    }
-
-    public void add(Client client) throws DuplicateEntryException {
+    public void add(Client client) {
+        // Check: Throw exception if ID is taken.
         if (findById(client.getId()) != null) {
             throw new DuplicateEntryException("Client with ID " + client.getId() + " already exists.");
         }
@@ -30,14 +26,11 @@ public class ClientRepository implements Serializable {
         return null;
     }
 
-    public void remove(String id) {
-        Client clientToRemove = findById(id);
-        if (clientToRemove != null) {
-            clients.remove(clientToRemove);
-        }
-    }
-
     public List<Client> getAll() {
         return new ArrayList<>(clients);
+    }
+
+    public void remove(String id) {
+        clients.removeIf(c -> c.getId().equals(id));
     }
 }

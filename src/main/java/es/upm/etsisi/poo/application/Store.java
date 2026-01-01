@@ -1,18 +1,28 @@
 package es.upm.etsisi.poo.application;
 
-import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
-import es.upm.etsisi.poo.domain.exceptions.*;
-import es.upm.etsisi.poo.domain.user.*;
-import es.upm.etsisi.poo.domain.ticket.Ticket;
+import java.util.ArrayList;
+import java.util.List;
+
+import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
+import es.upm.etsisi.poo.domain.exceptions.ResourceNotFoundException;
+import es.upm.etsisi.poo.domain.exceptions.TicketTypeMismatchException;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
+import es.upm.etsisi.poo.domain.exceptions.UnauthorizedAccessException;
 import es.upm.etsisi.poo.domain.product.Catalog;
 import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.product.StandardProduct;
 import es.upm.etsisi.poo.domain.ticket.CommonTicket;
 import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
-import es.upm.etsisi.poo.domain.product.StandardProduct;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
 import es.upm.etsisi.poo.domain.ticket.TicketRepository;
-
-import java.util.List;
-import java.util.ArrayList;
+import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.user.CashierRepository;
+import es.upm.etsisi.poo.domain.user.Client;
+import es.upm.etsisi.poo.domain.user.ClientRepository;
+import es.upm.etsisi.poo.domain.user.CompanyClient;
+import es.upm.etsisi.poo.domain.user.IndividualClient;
 
 
 // [Model] Central class that manages all data.
@@ -36,7 +46,7 @@ public class Store implements java.io.Serializable {
     }
 
     public void addClient(Client client) throws DuplicateEntryException {
-        // Check: Client ID must be unique.
+        // Validation: Throws error if ID is duplicate.
         clientRepository.add(client);
     }
 
@@ -59,6 +69,7 @@ public class Store implements java.io.Serializable {
         if (cashierId == null || cashierId.isEmpty()) {
             cashierId = Cashier.generateCashierId(this.cashierRepository.getAll());
         }
+        // Handler: Catch duplicate error and re-throw as domain error.
         try {
             addCashier(new Cashier(cashierId, name, email));
         } catch (DuplicateEntryException e) {
@@ -84,6 +95,7 @@ public class Store implements java.io.Serializable {
 
     public Ticket<?> createTicket(String id, String cashierId, String userId, TicketPrintType printType) throws UPMStoreDomainException {
         Cashier cashier = findCashierById(cashierId);
+        // Validation: Ensure Cashier exists.
         if (cashier == null) {
             throw new ResourceNotFoundException("Cashier with ID " + cashierId + " not found.");
         }
@@ -110,6 +122,7 @@ public class Store implements java.io.Serializable {
                     break;
             }
         } else {
+            // Error: Client type must match Ticket type.
             throw new TicketTypeMismatchException("Error: Unknown client type.");
         }
         
@@ -129,7 +142,7 @@ public class Store implements java.io.Serializable {
         }
 
         Cashier cashier = findCashierById(cashierId);
-        // Rule: Only the creator can modify the ticket.
+        // Security: Verify that the cashier owns this ticket.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -139,7 +152,7 @@ public class Store implements java.io.Serializable {
             throw new ResourceNotFoundException("Product with ID " + prodId + " not found.");
         }
 
-        // Use the polymorphic accepts method to check compatibility.
+        // Check: Ensure product is compatible with ticket.
         if (!ticket.accepts(product)) {
             throw new TicketTypeMismatchException("Error: Product type " + product.getClass().getSimpleName() + " not accepted by ticket type " + ticket.getClass().getSimpleName() + ".");
         }
@@ -166,7 +179,7 @@ public class Store implements java.io.Serializable {
 
         Cashier cashier = findCashierById(cashierId);
         
-        // Rule: Only the creator can remove items.
+        // Security: Enforce ownership before removal.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -182,7 +195,7 @@ public class Store implements java.io.Serializable {
         }
         
         Cashier cashier = findCashierById(cashierId);
-        // Rule: Only the creator can print.
+        // Security: Enforce ownership before printing.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }

@@ -1,77 +1,57 @@
 package es.upm.etsisi.poo.ui;
 
-import java.util.Map;
+import java.util.Arrays;
 import java.util.HashMap;
-import es.upm.etsisi.poo.application.Store;
+import java.util.Map;
 
-// [Controller] Reads input and calls Store methods.
+import es.upm.etsisi.poo.application.Store;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
+
 public class CommandHandler {
-    private final Map<String, Command> commands;
+    private final Map<String, Command> commands = new HashMap<>();
+    private final Store store;
 
     public CommandHandler(Store store) {
-        this.commands = new HashMap<>();
+        this.store = store;
+        initializeCommands();
+    }
+
+    private void initializeCommands() {
         commands.put("prod", new ProductCommand(store));
-        commands.put("ticket", new TicketCommand(store));
         commands.put("client", new ClientCommand(store));
         commands.put("cash", new CashierCommand(store));
+        commands.put("ticket", new TicketCommand(store));
     }
 
     public void handle(String input) {
-        if (input == null || input.trim().isEmpty()) {
+        String[] parts = input.trim().split("\\s+");
+        if (parts.length == 0) return;
+
+        String commandName = parts[0].toLowerCase();
+        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+
+        if ("echo".equals(commandName)) {
+            System.out.println(String.join(" ", args));
+            return;
+        }
+        if ("help".equals(commandName)) {
+            System.out.println("Available commands: prod, client, cash, ticket, echo, exit");
             return;
         }
 
-        String[] parts = input.split(" ", 2);
-        String commandName = parts[0];
-        String[] args = parts.length > 1 ? new String[]{parts[1]} : new String[0];
-
-        try {
-            if ("help".equals(commandName)) {
-                printHelp();
-            } else if ("echo".equals(commandName)) {
-                System.out.println(input);
-            } else {
-                Command command = commands.get(commandName);
-                if (command != null) {
-                    command.execute(args);
-                } else {
-                    System.out.println("Command not recognized. Type 'help' for a list of commands.");
-                }
+        Command command = commands.get(commandName);
+        if (command != null) {
+            try {
+                command.execute(args);
+            } catch (UPMStoreDomainException e) {
+                // Logic: Catch our custom errors and show clean message.
+                System.out.println("Error: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                // Safety: Catch unexpected crashes.
+                System.out.println("Unexpected Error: " + e.getMessage());
             }
-        } catch (es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException e) {
-            // Catch errors (like invalid ID or state).
-            System.out.println("ERROR: " + e.getMessage());
-        } catch (Exception e) {
-            // Catch all other unexpected errors.
-            System.out.println("General Error: " + e.getMessage());
+        } else {
+            System.out.println("Unknown command: " + commandName);
         }
-    }
-
-    private void printHelp() {
-        System.out.println("Commands:");
-        System.out.println("  prod add \"<name>\" <category> <price> [<maxPers>]");
-        System.out.println("  prod addFood \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
-        System.out.println("  prod addMeeting \"<name>\" <price> <expiration: yyyy-MM-dd> <max_people>");
-        System.out.println("  prod list");
-        System.out.println("  prod update <id> NAME|CATEGORY|PRICE <value>");
-        System.out.println("  prod remove <id>");
-        System.out.println("  ticket new [id] <cashId> <userId>");
-        System.out.println("  ticket add <ticketId> <cashId> <prodId> <amount> [--p <text>]");
-        System.out.println("  ticket remove <ticketId> <cashId> <prodId>");
-        System.out.println("  ticket print <ticketId> <cashId>");
-        System.out.println("  ticket list");
-        System.out.println("  client add \"<name>\" <dni> <email> <cashId>");
-        System.out.println("  client remove <dni>");
-        System.out.println("  client list");
-        System.out.println("  cash add [id] \"<name>\" <email>");
-        System.out.println("  cash remove <id>");
-        System.out.println("  cash list");
-        System.out.println("  cash tickets <id>");
-        System.out.println("  echo \"<text>\"");
-        System.out.println("  help");
-        System.out.println("  exit");
-        System.out.println();
-        System.out.println("Categories: MERCH, STATIONERY, CLOTHES, BOOK, ELECTRONICS");
-        System.out.println("Discounts if there are ≥2 units in the category: MERCH 0%, STATIONERY 5%, CLOTHES 7%, BOOK 10%, ELECTRONICS 3%");
     }
 }
