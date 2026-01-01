@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.product.Service;
-import es.upm.etsisi.poo.domain.product.StandardProduct;
 import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
@@ -29,7 +28,7 @@ public class CompanyTicket extends Ticket<Product> {
         int linesAfter = getLines().size();
 
         if (linesAfter > linesBefore) { // A new line was added
-            if (product instanceof StandardProduct) {
+            if (!product.isService()) {
                 productCount++;
             } else {
                 serviceCount++;
@@ -50,7 +49,7 @@ public class CompanyTicket extends Ticket<Product> {
         boolean removed = super.removeProduct(productId);
 
         if (removed && productToRemove != null) {
-            if (productToRemove instanceof StandardProduct) {
+            if (!productToRemove.isService()) {
                 productCount--;
             } else {
                 serviceCount--;
@@ -102,18 +101,18 @@ public class CompanyTicket extends Ticket<Product> {
     @Override
     public void validateProduct(Product p) throws TicketRuleViolationException {
         // E3: Service Usage Limit - Check expiration date.
-        if (p instanceof Service) {
+        if (p.isService()) {
             Service s = (Service) p;
             if (s.getExpirationDate().isBefore(LocalDateTime.now())) {
                 throw new TicketRuleViolationException("Error: Service " + s.getName() + " has expired.");
             }
         }
         if (getPrintStrategy() instanceof ServicePrintStrategy) {
-            if (!(p instanceof Service)) {
+            if (!p.isService()) {
                 throw new TicketRuleViolationException("Error: Service-only tickets cannot contain StandardProducts.");
             }
         } else if (getPrintStrategy() instanceof StandardPrintStrategy) {
-            if (p instanceof Service) {
+            if (p.isService()) {
                 throw new TicketRuleViolationException("Error: Product-only tickets cannot contain Services.");
             }
         }
@@ -123,21 +122,21 @@ public class CompanyTicket extends Ticket<Product> {
     public double getTotalPrice() {
         double productTotal = 0.0;
         double serviceTotal = 0.0;
-        int serviceCount = 0;
+        int totalServiceQuantity = 0;
 
         for (TicketLine<Product> line : getLines()) {
             Product p = line.getProduct();
             // Use instanceof to detect Service
-            if (p instanceof Service) {
+            if (p.isService()) {
                 serviceTotal += line.getLineTotal();
-                serviceCount += line.getQuantity();
+                totalServiceQuantity += line.getQuantity();
             } else {
                 productTotal += line.getLineTotal();
             }
         }
 
         // E3 Rule: 15% discount on PRODUCTS for EACH service.
-        double discountFactor = 0.15 * serviceCount;
+        double discountFactor = 0.15 * totalServiceQuantity;
         if (discountFactor > 1.0) discountFactor = 1.0; // Cap at 100%
 
         return serviceTotal + (productTotal * (1.0 - discountFactor));

@@ -107,6 +107,7 @@ public class Store implements java.io.Serializable {
         return newTicket;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void addProductToTicket(String ticketId, String cashierId, String prodId, int amount,
             List<String> customTexts) throws UPMStoreDomainException {
         Ticket<?> ticket = getTicket(ticketId);
