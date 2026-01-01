@@ -109,7 +109,7 @@ public class Store implements java.io.Serializable {
                     break;
             }
         } else {
-            throw new IllegalStateException("Error: Unknown client type.");
+            throw new TicketTypeMismatchException("Error: Unknown client type.");
         }
         
         // Link the ticket to the cashier and client.

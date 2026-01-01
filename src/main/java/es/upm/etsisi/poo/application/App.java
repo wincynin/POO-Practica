@@ -7,12 +7,20 @@ import java.io.FileNotFoundException;
 
 import es.upm.etsisi.poo.ui.CommandHandler;
 import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
+import es.upm.etsisi.poo.domain.exceptions.PersistenceException;
 
 // Main application class for the ticket module.
 public class App {
     public static void main(String[] args) throws FileNotFoundException {
         FilePersistenceHandler persistence = new FilePersistenceHandler();
-        Store store = persistence.load(); // Load state
+        Store store;
+        try {
+            store = persistence.load(); // Load state
+            System.out.println("Data loaded successfully.");
+        } catch (PersistenceException e) {
+            System.out.println("Warning: Could not load data (" + e.getMessage() + "). Starting with empty store.");
+            store = new Store(); // Fallback
+        }
         store.refreshCounters(); // Refresh static counters
 
         Scanner inputScanner;
@@ -51,7 +59,12 @@ public class App {
             if (inputLine.equalsIgnoreCase("exit")) {
                 // Exit the loop when user types 'exit'.
                 System.out.println("Closing application.");
-                persistence.save(store); // Save state
+                try {
+                    persistence.save(store); // Save state
+                    System.out.println("Data saved successfully.");
+                } catch (PersistenceException e) {
+                    System.err.println("CRITICAL: Failed to save data: " + e.getMessage());
+                }
                 System.out.println("Goodbye!");
                 running = false;
             } else if (!inputLine.isEmpty()) {
