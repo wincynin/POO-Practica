@@ -2,6 +2,7 @@ package es.upm.etsisi.poo.domain.product;
 
 import java.util.List;
 
+// Represents a concept of product used for the system.
 public abstract class Product implements java.io.Serializable {
 
     private int id;

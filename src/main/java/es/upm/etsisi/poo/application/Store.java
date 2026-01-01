@@ -1,11 +1,11 @@
 package es.upm.etsisi.poo.application;
 
 import es.upm.etsisi.poo.domain.user.*;
-import es.upm.etsisi.poo.domain.ticket.CommonTicket;
-import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Catalog;
 import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.ticket.CommonTicket;
+import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
 
 import java.util.List;

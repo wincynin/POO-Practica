@@ -1,11 +1,11 @@
 package es.upm.etsisi.poo.infrastructure.printing;
 
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.ticket.TicketLine;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
 
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-import es.upm.etsisi.poo.domain.ticket.TicketLine;
-
+// Implements the service print strategy for tickets containing only services.
 public class ServicePrintStrategy implements PrintStrategy {
     @Override
     public String formatTicket(Ticket<?> ticket) {
@@ -28,4 +28,3 @@ public class ServicePrintStrategy implements PrintStrategy {
         return sb.toString();
     }
 }
-

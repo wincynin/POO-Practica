@@ -1,11 +1,10 @@
 package es.upm.etsisi.poo.domain.ticket;
 
 import es.upm.etsisi.poo.domain.product.Product;
-
 import es.upm.etsisi.poo.domain.product.StandardProduct;
-
 import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
 
+// Represents a company ticket that must contain at least one product and one service as defined by E3.
 public class CompanyTicket extends Ticket<Product> {
     private int productCount;
     private int serviceCount;

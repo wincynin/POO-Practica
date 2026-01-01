@@ -1,9 +1,10 @@
 package es.upm.etsisi.poo.ui;
 
-import es.upm.etsisi.poo.application.Store;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import es.upm.etsisi.poo.application.Store;
 
+// Abstract base class for commands, providing common functionality.
 abstract class AbstractCommand implements Command {
     protected final Store store;
 

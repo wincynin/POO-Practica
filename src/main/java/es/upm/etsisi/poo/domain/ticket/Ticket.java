@@ -2,8 +2,8 @@ package es.upm.etsisi.poo.domain.ticket;
 
 import java.util.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import es.upm.etsisi.poo.domain.product.*;
+import java.time.format.DateTimeFormatter;
 import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 

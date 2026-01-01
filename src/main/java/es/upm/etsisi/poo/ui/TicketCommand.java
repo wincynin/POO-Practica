@@ -1,10 +1,9 @@
 package es.upm.etsisi.poo.ui;
 
+import java.util.List;
+import java.util.ArrayList;
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
-
-import java.util.ArrayList;
-import java.util.List;
 
 class TicketCommand extends AbstractCommand {
 

@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.domain.product;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
 
+// Represents a standard product in the system.
 public class StandardProduct extends Product {
 
     public StandardProduct(String name, ProductCategory category, double price) {

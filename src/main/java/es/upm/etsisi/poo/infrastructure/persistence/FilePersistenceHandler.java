@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.infrastructure.persistence;
 
-import es.upm.etsisi.poo.application.Store;
 import java.io.*;
+import es.upm.etsisi.poo.application.Store;
 
+// Handles persistence of the system state to and from a file.
 public class FilePersistenceHandler {
     private static final String FILE_NAME = "store_data.dat";
 

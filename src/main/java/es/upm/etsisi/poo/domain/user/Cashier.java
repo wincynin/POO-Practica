@@ -1,7 +1,7 @@
 package es.upm.etsisi.poo.domain.user;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 

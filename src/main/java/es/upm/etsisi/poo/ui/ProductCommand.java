@@ -1,11 +1,10 @@
 package es.upm.etsisi.poo.ui;
 
-import es.upm.etsisi.poo.application.Store;
-import es.upm.etsisi.poo.domain.product.*;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.time.LocalDate;
+import es.upm.etsisi.poo.domain.product.*;
+import es.upm.etsisi.poo.application.Store;
+import java.time.format.DateTimeFormatter;
 
 class ProductCommand extends AbstractCommand {
 

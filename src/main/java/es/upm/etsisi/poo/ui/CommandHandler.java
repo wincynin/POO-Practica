@@ -1,8 +1,8 @@
 package es.upm.etsisi.poo.ui;
 
-import es.upm.etsisi.poo.application.Store;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
+import es.upm.etsisi.poo.application.Store;
 
 // This class acts as the Controller. It parses user input and calls Store methods.
 public class CommandHandler {

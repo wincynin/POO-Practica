@@ -1,12 +1,13 @@
 package es.upm.etsisi.poo.ui;
 
 import es.upm.etsisi.poo.application.Store;
-import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.user.Cashier;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
 
+// Handles cashier-related commands such as add, remove, list, and tickets.
 class CashierCommand extends AbstractCommand {
     public CashierCommand(Store store) {
         super(store);
@@ -68,9 +69,9 @@ class CashierCommand extends AbstractCommand {
                     if (cashier == null) {
                         throw new IllegalArgumentException("Error: Cashier with ID " + cashierId + " not found.");
                     }
+
                     List<Ticket<?>> cashierTickets = cashier.getTickets();
 
-                    // --- NEW (Anonymous Inner Class - Professor Approved) ---
                     Collections.sort(cashierTickets, new java.util.Comparator<Ticket<?>>() {
                         @Override
                         public int compare(Ticket<?> t1, Ticket<?> t2) {

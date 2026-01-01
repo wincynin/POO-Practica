@@ -3,9 +3,10 @@ package es.upm.etsisi.poo.ui;
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.user.Client;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
 
+// Handles client-related commands such as add, remove, and list.
 class ClientCommand extends AbstractCommand {
 
     public ClientCommand(Store store) {

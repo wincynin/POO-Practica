@@ -1,8 +1,8 @@
 package es.upm.etsisi.poo.domain.product;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
+import java.time.LocalDateTime;
 
 // Represents an event product that can be booked, as defined in E2.
 public abstract class BookableProduct extends Product {

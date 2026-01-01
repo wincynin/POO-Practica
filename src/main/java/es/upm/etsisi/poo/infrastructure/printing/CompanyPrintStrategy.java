@@ -1,11 +1,12 @@
 package es.upm.etsisi.poo.infrastructure.printing;
 
-import es.upm.etsisi.poo.domain.product.BookableProduct;
-import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.domain.product.StandardProduct;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.ticket.TicketLine;
+import es.upm.etsisi.poo.domain.product.BookableProduct;
+import es.upm.etsisi.poo.domain.product.StandardProduct;
 
+// Implements the print strategy for company tickets as required by E3.
 public class CompanyPrintStrategy implements PrintStrategy {
 
     private static final double DISCOUNT_RATE_PER_SERVICE = 0.15;

@@ -1,12 +1,13 @@
 package es.upm.etsisi.poo.domain.product;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
+import java.time.LocalDateTime;
 
+// Represents a service in the system as defined by E3.
 public class Service extends Product {
-    private final LocalDateTime expirationDate;
     private final ServiceType serviceType;
+    private final LocalDateTime expirationDate;
 
     public Service(LocalDateTime expirationDate, ServiceType serviceType) {
         super(String.format("Service-%s", serviceType.name()), null, 0.0); // Price is 0.0

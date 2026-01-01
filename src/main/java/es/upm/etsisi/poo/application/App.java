@@ -5,8 +5,8 @@ import java.util.Scanner;
 import java.io.FileNotFoundException;
 
 
-import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
 import es.upm.etsisi.poo.ui.CommandHandler;
+import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
 
 // Main application class for the ticket module.
 public class App {
