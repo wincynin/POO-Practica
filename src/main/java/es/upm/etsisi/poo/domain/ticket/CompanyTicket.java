@@ -1,11 +1,13 @@
 package es.upm.etsisi.poo.domain.ticket;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.product.Service;
 import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
@@ -13,12 +15,22 @@ import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 public class CompanyTicket extends Ticket<Product> {
     private int productCount;
     private int serviceCount;
+    private ValidationPolicy validationPolicy;
 
     public CompanyTicket(String id) {
         super(id);
+        // This will trigger setPrintStrategy and initialize the validationPolicy
         setPrintStrategy(new CompanyPrintStrategy());
         this.productCount = 0;
         this.serviceCount = 0;
+    }
+
+    @Override
+    public void setPrintStrategy(PrintStrategy printStrategy) {
+        super.setPrintStrategy(printStrategy);
+        // Map the print strategy to a validation policy.
+        // This isolates the coupling to this configuration method.
+        this.validationPolicy = ValidationPolicyFactory.getPolicy(printStrategy);
     }
 
     @Override
@@ -61,34 +73,8 @@ public class CompanyTicket extends Ticket<Product> {
     @Override
     public String print() throws TicketRuleViolationException {
         // Check for rules before calling super.print(), which closes the ticket.
-        if (getPrintStrategy() instanceof CompanyPrintStrategy) {
-            // This is the "Mixed" strategy. It must have at least one Product and one Service.
-            if (productCount == 0 || serviceCount == 0) {
-                if (productCount == 0 && serviceCount == 0) {
-                    throw new TicketRuleViolationException("Error: Cannot print an empty company ticket.");
-                } else {
-                    // It's not empty, but it's not mixed. It's either product-only or service-only with CompanyPrintStrategy.
-                    // This is a violation of the "Mixed" rule for CompanyPrintStrategy.
-                    throw new TicketRuleViolationException("Error: Mixed ticket must contain at least one StandardProduct and one Service.");
-                }
-            }
-        } else if (getPrintStrategy() instanceof ServicePrintStrategy) {
-            // This is a Service-only strategy.
-            if (productCount > 0) {
-                throw new TicketRuleViolationException("Error: Service-only ticket cannot contain StandardProducts.");
-            }
-            if (serviceCount == 0) {
-                throw new TicketRuleViolationException("Error: Service-only ticket must contain at least one Service.");
-            }
-        } else if (getPrintStrategy() instanceof StandardPrintStrategy) {
-            // This is a Product-only strategy.
-            if (serviceCount > 0) {
-                throw new TicketRuleViolationException("Error: Product-only ticket cannot contain Services.");
-            }
-            if (productCount == 0) {
-                throw new TicketRuleViolationException("Error: Product-only ticket must contain at least one StandardProduct.");
-            }
-        }
+        // Delegate validation to the active policy.
+        validationPolicy.validatePrint(productCount, serviceCount);
 
         return super.print();
     }
@@ -107,15 +93,8 @@ public class CompanyTicket extends Ticket<Product> {
                 throw new TicketRuleViolationException("Error: Service " + s.getName() + " has expired.");
             }
         }
-        if (getPrintStrategy() instanceof ServicePrintStrategy) {
-            if (!p.isService()) {
-                throw new TicketRuleViolationException("Error: Service-only tickets cannot contain StandardProducts.");
-            }
-        } else if (getPrintStrategy() instanceof StandardPrintStrategy) {
-            if (p.isService()) {
-                throw new TicketRuleViolationException("Error: Product-only tickets cannot contain Services.");
-            }
-        }
+        // Delegate strategy-specific product validation.
+        validationPolicy.validateProduct(p);
     }
 
     @Override
@@ -140,5 +119,62 @@ public class CompanyTicket extends Ticket<Product> {
         if (discountFactor > 1.0) discountFactor = 1.0; // Cap at 100%
 
         return serviceTotal + (productTotal * (1.0 - discountFactor));
+    }
+
+    // --- Internal Strategy Pattern for Validation ---
+
+    private interface ValidationPolicy extends Serializable {
+        void validatePrint(int productCount, int serviceCount) throws TicketRuleViolationException;
+        void validateProduct(Product p) throws TicketRuleViolationException;
+    }
+
+    private static class ValidationPolicyFactory {
+        static ValidationPolicy getPolicy(PrintStrategy strategy) {
+            if (strategy instanceof CompanyPrintStrategy) return new MixedPolicy();
+            if (strategy instanceof ServicePrintStrategy) return new ServiceOnlyPolicy();
+            if (strategy instanceof StandardPrintStrategy) return new ProductOnlyPolicy();
+            return new DefaultPolicy();
+        }
+    }
+
+    private static class MixedPolicy implements ValidationPolicy {
+        @Override
+        public void validatePrint(int pCount, int sCount) {
+            if (pCount == 0 && sCount == 0) throw new TicketRuleViolationException("Error: Cannot print an empty company ticket.");
+            if (pCount == 0 || sCount == 0) throw new TicketRuleViolationException("Error: Mixed ticket must contain at least one StandardProduct and one Service.");
+        }
+        @Override
+        public void validateProduct(Product p) { /* Accepts all */ }
+    }
+
+    private static class ServiceOnlyPolicy implements ValidationPolicy {
+        @Override
+        public void validatePrint(int pCount, int sCount) {
+            if (pCount > 0) throw new TicketRuleViolationException("Error: Service-only ticket cannot contain StandardProducts.");
+            if (sCount == 0) throw new TicketRuleViolationException("Error: Service-only ticket must contain at least one Service.");
+        }
+        @Override
+        public void validateProduct(Product p) {
+            if (!p.isService()) throw new TicketRuleViolationException("Error: Service-only tickets cannot contain StandardProducts.");
+        }
+    }
+
+    private static class ProductOnlyPolicy implements ValidationPolicy {
+        @Override
+        public void validatePrint(int pCount, int sCount) {
+            if (sCount > 0) throw new TicketRuleViolationException("Error: Product-only ticket cannot contain Services.");
+            if (pCount == 0) throw new TicketRuleViolationException("Error: Product-only ticket must contain at least one StandardProduct.");
+        }
+        @Override
+        public void validateProduct(Product p) {
+            if (p.isService()) throw new TicketRuleViolationException("Error: Product-only tickets cannot contain Services.");
+        }
+    }
+
+    private static class DefaultPolicy implements ValidationPolicy {
+        @Override
+        public void validatePrint(int pCount, int sCount) {}
+        @Override
+        public void validateProduct(Product p) {}
     }
 }

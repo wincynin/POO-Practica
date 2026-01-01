@@ -7,13 +7,12 @@ import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 // [Abstract Class] Base class for all products.
 public abstract class Product implements java.io.Serializable {
 
-    private String id;
     private String name;
     private double price;
-    // Static counter for IDs.
-    private static int nextId = 1;
-    protected static int nextServiceId = 1;
+    private final String id;
+    private static int nextId = 1;              // Static counter for IDs.
     private ProductCategory category;
+    protected static int nextServiceId = 1;
     protected static final double MIN_PRICE = -0.001;
     protected static final int MAX_NAME_LENGTH = 100;
 
