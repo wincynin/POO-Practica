@@ -1,24 +1,23 @@
 @startuml
-'--- STYLING ---
-skinparam classAttributeIconSize 0
 skinparam linetype ortho
+skinparam classAttributeIconSize 0
 skinparam packageStyle rectangle
 
-'--- PACKAGES ---
+title UPM Store - Class Diagram (Entrega 3)
 
+'--- DOMAIN: PRODUCT ---
 package "es.upm.etsisi.poo.domain.product" {
-    abstract class Product {
-        # String id
-        + {abstract} double getPrice()
-        + String getId()
-    }
-
     enum ProductCategory {
         MERCH
-        STATIONERY
-        CLOTHES
         BOOK
+        CLOTHES
+        STATIONERY
         ELECTRONICS
+    }
+
+    enum EventType {
+        FOOD
+        MEETING
     }
 
     enum ServiceType {
@@ -27,138 +26,246 @@ package "es.upm.etsisi.poo.domain.product" {
         INSURANCE
     }
 
-    class StandardProduct {
+    abstract class Product implements java.io.Serializable {
+        - int id
         - String name
         - double price
         - ProductCategory category
-        + StandardProduct(id, name, price, category)
-        + double getPrice()
+        + {abstract} boolean isBookable()
+        + {abstract} void validate()
+        + {abstract} double getLineTotal(int qty, List<String> custom)
+    }
+
+    class StandardProduct {
+        + StandardProduct(name, category, price)
+    }
+
+    class CustomizableProduct {
+        - int maxCustomizableTexts
+        - List<String> customTexts
+        + double getLineTotal(...)
+    }
+
+    abstract class BookableProduct {
+        - int maxParticipants
+        - LocalDateTime expirationDate
+        + {abstract} void validate()
+    }
+
+    class EventProduct {
+        - EventType type
+        + void validate()
     }
 
     class Service {
-        - LocalDate maxUsageDate
-        - ServiceType type
-        + Service(id, date, type)
-        + double getPrice() 
-        note right: Price is 0.0 initially (calculated a posteriori)
+        - ServiceType serviceType
+        - LocalDateTime expirationDate
+        + boolean isBookable()
+    }
+
+    class Catalog implements java.io.Serializable {
+        - List<Product> products
+        + void addProduct(Product p)
+        + Product getProduct(int id)
     }
 
     Product <|-- StandardProduct
+    Product <|-- CustomizableProduct
+    Product <|-- BookableProduct
     Product <|-- Service
-    StandardProduct o-- ProductCategory
-    Service o-- ServiceType
+    BookableProduct <|-- EventProduct
+    
+    StandardProduct ..> ProductCategory
+    EventProduct ..> EventType
+    Service ..> ServiceType
+    Catalog o-- Product
 }
 
+'--- DOMAIN: TICKET ---
+package "es.upm.etsisi.poo.domain.ticket" {
+    enum TicketState {
+        EMPTY
+        ACTIVE
+        CLOSED
+    }
+
+    class TicketLine<T extends Product> implements java.io.Serializable {
+        - int quantity
+        - T product
+        - List<String> customTexts
+        + double getLineTotal()
+    }
+
+    abstract class Ticket<T extends Product> implements java.io.Serializable, Comparable {
+        - String id
+        - TicketState state
+        - List<TicketLine<T>> lines
+        - PrintStrategy printStrategy
+        + void addProduct(T product, int qty, List<String> texts)
+        + String print()
+        + void setPrintStrategy(PrintStrategy ps)
+    }
+
+    class CommonTicket {
+        + CommonTicket(String id)
+    }
+    note bottom: <T> is StandardProduct
+
+    class CompanyTicket {
+        - int productCount
+        - int serviceCount
+        + CompanyTicket(String id)
+        + void addProduct(...)
+    }
+    note bottom: <T> is Product (Mixed)
+
+    class TicketRepository implements java.io.Serializable {
+        - List<Ticket<?>> tickets
+        + void add(Ticket<?> ticket)
+        + Ticket<?> findById(String id)
+    }
+
+    Ticket <|-- CommonTicket
+    Ticket <|-- CompanyTicket
+    Ticket *-- TicketLine
+    TicketLine o-- Product
+    TicketRepository o-- Ticket
+}
+
+'--- DOMAIN: USER ---
 package "es.upm.etsisi.poo.domain.user" {
-    abstract class User {
-        # String id
-        + String getId()
+    abstract class User implements java.io.Serializable {
+        - String id
+        - String name
+        - String email
     }
 
     class Cashier {
-        - String name
-        + Cashier(id, name)
+        - List<Ticket<?>> tickets
+        + void addTicket(Ticket<?> t)
     }
 
     abstract class Client {
-        # String email
-        # String name
-        + {abstract} boolean validateId()
+        + {abstract} boolean validateId(String id)
+        + {abstract} void addTicket(Ticket<?> t)
     }
 
     class IndividualClient {
-        + IndividualClient(dni, email, name)
-        + boolean validateId() 
-        note right: Validates DNI
+        - String cashierId
+        - List<Ticket<?>> tickets
     }
 
     class CompanyClient {
-        + CompanyClient(nif, email, name)
-        + boolean validateId()
-        note right: Validates NIF
+        - String cashierId
+        - List<Ticket<?>> tickets
+    }
+
+    class ClientRepository implements java.io.Serializable {
+        - List<Client> clients
+    }
+    
+    class CashierRepository implements java.io.Serializable {
+        - List<Cashier> cashiers
     }
 
     User <|-- Cashier
     User <|-- Client
     Client <|-- IndividualClient
     Client <|-- CompanyClient
+    
+    ClientRepository o-- Client
+    CashierRepository o-- Cashier
 }
 
-package "es.upm.etsisi.poo.domain.ticket" {
-    interface PrintStrategy {
-        + String formatTicket(Ticket<?> ticket)
-    }
-
-    abstract class Ticket<T extends Product> {
-        # String id
-        # LocalDate date
-        # List<T> lines
-        # PrintStrategy printStrategy
-        + Ticket(id, PrintStrategy)
-        + void addLine(T item)
-        + String print()
-        + void close()
-    }
-
-    class CommonTicket {
-        + CommonTicket(id, strategy)
-    }
-
-    class CompanyTicket {
-        + CompanyTicket(id, strategy)
-    }
-
-    ' GENERICS NOTATION
-    note top of CommonTicket: extends Ticket<StandardProduct>\n(Only accepts physical goods)
-    note top of CompanyTicket: extends Ticket<Product>\n(Accepts Mixed: Services + Products)
-
-    Ticket <|-- CommonTicket
-    Ticket <|-- CompanyTicket
-    Ticket o-r- PrintStrategy : uses >
-}
-
+'--- INFRASTRUCTURE ---
 package "es.upm.etsisi.poo.infrastructure" {
     package "printing" {
-        class StandardPrintStrategy {
+        interface PrintStrategy implements java.io.Serializable {
             + String formatTicket(Ticket<?> ticket)
         }
 
-        class CompanyPrintStrategy {
-            + String formatTicket(Ticket<?> ticket)
-            note bottom: Applies 15% discount logic\nif Services are present
-        }
+        class StandardPrintStrategy
+        class CompanyPrintStrategy
+        class ServicePrintStrategy
 
         PrintStrategy <|.. StandardPrintStrategy
         PrintStrategy <|.. CompanyPrintStrategy
+        PrintStrategy <|.. ServicePrintStrategy
     }
 
     package "persistence" {
         class FilePersistenceHandler {
-            - String STORAGE_PATH
-            + void saveState(Store store)
-            + Store loadState()
+            - String FILE_NAME
+            + void save(Store store)
+            + Store load()
         }
     }
 }
 
+'--- APPLICATION ---
 package "es.upm.etsisi.poo.application" {
-    class Store {
-        - static Store instance
-        - Map<String, Product> catalog
-        - Map<String, User> users
-        - List<Ticket> tickets
-        + void registerTicket(Ticket t)
-        + void persist()
+    class Store implements java.io.Serializable {
+        + void addProduct(Product p)
+        + Ticket<?> createTicket(...)
+        + void addProductToTicket(...)
+        + String printTicket(...)
     }
+    note top: Facade / Main Model
 }
 
-'--- RELATIONSHIPS ---
-Store o-- Product : catalog
-Store o-- User : users
-Store o-- Ticket : history
-Store ..> FilePersistenceHandler : uses for saving
+'--- UI ---
+package "es.upm.etsisi.poo.ui" {
+    interface Command {
+        + void execute(String[] args)
+    }
 
-Ticket --> Client : belongs to
-Ticket --> Cashier : created by
-Ticket *-- Product : contains list of
+    abstract class AbstractCommand {
+        # Store store
+        + List<String> parseArgs(String args)
+    }
+
+    class CommandHandler {
+        - Map<String, Command> commands
+        + void handle(String input)
+    }
+
+    class ProductCommand
+    class TicketCommand
+    class ClientCommand
+    class CashierCommand
+    
+    class TicketCashierComparator
+
+    Command <|.. AbstractCommand
+    AbstractCommand <|-- ProductCommand
+    AbstractCommand <|-- TicketCommand
+    AbstractCommand <|-- ClientCommand
+    AbstractCommand <|-- CashierCommand
+    
+    CommandHandler o-- Command
+}
+
+'--- RELATIONSHIPS ACROSS PACKAGES ---
+
+' Strategy Pattern
+Ticket o-right- PrintStrategy
+
+' Store Aggregations (The Hexagon Core)
+Store *-- Catalog
+Store *-- TicketRepository
+Store *-- ClientRepository
+Store *-- CashierRepository
+
+' Persistence
+FilePersistenceHandler ..> Store : Saves/Loads
+
+' UI to Application
+AbstractCommand --> Store : Uses
+CommandHandler --> Store : Uses
+TicketCashierComparator --> Store : Uses
+
+' User to Ticket Associations
+Cashier o-- Ticket : created >
+Client o-- Ticket : owns >
+
 @enduml
