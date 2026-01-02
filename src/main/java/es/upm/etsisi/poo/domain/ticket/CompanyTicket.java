@@ -1,18 +1,15 @@
 package es.upm.etsisi.poo.domain.ticket;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
-import es.upm.etsisi.poo.domain.printing.PrintStrategy;
 import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.domain.product.Service;
 
 // [Class] Ticket implementation for specific Client types.
 public class CompanyTicket extends Ticket<Product> {
-    private int productCount;
+    private final int productCount;
     private int serviceCount;
-    private ValidationPolicy validationPolicy;
+    private final ValidationPolicy validationPolicy;
 
     public CompanyTicket(String id, TicketPrintType printType) {
         super(id);

@@ -1,10 +1,6 @@
 package es.upm.etsisi.poo.application;
 
 
-import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
-import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
-import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
-import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +18,9 @@ import es.upm.etsisi.poo.domain.user.Cashier;
 import es.upm.etsisi.poo.domain.user.CashierRepository;
 import es.upm.etsisi.poo.domain.user.Client;
 import es.upm.etsisi.poo.domain.user.ClientRepository;
+import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
 // [Model] Central class managing data and logic.
 public class Store implements java.io.Serializable {
@@ -104,22 +103,20 @@ public class Store implements java.io.Serializable {
         
         Ticket<?> newTicket = client.createTicket(id, printType.getFlag());
 
-        if (!(newTicket instanceof CompanyTicket)) {
-            // FIX: Inject the PrintStrategy based on the requested type
-            es.upm.etsisi.poo.domain.printing.PrintStrategy strategy;
-            switch (printType) {
-                case COMPANY:
-                    strategy = new CompanyPrintStrategy();
-                    break;
-                case SERVICE:
-                    strategy = new ServicePrintStrategy();
-                    break;
-                default:
-                    strategy = new StandardPrintStrategy();
-                    break;
-            }
-            newTicket.setPrintStrategy(strategy);
+        // FIX: Inject the PrintStrategy based on the requested type
+        es.upm.etsisi.poo.domain.printing.PrintStrategy strategy;
+        switch (printType) {
+            case COMPANY:
+                strategy = new CompanyPrintStrategy();
+                break;
+            case SERVICE:
+                strategy = new ServicePrintStrategy();
+                break;
+            default:
+                strategy = new StandardPrintStrategy();
+                break;
         }
+        newTicket.setPrintStrategy(strategy);
         
         // Logic: Add ticket to lists.
         ticketRepository.add(newTicket);
