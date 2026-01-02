@@ -1,6 +1,5 @@
 package es.upm.etsisi.poo.ui;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

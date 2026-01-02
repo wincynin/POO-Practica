@@ -10,7 +10,7 @@ import java.util.Objects;
 
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
+import es.upm.etsisi.poo.domain.printing.PrintStrategy;
 
 public abstract class Ticket<T extends Product> implements Serializable, Comparable<Ticket<?>> {
     private static final int MAX_TICKET_LINES = 100;

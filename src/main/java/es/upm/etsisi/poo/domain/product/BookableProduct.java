@@ -60,9 +60,10 @@ public abstract class BookableProduct extends Product {
     }
 
     // Abstract method to be implemented by subclasses (Food/Meeting)
-    @Override
     public abstract void validate();
     
+    public abstract String getPrintablePriceDetails();
+
     // Abstract method for ticket addition policy
     public abstract void validateTicketAddition() throws InvalidProductDataException;
 }

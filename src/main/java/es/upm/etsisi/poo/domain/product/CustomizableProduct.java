@@ -58,6 +58,16 @@ public class CustomizableProduct extends Product {
     }
 
     @Override
+    public java.time.LocalDateTime getExpirationDate() {
+        return null;
+    }
+
+    @Override
+    public String getPrintablePriceDetails() {
+        return String.format("Price: %.2f", getPrice());
+    }
+
+    @Override
     public String toString() {
         // Returns a string representation of the CustomizableProduct, including id, name, category, price and custom texts, in that order.
         return String.format("{class: %s, id:%s, name:'%s', category:%s, price:%.1f, customTexts:%s}",

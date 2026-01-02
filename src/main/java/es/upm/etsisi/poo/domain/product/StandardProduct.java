@@ -57,4 +57,9 @@ public class StandardProduct extends Product {
     public LocalDateTime getExpirationDate() {
         return null;
     }
+
+    @Override
+    public String getPrintablePriceDetails() {
+        return String.format("Price: %.2f", getPrice());
+    }
 }

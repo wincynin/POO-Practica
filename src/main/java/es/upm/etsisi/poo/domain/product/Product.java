@@ -99,6 +99,7 @@ public abstract class Product implements java.io.Serializable {
     public abstract boolean isBookable();
     public abstract void validate();
     public abstract LocalDateTime getExpirationDate();
+    public abstract String getPrintablePriceDetails();
     
     public boolean isService() {
         return false;

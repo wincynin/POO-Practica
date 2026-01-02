@@ -1,4 +1,4 @@
-package es.upm.etsisi.poo.infrastructure.printing;
+package es.upm.etsisi.poo.domain.printing;
 
 import java.io.Serializable;
 import es.upm.etsisi.poo.domain.ticket.Ticket;

@@ -60,4 +60,9 @@ public class Service extends Product {
     public String getExpirationDetails() {
         return ", Date: " + this.getExpirationDate().toString();
     }
+
+    @Override
+    public String getPrintablePriceDetails() {
+        return "Price: HIDDEN";
+    }
 }

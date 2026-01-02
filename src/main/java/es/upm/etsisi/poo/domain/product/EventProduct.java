@@ -56,6 +56,11 @@ public class EventProduct extends BookableProduct {
     public String getExpirationDetails() {
         return ", Date: " + this.getExpirationDate().toString();
     }
+
+    @Override
+    public String getPrintablePriceDetails() {
+        return String.format("Price: %.2f", getPrice());
+    }
     
     @Override
     public String toString() {

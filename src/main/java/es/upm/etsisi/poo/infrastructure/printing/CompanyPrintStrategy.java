@@ -1,5 +1,7 @@
 package es.upm.etsisi.poo.infrastructure.printing;
 
+import es.upm.etsisi.poo.domain.printing.PrintStrategy;
+
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.ticket.TicketLine;
@@ -34,19 +36,10 @@ public class CompanyPrintStrategy implements PrintStrategy {
         for (TicketLine<?> line : ticket.getLines()) {
             Product product = line.getProduct();
             
-            // Logic: Is it a Service (Hidden Price) or a Standard Product (Show Price)?
-            if (product.isService()) { 
-                // OCP Compliant: No casting needed! We just ask for details.
-                sb.append(String.format("Name: %s%s, Price: HIDDEN\n", 
-                    product.getName(), 
-                    product.getExpirationDetails())); // Polymorphic call
-            } else { 
-                // It is a paid product
-                sb.append(String.format("Name: %s%s, Price: %.2f\n", 
-                    product.getName(), 
-                    product.getExpirationDetails(), // Now Meetings will show their date too!
-                    line.getLineTotal()));
-            }
+            sb.append(String.format("Name: %s%s, %s\n", 
+                product.getName(), 
+                product.getExpirationDetails(),
+                product.getPrintablePriceDetails()));
         }
 
         sb.append("--------------------");
