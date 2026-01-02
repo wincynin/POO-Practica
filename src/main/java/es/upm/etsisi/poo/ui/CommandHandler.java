@@ -35,7 +35,7 @@ public class CommandHandler {
             return;
         }
         if ("help".equals(commandName)) {
-            System.out.println("Available commands: prod, client, cash, ticket, echo, exit");
+            printHelp();
             return;
         }
 
@@ -53,5 +53,39 @@ public class CommandHandler {
         } else {
             System.out.println("Unknown command: " + commandName);
         }
+    }
+
+    private void printHelp() {
+        System.out.println("Available commands:");
+        
+        // --- USERS (Client & Cashier) ---
+        System.out.println("  client add \"<name>\" <DNI|NIF> <email> <cashId>");
+        System.out.println("  client remove <id>");
+        System.out.println("  client list");
+        System.out.println("  cash add [<id>] \"<name>\" <email>");
+        System.out.println("  cash remove <id>");
+        System.out.println("  cash list");
+        System.out.println("  cash tickets <id>");
+
+        // --- PRODUCTS (Standard, Event, & E3 Services) ---
+        System.out.println("  prod add [<id>] \"<name>\" <category> <price> [<maxPers>]");
+        System.out.println("  prod add <expiration:yyyy-MM-dd> <category>"); // E3 Service
+        System.out.println("  prod update <id> NAME|CATEGORY|PRICE <value>");
+        System.out.println("  prod remove <id>");
+        System.out.println("  prod list");
+        System.out.println("  prod addFood [<id>] \"<name>\" <price> <expiration:yyyy-MM-dd> <max_people>");
+        System.out.println("  prod addMeeting [<id>] \"<name>\" <price> <expiration:yyyy-MM-dd> <max_people>");
+
+        // --- TICKETS (E3 Strategy Logic) ---
+        System.out.println("  ticket new [<id>] <cashId> <userId> -[c/p/s]"); // E3 Flags
+        System.out.println("  ticket add <ticketId> <cashId> <prodId> <amount> [--p<txt> --p<txt>]");
+        System.out.println("  ticket remove <ticketId> <cashId> <prodId>");
+        System.out.println("  ticket print <ticketId> <cashId>");
+        System.out.println("  ticket list");
+
+        // --- SYSTEM ---
+        System.out.println("  help");
+        System.out.println("  echo \"<text>\"");
+        System.out.println("  exit");
     }
 }
