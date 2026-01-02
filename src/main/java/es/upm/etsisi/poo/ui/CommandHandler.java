@@ -24,11 +24,11 @@ public class CommandHandler {
     }
 
     public void handle(String input) {
-        String[] parts = input.trim().split("\\s+");
-        if (parts.length == 0) return;
+        String[] parts = input.trim().split("\\s+", 2);
+        if (parts.length == 0 || parts[0].isEmpty()) return;
 
         String commandName = parts[0].toLowerCase();
-        String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+        String[] args = parts.length > 1 ? new String[]{parts[1]} : new String[0];
 
         if ("echo".equals(commandName)) {
             System.out.println(String.join(" ", args));
