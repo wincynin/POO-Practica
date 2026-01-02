@@ -105,7 +105,6 @@ public abstract class Product implements java.io.Serializable {
         return false;
     }
 
-    // OCP Fix: Polymorphic method to handle date display without instanceof
     public String getExpirationDetails() {
         return ""; // Default for StandardProduct (returns empty string)
     }
