@@ -103,7 +103,7 @@ public class Store implements java.io.Serializable {
         
         Ticket<?> newTicket = client.createTicket(id, printType.getFlag());
 
-        // FIX: Inject the PrintStrategy based on the requested type
+        // Inject the PrintStrategy based on the requested type
         es.upm.etsisi.poo.domain.printing.PrintStrategy strategy;
         switch (printType) {
             case COMPANY:

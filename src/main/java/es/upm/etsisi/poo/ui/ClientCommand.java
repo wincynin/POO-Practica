@@ -31,25 +31,28 @@ class ClientCommand extends AbstractCommand {
 
         switch (command) {
             case "add":
-                String name = argList.get(0);
                 String id = argList.get(1);
+                String name = argList.get(0);
                 String email = argList.get(2);
                 String cashierId = argList.get(3);
 
                 Client client;
+
                 // Logic: Discriminator (DNI vs NIF).
-                boolean isCompany = id.matches("^[A-Za-z].*");
+                boolean isCompany = !id.isEmpty() && Character.isLetter(id.charAt(0));
+
                 if (isCompany) {
                     client = new CompanyClient(id, name, email, cashierId);
                 } else {
                     client = new IndividualClient(id, name, email, cashierId);
                 }
+
                 if (!client.validateId(id)) {
                     throw new IllegalArgumentException("Error: Invalid client ID format.");
                 }
+
                 store.addClient(client);
                 System.out.println("client add: ok");
-
                 break;
             case "remove":
                 if (!argList.isEmpty()) {
@@ -62,8 +65,8 @@ class ClientCommand extends AbstractCommand {
                 break;
             case "list":
                 List<Client> clientList = store.getClients();
-                
-                // E2 Requirement: Sort by name
+
+                // Rule: Sort by name (E2)
                 Collections.sort(clientList);
                 System.out.println("Clients:");
                 for (Client c : clientList) {
