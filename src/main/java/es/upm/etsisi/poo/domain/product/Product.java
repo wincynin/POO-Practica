@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.product;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
@@ -97,9 +98,15 @@ public abstract class Product implements java.io.Serializable {
     public abstract double getLineTotal(int quantity, List<String> customTexts);
     public abstract boolean isBookable();
     public abstract void validate();
+    public abstract LocalDateTime getExpirationDate();
     
     public boolean isService() {
         return false;
+    }
+
+    // OCP Fix: Polymorphic method to handle date display without instanceof
+    public String getExpirationDetails() {
+        return ""; // Default for StandardProduct (returns empty string)
     }
 
     @Override

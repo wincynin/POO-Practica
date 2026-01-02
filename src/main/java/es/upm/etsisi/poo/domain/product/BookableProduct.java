@@ -25,6 +25,7 @@ public abstract class BookableProduct extends Product {
         this.maxParticipants = maxParticipants;
     }
 
+    @Override
     public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
@@ -50,6 +51,11 @@ public abstract class BookableProduct extends Product {
 
     @Override
     public boolean isBookable() {
+        return true;
+    }
+
+    @Override
+    public boolean isService() {
         return true;
     }
 

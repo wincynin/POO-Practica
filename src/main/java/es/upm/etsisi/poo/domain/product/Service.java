@@ -17,6 +17,7 @@ public class Service extends Product {
         this.serviceType = serviceType;
     }
 
+    @Override
     public LocalDateTime getExpirationDate() {
         return expirationDate;
     }
@@ -53,5 +54,10 @@ public class Service extends Product {
     @Override
     public boolean isService() {
         return true;
+    }
+
+    @Override
+    public String getExpirationDetails() {
+        return ", Date: " + this.getExpirationDate().toString();
     }
 }

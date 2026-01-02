@@ -1,5 +1,6 @@
 package es.upm.etsisi.poo.domain.product;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,5 +51,10 @@ public class StandardProduct extends Product {
     @Override
     public void validate() {
         // Standard products have no specific validation logic.
+    }
+
+    @Override
+    public LocalDateTime getExpirationDate() {
+        return null;
     }
 }
