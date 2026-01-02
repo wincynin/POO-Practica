@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 
 import es.upm.etsisi.poo.ui.CommandHandler;
 import es.upm.etsisi.poo.domain.exceptions.PersistenceException;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
 
 // [Main] Application Entry Point.
@@ -69,7 +70,7 @@ public class App {
             } else if (!inputLine.isEmpty()) {
                 try {
                     handler.handle(inputLine);
-                } catch (Exception e) {
+                } catch (UPMStoreDomainException e) {
                     System.out.println("Error: " + e.getMessage());
                 }
             }
