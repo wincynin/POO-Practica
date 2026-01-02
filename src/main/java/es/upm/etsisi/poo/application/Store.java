@@ -1,5 +1,9 @@
 package es.upm.etsisi.poo.application;
 
+import es.upm.etsisi.poo.infrastructure.printing.PrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
+import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,6 +102,21 @@ public class Store implements java.io.Serializable {
         }
         
         Ticket<?> newTicket = client.createTicket(id, printType.getFlag());
+
+        // FIX: Inject the PrintStrategy based on the requested type
+        PrintStrategy strategy;
+        switch (printType) {
+            case COMPANY:
+                strategy = new CompanyPrintStrategy();
+                break;
+            case SERVICE:
+                strategy = new ServicePrintStrategy();
+                break;
+            default:
+                strategy = new StandardPrintStrategy();
+                break;
+        }
+        newTicket.setPrintStrategy(strategy);
         
         // Logic: Add ticket to lists.
         ticketRepository.add(newTicket);
