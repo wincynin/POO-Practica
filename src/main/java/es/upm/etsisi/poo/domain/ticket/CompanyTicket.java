@@ -7,15 +7,59 @@ import es.upm.etsisi.poo.domain.product.Product;
 
 // [Class] Ticket implementation for specific Client types.
 public class CompanyTicket extends Ticket<Product> {
-    private final int productCount;
-    private int serviceCount;
     private final ValidationPolicy validationPolicy;
 
     public CompanyTicket(String id, TicketPrintType printType) {
         super(id);
         this.validationPolicy = ValidationPolicyFactory.getPolicy(printType);
-        this.productCount = 0;
-        this.serviceCount = 0;
+    }
+
+    @Override
+    public boolean accepts(Product p) {
+        try {
+            validateProduct(p);
+            return true;
+        } catch (TicketRuleViolationException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void validateProduct(Product p) throws TicketRuleViolationException {
+        validationPolicy.validateProduct(p);
+    }
+
+    @Override
+    public String print() {
+        int pCount = 0;
+        int sCount = 0;
+        for (TicketLine<Product> line : getLines()) {
+            if (line.getProduct().isService()) {
+                sCount++;
+            } else {
+                pCount++;
+            }
+        }
+        validationPolicy.validatePrint(pCount, sCount);
+        return super.print();
+    }
+
+    @Override
+    public double getTotalPrice() {
+        double standardProductsTotal = 0.0;
+        int numServices = 0;
+
+        for (TicketLine<Product> line : getLines()) {
+            Product product = line.getProduct();
+            if (product.isService()) {
+                numServices++;
+            } else {
+                standardProductsTotal += line.getLineTotal();
+            }
+        }
+
+        double discountRate = Math.min(numServices * 0.15, 1.0);
+        return standardProductsTotal * (1.0 - discountRate);
     }
 
     private interface ValidationPolicy extends Serializable {

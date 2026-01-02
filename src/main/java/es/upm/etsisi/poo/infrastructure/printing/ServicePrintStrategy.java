@@ -1,11 +1,10 @@
 package es.upm.etsisi.poo.infrastructure.printing;
 
 import es.upm.etsisi.poo.domain.printing.PrintStrategy;
-
-import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.domain.ticket.TicketLine;
 import es.upm.etsisi.poo.domain.product.StandardProduct;
+import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.ticket.TicketLine;
 
 // [Class] Prints ticket in service format.
 public class ServicePrintStrategy implements PrintStrategy {
@@ -19,7 +18,7 @@ public class ServicePrintStrategy implements PrintStrategy {
 
         for (TicketLine<?> line : ticket.getLines()) {
             Product product = line.getProduct();
-            if (!(product instanceof StandardProduct)) {
+            if (product != null && !(product instanceof StandardProduct)) {
                 sb.append(String.format("Name: %s, Price: HIDDEN\n", product.getName()));
                 totalServicePrice += line.getLineTotal();
             }
