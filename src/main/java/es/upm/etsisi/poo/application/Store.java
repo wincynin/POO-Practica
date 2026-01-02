@@ -221,13 +221,17 @@ public class Store implements java.io.Serializable {
                     try {
                         int val = Integer.parseInt(pid.substring(0, pid.length() - 1));
                         if (val > maxServiceId) maxServiceId = val;
-                    } catch (NumberFormatException ignored) {}
+                    } catch (NumberFormatException e) {
+                        System.err.println("Warning: Corrupt ID found: " + pid);
+                    }
                 }
             } else {
                 try {
                     int val = Integer.parseInt(pid);
                     if (val > maxProdId) maxProdId = val;
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException e) {
+                        System.err.println("Warning: Corrupt ID found: " + pid);
+                }
             }
         }
         es.upm.etsisi.poo.domain.product.Product.updateNextId(maxProdId);

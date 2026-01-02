@@ -80,6 +80,6 @@ public class Catalog implements java.io.Serializable {
     }
 
     public List<Product> getProducts() {
-        return products;
+    return new ArrayList<>(products);
     }
 }
