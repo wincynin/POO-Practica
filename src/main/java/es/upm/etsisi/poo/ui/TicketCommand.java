@@ -56,7 +56,15 @@ class TicketCommand extends AbstractCommand {
                 String addTicketId = argList.get(0);
                 String addCashierId = argList.get(1);
                 String prodId = argList.get(2);
-                int amount = Integer.parseInt(argList.get(3));
+                int amount = 1; // Default to 1 if not specified
+                if (argList.size() > 3) {
+                    // Only try to parse if the argument actually exists
+                    try {
+                        amount = Integer.parseInt(argList.get(3));
+                    } catch (NumberFormatException e) {
+                        // If the 4th argument isn't a number (e.g., it's a customization flag), keep default 1
+                    }
+                }
 
                 // Logic: Parse custom text (--p).
                 @SuppressWarnings("Convert2Diamond")
