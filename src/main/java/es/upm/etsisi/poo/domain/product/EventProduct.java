@@ -27,23 +27,23 @@ public class EventProduct extends BookableProduct {
     }
 
     @Override
-    public void validate() {
+    public void validate() throws InvalidProductDataException {
         // Validation logic based on type (Food vs Meeting)
         if (type == EventType.FOOD) {
             // Food: planned at least 3 days in advance
             if (getExpirationDate().isBefore(LocalDateTime.now().plusDays(MIN_FOOD_PLANNING_DAYS))) {
-                throw new IllegalStateException("Error: Food products must be planned at least " + MIN_FOOD_PLANNING_DAYS + " days in advance.");
+                throw new InvalidProductDataException("Error: Food products must be planned at least " + MIN_FOOD_PLANNING_DAYS + " days in advance.");
             }
         } else if (type == EventType.MEETING) {
             // Meeting: planned at least 12 hours in advance
             if (getExpirationDate().isBefore(LocalDateTime.now().plusHours(MIN_MEETING_PLANNING_HOURS))) {
-                throw new IllegalStateException("Error: Meeting products must be planned at least " + MIN_MEETING_PLANNING_HOURS + " hours in advance.");
+                throw new InvalidProductDataException("Error: Meeting products must be planned at least " + MIN_MEETING_PLANNING_HOURS + " hours in advance.");
             }
         }
     }
 
     @Override
-    public void validateTicketAddition() {
+    public void validateTicketAddition() throws InvalidProductDataException {
         // Reuse the validation logic when adding to ticket
         validate();
     }

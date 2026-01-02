@@ -58,5 +58,5 @@ public abstract class BookableProduct extends Product {
     public abstract void validate();
     
     // Abstract method for ticket addition policy
-    public abstract void validateTicketAddition();
+    public abstract void validateTicketAddition() throws InvalidProductDataException;
 }
