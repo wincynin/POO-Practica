@@ -1,7 +1,7 @@
 package es.upm.etsisi.poo.domain.product;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
@@ -11,15 +11,13 @@ public abstract class Product implements java.io.Serializable {
     private String name;
     private double price;
     private final String id;
-    private static int nextId = 1;              // Static counter for IDs.
+    private static int nextId = 1;
     private ProductCategory category;
     protected static int nextServiceId = 1;
     protected static final double MIN_PRICE = -0.001;
     protected static final int MAX_NAME_LENGTH = 100;
 
     protected Product(String name, ProductCategory category, double price) throws InvalidProductDataException {
-        // Validation removed to allow Services (which may have no price/name initially).
-        // Subclasses (like StandardProduct) must enforce their own rules.
         this.id = String.valueOf(nextId++);
         this.name = name;
         this.category = category;
@@ -27,7 +25,6 @@ public abstract class Product implements java.io.Serializable {
     }
 
     protected Product(String id, String name, ProductCategory category, double price) throws InvalidProductDataException {
-        // Validation removed to allow Services.
         this.id = id;
         this.name = name;
         this.category = category;
@@ -93,13 +90,13 @@ public abstract class Product implements java.io.Serializable {
         nextServiceId = Math.max(nextServiceId, id + 1);
     }
 
+    public abstract void validate();
+    public abstract boolean isBookable();
     public abstract List<String> getCustomTexts();
+    public abstract String getPrintablePriceDetails();
+    public abstract LocalDateTime getExpirationDate();
     public abstract void addCustomText(List<String> customTexts, String text);
     public abstract double getLineTotal(int quantity, List<String> customTexts);
-    public abstract boolean isBookable();
-    public abstract void validate();
-    public abstract LocalDateTime getExpirationDate();
-    public abstract String getPrintablePriceDetails();
     
     public boolean isService() {
         return false;

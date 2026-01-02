@@ -1,20 +1,13 @@
 package es.upm.etsisi.poo.ui;
 
+import java.util.List;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
+import es.upm.etsisi.poo.domain.product.*;
 import es.upm.etsisi.poo.application.Store;
-import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
-import es.upm.etsisi.poo.domain.product.CustomizableProduct;
-import es.upm.etsisi.poo.domain.product.EventProduct;
-import es.upm.etsisi.poo.domain.product.EventType;
-import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.domain.product.ProductCategory;
-import es.upm.etsisi.poo.domain.product.Service;
-import es.upm.etsisi.poo.domain.product.ServiceType;
-import es.upm.etsisi.poo.domain.product.StandardProduct;
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
 // [Command] Product CRUD operations.
 class ProductCommand extends AbstractCommand {
@@ -60,6 +53,7 @@ class ProductCommand extends AbstractCommand {
                     id = argList.get(0);
                     argList.remove(0);
                 }
+
                 String name;
                 double price;
                 int maxPers = -1;           // -1 means not customizable
@@ -106,7 +100,7 @@ class ProductCommand extends AbstractCommand {
                 double eventPrice;
                 LocalDate expirationDate;
 
-                // E2 Requirement: Date format yyyy-MM-dd
+                // Rule: Date format yyyy-MM-dd (E2)
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
                 eventName = argList.get(0);
@@ -143,7 +137,7 @@ class ProductCommand extends AbstractCommand {
                     String field = argList.get(1);
                     String updateValue = argList.get(2);
                     store.updateProduct(productId, field, updateValue);
-                    System.out.println(store.getCatalog().getProduct(productId)); // Keeping this one for now as there's no `store.getProduct(id)`
+                    System.out.println(store.getCatalog().getProduct(productId));
                     System.out.println("prod update: ok");
                 }
                 break;

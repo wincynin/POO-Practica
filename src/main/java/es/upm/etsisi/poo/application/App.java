@@ -1,12 +1,12 @@
 package es.upm.etsisi.poo.application;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.io.FileNotFoundException;
 
+import es.upm.etsisi.poo.ui.CommandHandler;
 import es.upm.etsisi.poo.domain.exceptions.PersistenceException;
 import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
-import es.upm.etsisi.poo.ui.CommandHandler;
 
 // [Main] Application Entry Point.
 public class App {

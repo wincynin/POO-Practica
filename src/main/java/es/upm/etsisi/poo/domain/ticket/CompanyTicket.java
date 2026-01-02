@@ -2,8 +2,8 @@ package es.upm.etsisi.poo.domain.ticket;
 
 import java.io.Serializable;
 
-import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 
 // [Class] Ticket implementation for specific Client types.
 public class CompanyTicket extends Ticket<Product> {
@@ -119,6 +119,7 @@ public class CompanyTicket extends Ticket<Product> {
     private static class DefaultPolicy implements ValidationPolicy {
         @Override
         public void validatePrint(int pCount, int sCount) {}
+
         @Override
         public void validateProduct(Product p) {}
     }

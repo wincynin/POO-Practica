@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.domain.product;
 
-import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 import java.util.List;
 import java.util.ArrayList;
+
+import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 
 // [Class] Product subtype.
 public class CustomizableProduct extends Product {

@@ -1,7 +1,7 @@
 package es.upm.etsisi.poo.ui;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;

@@ -2,7 +2,7 @@ package es.upm.etsisi.poo.domain.product;
 
 import java.time.LocalDateTime;
 
-// Represents event types and their planning time requirements as defined in E2.
+// Represents event types with their planning time requirements as defined by E2.
 public enum EventType {
     FOOD(3),
     MEETING(0);

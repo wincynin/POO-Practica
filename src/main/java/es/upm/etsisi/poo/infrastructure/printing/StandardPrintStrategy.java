@@ -1,10 +1,9 @@
 package es.upm.etsisi.poo.infrastructure.printing;
 
-import es.upm.etsisi.poo.domain.printing.PrintStrategy;
-
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.ticket.TicketLine;
+import es.upm.etsisi.poo.domain.printing.PrintStrategy;
 
 // [Class] Prints ticket in standard format.
 public class StandardPrintStrategy implements PrintStrategy {

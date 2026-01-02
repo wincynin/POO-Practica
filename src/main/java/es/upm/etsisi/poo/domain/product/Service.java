@@ -1,8 +1,8 @@
 package es.upm.etsisi.poo.domain.product;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
+import java.time.LocalDateTime;
 
 import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
 

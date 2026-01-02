@@ -1,12 +1,12 @@
 package es.upm.etsisi.poo.ui;
 
-import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
+import java.util.List;
+import java.util.Collections;
+
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.user.Cashier;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
-
-import java.util.List;
-import java.util.Collections;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 
 // [Command] Cashier CRUD operations.
 class CashierCommand extends AbstractCommand {
@@ -33,7 +33,7 @@ class CashierCommand extends AbstractCommand {
                 String name;
                 String email;
 
-                // E2: Check if optional Cashier ID is provided
+                // Rule: Check if optional Cashier ID is provided (E2)
                 if (argList.size() > 2) {
                     id = argList.get(0);
                     argList.remove(0);
@@ -55,7 +55,7 @@ class CashierCommand extends AbstractCommand {
                 break;
             case "list":
                 List<Cashier> cashierList = store.getCashiers();
-                // E2 Requirement: Sort by name
+                // Rule: Sort by name (E2)
                 Collections.sort(cashierList);
                 System.out.println("Cashiers:");
                 for (Cashier cashier : cashierList) {
@@ -82,7 +82,7 @@ class CashierCommand extends AbstractCommand {
 
                     System.out.println("Tickets for Cashier " + cashierId + ":");
                     for (Ticket<?> ticket : cashierTickets) {
-                        // E2 Requirement: Show only ID and state
+                        // Rule: Show only ID and state (E2)
                         System.out.println("  ID: " + ticket.getId() + ", State: " + ticket.getState());
                     }
                     System.out.println("cash tickets: ok");

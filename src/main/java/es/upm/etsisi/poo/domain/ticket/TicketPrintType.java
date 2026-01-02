@@ -1,8 +1,9 @@
 package es.upm.etsisi.poo.domain.ticket;
 
+// Represents ticket print types with their associated flags as defined by E3.
 public enum TicketPrintType {
-    SERVICE('s'),
     COMPANY('c'),
+    SERVICE('s'),
     STANDARD('p');
 
     private final char flag;

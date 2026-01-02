@@ -1,10 +1,10 @@
 package es.upm.etsisi.poo.domain.user;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
-import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.ticket.CompanyTicket;
 
 // [Entity] Corporate (NIF-based) Client.
 public class CompanyClient extends Client {

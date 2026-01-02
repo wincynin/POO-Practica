@@ -1,13 +1,13 @@
 package es.upm.etsisi.poo.ui;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
 
 import es.upm.etsisi.poo.application.Store;
-import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.domain.user.Client;
 import es.upm.etsisi.poo.domain.user.CompanyClient;
 import es.upm.etsisi.poo.domain.user.IndividualClient;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 
 // [Command] Client CRUD operations.
 class ClientCommand extends AbstractCommand {

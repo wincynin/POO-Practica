@@ -1,16 +1,16 @@
 package es.upm.etsisi.poo.domain.ticket;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Iterator;
+import java.util.ArrayList;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
 
-import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
-import es.upm.etsisi.poo.domain.printing.PrintStrategy;
 import es.upm.etsisi.poo.domain.product.Product;
+import es.upm.etsisi.poo.domain.printing.PrintStrategy;
+import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 
 // [Entity] Abstract Ticket.
 public abstract class Ticket<T extends Product> implements Serializable, Comparable<Ticket<?>> {
@@ -107,7 +107,9 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
         if (printStrategy == null) {
             return "Error: No print strategy set.";
         }
+
         String result = printStrategy.formatTicket(this);
+
         // Logic: Close ticket and generate final ID.
         this.id = generateTicketId();
         this.state = TicketState.CLOSED;

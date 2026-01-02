@@ -1,6 +1,12 @@
 package es.upm.etsisi.poo.infrastructure.persistence;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.exceptions.PersistenceException;
 
@@ -21,7 +27,7 @@ public class FilePersistenceHandler {
         File file = new File(FILE_NAME);
         if (!file.exists()) {
             // If file doesn't exist, create empty Store.
-            return new Store(); 
+            return new Store();
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
             return (Store) ois.readObject();

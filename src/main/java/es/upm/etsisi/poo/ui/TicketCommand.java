@@ -1,11 +1,12 @@
 package es.upm.etsisi.poo.ui;
 
-import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
 import java.util.List;
 import java.util.ArrayList;
+
 import es.upm.etsisi.poo.application.Store;
-import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 import es.upm.etsisi.poo.domain.ticket.Ticket;
+import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
+import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 
 class TicketCommand extends AbstractCommand {
 
@@ -57,8 +58,8 @@ class TicketCommand extends AbstractCommand {
                 String addCashierId = argList.get(1);
                 String prodId = argList.get(2);
                 int amount = 1; // Default to 1 if not specified
+
                 if (argList.size() > 3) {
-                    // Only try to parse if the argument actually exists
                     try {
                         amount = Integer.parseInt(argList.get(3));
                     } catch (NumberFormatException e) {

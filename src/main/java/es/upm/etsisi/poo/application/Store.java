@@ -1,26 +1,14 @@
 package es.upm.etsisi.poo.application;
 
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
-import es.upm.etsisi.poo.domain.exceptions.DuplicateEntryException;
-import es.upm.etsisi.poo.domain.exceptions.InvalidProductDataException;
-import es.upm.etsisi.poo.domain.exceptions.ResourceNotFoundException;
-import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
-import es.upm.etsisi.poo.domain.exceptions.UnauthorizedAccessException;
-import es.upm.etsisi.poo.domain.product.Catalog;
-import es.upm.etsisi.poo.domain.product.Product;
-import es.upm.etsisi.poo.domain.ticket.Ticket;
-import es.upm.etsisi.poo.domain.ticket.TicketPrintType;
-import es.upm.etsisi.poo.domain.ticket.TicketRepository;
-import es.upm.etsisi.poo.domain.user.Cashier;
-import es.upm.etsisi.poo.domain.user.CashierRepository;
-import es.upm.etsisi.poo.domain.user.Client;
-import es.upm.etsisi.poo.domain.user.ClientRepository;
-import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
-import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
-import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
+import es.upm.etsisi.poo.domain.user.*;
+import es.upm.etsisi.poo.domain.ticket.*;
+import es.upm.etsisi.poo.domain.product.*;
+import es.upm.etsisi.poo.domain.exceptions.*;
+import es.upm.etsisi.poo.infrastructure.printing.*;
 
 // [Model] Data & Logic Hub.
 public class Store implements java.io.Serializable {

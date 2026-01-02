@@ -1,11 +1,11 @@
 package es.upm.etsisi.poo.domain.ticket;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
-import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.product.ProductCategory;
+import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
 
 // [Class] Ticket implementation for specific Client types.
 public class CommonTicket extends Ticket<Product> {
@@ -30,7 +30,7 @@ public class CommonTicket extends Ticket<Product> {
         // Map to count items per category
         Map<ProductCategory, Integer> categoryCounts = new HashMap<>();
 
-        // Pass 1: Count quantities per category
+        // First count quantities per category
         for (TicketLine<Product> line : getLines()) {
             Product p = line.getProduct();
             if (p.getCategory() != null) {
@@ -38,7 +38,7 @@ public class CommonTicket extends Ticket<Product> {
             }
         }
 
-        // Pass 2: Calculate price with discounts
+        // Then calculate price with discounts
         for (TicketLine<Product> line : getLines()) {
             double lineTotal = line.getLineTotal();
             Product p = line.getProduct();
