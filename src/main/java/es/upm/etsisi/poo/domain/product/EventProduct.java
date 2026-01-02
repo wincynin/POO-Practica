@@ -52,6 +52,12 @@ public class EventProduct extends BookableProduct {
     public boolean isBookable() {
         return true;
     }
+
+    @Override
+    public boolean isService() {
+        return false;
+    }
+
     @Override
     public String getExpirationDetails() {
         return ", Date: " + this.getExpirationDate().toString();

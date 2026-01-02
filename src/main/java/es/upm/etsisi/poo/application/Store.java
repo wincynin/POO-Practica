@@ -217,10 +217,12 @@ public class Store implements java.io.Serializable {
         for (es.upm.etsisi.poo.domain.product.Product p : getProducts()) {
             String pid = p.getId();
             if (p.isService()) {
-                try {
-                    int val = Integer.parseInt(pid.substring(0, pid.length() - 1));
-                    if (val > maxServiceId) maxServiceId = val;
-                } catch (NumberFormatException ignored) {}
+                if (pid.endsWith("S")) {
+                    try {
+                        int val = Integer.parseInt(pid.substring(0, pid.length() - 1));
+                        if (val > maxServiceId) maxServiceId = val;
+                    } catch (NumberFormatException ignored) {}
+                }
             } else {
                 try {
                     int val = Integer.parseInt(pid);

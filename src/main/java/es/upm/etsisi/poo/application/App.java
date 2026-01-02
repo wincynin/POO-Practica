@@ -67,7 +67,11 @@ public class App {
                 System.out.println("Goodbye!");
                 running = false;
             } else if (!inputLine.isEmpty()) {
-                handler.handle(inputLine);
+                try {
+                    handler.handle(inputLine);
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.getMessage());
+                }
             }
         }
         inputScanner.close();
