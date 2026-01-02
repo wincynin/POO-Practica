@@ -8,7 +8,7 @@ import es.upm.etsisi.poo.domain.exceptions.PersistenceException;
 import es.upm.etsisi.poo.infrastructure.persistence.FilePersistenceHandler;
 import es.upm.etsisi.poo.ui.CommandHandler;
 
-// [Main] Entry point for the application.
+// [Main] Application Entry Point.
 public class App {
     public static void main(String[] args) throws FileNotFoundException {
         FilePersistenceHandler persistence = new FilePersistenceHandler();
@@ -24,7 +24,7 @@ public class App {
 
         Scanner inputScanner;
 
-        // Logic: Check for input file argument.
+        // Logic: Load file if argument exists.
         if (args.length > 0) {
             inputScanner = new Scanner(new File(args[0]));
         } else {
@@ -34,14 +34,14 @@ public class App {
         System.out.println("Welcome to the ticket module App.");
         System.out.println("Ticket module. Type 'help' to see commands.");
 
-        // Init: Create the CommandHandler.
+        // Init: CommandHandler.
         CommandHandler handler = new CommandHandler(store);
 
         boolean running = true;
         while (running) {
             String inputLine;
             if (args.length > 0) {
-                // Mode: Read from file.
+                // Mode: File Input.
                 if (inputScanner.hasNextLine()) {
                     inputLine = inputScanner.nextLine().trim();
                     System.out.println("tUPM> " + inputLine);
@@ -56,7 +56,7 @@ public class App {
             }
 
             if (inputLine.equalsIgnoreCase("exit")) {
-                // Shutdown: Save and exit.
+                // Shutdown: Save state and exit.
                 System.out.println("Closing application.");
                 try {
                     persistence.save(store); // Save state

@@ -6,6 +6,7 @@ import java.util.Map;
 import es.upm.etsisi.poo.application.Store;
 import es.upm.etsisi.poo.domain.exceptions.UPMStoreDomainException;
 
+// [Controller] Dispatches commands to Store.
 public class CommandHandler {
     private final Map<String, Command> commands = new HashMap<>();
     private final Store store;
@@ -43,10 +44,10 @@ public class CommandHandler {
             try {
                 command.execute(args);
             } catch (UPMStoreDomainException e) {
-                // Logic: Catch our custom errors and show clean message.
+                // Error: Handle domain exceptions.
                 System.out.println("Error: " + e.getMessage());
             } catch (IllegalArgumentException e) {
-                // Safety: Catch unexpected crashes.
+                // Error: Handle crash/bug.
                 System.out.println("Unexpected Error: " + e.getMessage());
             }
         } else {

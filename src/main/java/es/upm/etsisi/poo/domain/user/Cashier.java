@@ -1,11 +1,11 @@
 package es.upm.etsisi.poo.domain.user;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import es.upm.etsisi.poo.domain.ticket.Ticket;
 
-// [Class] Represents a Cashier.
+// [Entity] Cashier User.
 public class Cashier extends User implements Comparable<Cashier> {
     private final List<Ticket<?>> tickets;
 
@@ -17,13 +17,13 @@ public class Cashier extends User implements Comparable<Cashier> {
     public static String generateCashierId(List<Cashier> existingCashiers) {
         String id;
 
-        // Generate ID starting with "UW".
+        // Logic: "UW" + 7 digits.
         do {
             
             int randomDigits = (int) (Math.random() * 10000000);
             id = "UW" + String.format("%07d", randomDigits);
         }
-        // Check if ID is already taken.
+        // Check: Ensure uniqueness.
         while (isCashierIdTaken(id, existingCashiers));
 
         return id;
@@ -49,7 +49,7 @@ public class Cashier extends User implements Comparable<Cashier> {
         return new ArrayList<>(tickets);
     }
 
-    // Check if this cashier created the ticket.
+    // Check: Verify ownership.
     public boolean hasTicket(String ticketId) {
         for (Ticket<?> ticket : tickets) {
             if (ticket.getId().equals(ticketId)) {

@@ -22,7 +22,7 @@ import es.upm.etsisi.poo.infrastructure.printing.CompanyPrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.ServicePrintStrategy;
 import es.upm.etsisi.poo.infrastructure.printing.StandardPrintStrategy;
 
-// [Model] Central class managing data and logic.
+// [Model] Data & Logic Hub.
 public class Store implements java.io.Serializable {
     private final Catalog catalog;
     private final TicketRepository ticketRepository;
@@ -60,13 +60,13 @@ public class Store implements java.io.Serializable {
         cashierRepository.add(cashier);
     }
 
-    // Helper: Auto-generate ID if null.
+    // Helper: Auto-generate ID if missing.
     public void addCashier(String id, String name, String email) throws UPMStoreDomainException {
         String cashierId = id;
         if (cashierId == null || cashierId.isEmpty()) {
             cashierId = Cashier.generateCashierId(this.cashierRepository.getAll());
         }
-        // Error Handling: Re-throw as domain exception.
+        // Error: Convert duplicate ID to domain error.
         try {
             addCashier(new Cashier(cashierId, name, email));
         } catch (DuplicateEntryException e) {
@@ -92,7 +92,7 @@ public class Store implements java.io.Serializable {
 
     public Ticket<?> createTicket(String id, String cashierId, String userId, TicketPrintType printType) throws UPMStoreDomainException {
         Cashier cashier = findCashierById(cashierId);
-        // Check: Cashier must exist.
+        // Validation: Cashier must exist.
         if (cashier == null) {
             throw new ResourceNotFoundException("Cashier with ID " + cashierId + " not found.");
         }
@@ -118,7 +118,7 @@ public class Store implements java.io.Serializable {
         }
         newTicket.setPrintStrategy(strategy);
         
-        // Logic: Add ticket to lists.
+        // Logic: Register ticket in repositories.
         ticketRepository.add(newTicket);
         cashier.addTicket(newTicket);
         client.addTicket(newTicket);
@@ -135,7 +135,7 @@ public class Store implements java.io.Serializable {
         }
 
         Cashier cashier = findCashierById(cashierId);
-        // Security: Only the owner can modify.
+        // Security: Only owner can modify ticket.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -145,7 +145,7 @@ public class Store implements java.io.Serializable {
             throw new ResourceNotFoundException("Product with ID " + prodId + " not found.");
         }
 
-        // Validation: Delegate check to Ticket class.
+        // Validation: Delegate rules to Ticket class.
         ticket.validateProduct(product);
 
         // Unchecked cast is safe because validation passed.
@@ -161,7 +161,7 @@ public class Store implements java.io.Serializable {
 
         Cashier cashier = findCashierById(cashierId);
         
-        // Security: Only the owner can remove items.
+        // Security: Only owner can remove items.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -177,7 +177,7 @@ public class Store implements java.io.Serializable {
         }
         
         Cashier cashier = findCashierById(cashierId);
-        // Security: Only the owner can print.
+        // Security: Only owner can print.
         if (cashier == null || !cashier.hasTicket(ticketId)) {
             throw new UnauthorizedAccessException("Cashier " + cashierId + " does not own ticket " + ticketId);
         }
@@ -214,7 +214,7 @@ public class Store implements java.io.Serializable {
         return ticketRepository.getAll();
     }
     
-    // Search: Get tickets for a cashier.
+    // Search: Get tickets for cashier.
     public List<Ticket<?>> getTicketsByCashierId(String cashierId) {
         Cashier cashier = findCashierById(cashierId);
         if(cashier != null) {
@@ -248,7 +248,7 @@ public class Store implements java.io.Serializable {
         return catalog;
     }
 
-    // Delegation: Call Catalog methods.
+    // Delegation: Catalog methods.
     public List<Product> getProducts() {
         return catalog.getProducts();
     }

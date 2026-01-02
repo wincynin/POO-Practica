@@ -10,7 +10,7 @@ public class CashierRepository implements Serializable {
     private final List<Cashier> cashiers = new ArrayList<>();
 
     public void add(Cashier cashier) {
-        // Check: Throw exception if ID is taken.
+        // Validation: Prevent duplicate IDs.
         if (findById(cashier.getId()) != null) {
             throw new DuplicateEntryException("Cashier with ID " + cashier.getId() + " already exists.");
         }

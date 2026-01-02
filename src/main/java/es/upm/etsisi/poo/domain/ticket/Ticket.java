@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Objects;
 
 import es.upm.etsisi.poo.domain.exceptions.TicketRuleViolationException;
-import es.upm.etsisi.poo.domain.product.Product;
 import es.upm.etsisi.poo.domain.printing.PrintStrategy;
+import es.upm.etsisi.poo.domain.product.Product;
 
+// [Entity] Abstract Ticket.
 public abstract class Ticket<T extends Product> implements Serializable, Comparable<Ticket<?>> {
     private static final int MAX_TICKET_LINES = 100;
     private String id;
@@ -42,12 +43,12 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     }
 
     public void addProduct(T product, int quantity, List<String> customTexts) {
-        // Rule: CLOSED tickets are read-only.
+        // Rule: Closed tickets are read-only.
         if (this.state == TicketState.CLOSED) {
             throw new TicketRuleViolationException("Cannot modify a CLOSED ticket.");
         }
 
-        // Rule: No duplicate Bookable items.
+        // Rule: No duplicate Bookables allowed.
         if (product.isBookable()) {
             for (TicketLine<T> line : lines) {
                 if (line.getProduct().getId().equals(product.getId())) {
@@ -56,7 +57,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
             }
         }
 
-        // Constraint: Max 100 lines (E1).
+        // Constraint: Max 100 items (E1).
         if (lines.size() >= MAX_TICKET_LINES) {
             throw new TicketRuleViolationException("Ticket cannot exceed " + MAX_TICKET_LINES + " lines.");
         }
@@ -82,7 +83,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     }
 
     public boolean removeProduct(String productId) {
-        // Rule: CLOSED tickets are read-only.
+        // Rule: Closed tickets are read-only.
         if (this.state == TicketState.CLOSED) {
             throw new TicketRuleViolationException("Cannot remove items from CLOSED ticket.");
         }
@@ -107,7 +108,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
             return "Error: No print strategy set.";
         }
         String result = printStrategy.formatTicket(this);
-        // Logic: Generate new ID and close ticket.
+        // Logic: Close ticket and generate final ID.
         this.id = generateTicketId();
         this.state = TicketState.CLOSED;
         return result;
@@ -123,7 +124,7 @@ public abstract class Ticket<T extends Product> implements Serializable, Compara
     public abstract double getTotalPrice();
 
     private String generateTicketId() {
-        // Format: YY-MM-dd-HH:mm + random digits.
+        // Format: Date + Random Digits.
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy-MM-dd-HH:mm");
         int randomDigits = (int) (Math.random() * 100000);
         return LocalDateTime.now().format(dtf) + "-" + String.format("%05d", randomDigits);

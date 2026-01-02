@@ -10,7 +10,7 @@ public class ClientRepository implements Serializable {
     private final List<Client> clients = new ArrayList<>();
 
     public void add(Client client) {
-        // Check: Throw exception if ID is taken.
+        // Validation: Prevent duplicate IDs.
         if (findById(client.getId()) != null) {
             throw new DuplicateEntryException("Client with ID " + client.getId() + " already exists.");
         }
