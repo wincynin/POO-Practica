@@ -1,271 +1,390 @@
 @startuml
-skinparam linetype ortho
+
+' Style configuration
 skinparam classAttributeIconSize 0
+skinparam componentStyle uml2
 skinparam packageStyle rectangle
 
-title UPM Store - Class Diagram (Entrega 3)
+package "es.upm.etsisi.poo" {
 
-'--- DOMAIN: PRODUCT ---
-package "es.upm.etsisi.poo.domain.product" {
-    enum ProductCategory {
-        MERCH
-        BOOK
-        CLOTHES
-        STATIONERY
-        ELECTRONICS
-    }
-
-    enum EventType {
-        FOOD
-        MEETING
-    }
-
-    enum ServiceType {
-        TRANSPORT
-        EVENT
-        INSURANCE
-    }
-
-    abstract class Product implements java.io.Serializable {
-        - int id
-        - String name
-        - double price
-        - ProductCategory category
-        + {abstract} boolean isBookable()
-        + {abstract} void validate()
-        + {abstract} double getLineTotal(int qty, List<String> custom)
-    }
-
-    class StandardProduct {
-        + StandardProduct(name, category, price)
-    }
-
-    class CustomizableProduct {
-        - int maxCustomizableTexts
-        - List<String> customTexts
-        + double getLineTotal(...)
-    }
-
-    abstract class BookableProduct {
-        - int maxParticipants
-        - LocalDateTime expirationDate
-        + {abstract} void validate()
-    }
-
-    class EventProduct {
-        - EventType type
-        + void validate()
-    }
-
-    class Service {
-        - ServiceType serviceType
-        - LocalDateTime expirationDate
-        + boolean isBookable()
-    }
-
-    class Catalog implements java.io.Serializable {
-        - List<Product> products
-        + void addProduct(Product p)
-        + Product getProduct(int id)
-    }
-
-    Product <|-- StandardProduct
-    Product <|-- CustomizableProduct
-    Product <|-- BookableProduct
-    Product <|-- Service
-    BookableProduct <|-- EventProduct
-    
-    StandardProduct ..> ProductCategory
-    EventProduct ..> EventType
-    Service ..> ServiceType
-    Catalog o-- Product
-}
-
-'--- DOMAIN: TICKET ---
-package "es.upm.etsisi.poo.domain.ticket" {
-    enum TicketState {
-        EMPTY
-        ACTIVE
-        CLOSED
-    }
-
-    class TicketLine<T extends Product> implements java.io.Serializable {
-        - int quantity
-        - T product
-        - List<String> customTexts
-        + double getLineTotal()
-    }
-
-    abstract class Ticket<T extends Product> implements java.io.Serializable, Comparable {
-        - String id
-        - TicketState state
-        - List<TicketLine<T>> lines
-        - PrintStrategy printStrategy
-        + void addProduct(T product, int qty, List<String> texts)
-        + String print()
-        + void setPrintStrategy(PrintStrategy ps)
-    }
-
-    class CommonTicket {
-        + CommonTicket(String id)
-    }
-    note bottom: <T> is StandardProduct
-
-    class CompanyTicket {
-        - int productCount
-        - int serviceCount
-        + CompanyTicket(String id)
-        + void addProduct(...)
-    }
-    note bottom: <T> is Product (Mixed)
-
-    class TicketRepository implements java.io.Serializable {
-        - List<Ticket<?>> tickets
-        + void add(Ticket<?> ticket)
-        + Ticket<?> findById(String id)
-    }
-
-    Ticket <|-- CommonTicket
-    Ticket <|-- CompanyTicket
-    Ticket *-- TicketLine
-    TicketLine o-- Product
-    TicketRepository o-- Ticket
-}
-
-'--- DOMAIN: USER ---
-package "es.upm.etsisi.poo.domain.user" {
-    abstract class User implements java.io.Serializable {
-        - String id
-        - String name
-        - String email
-    }
-
-    class Cashier {
-        - List<Ticket<?>> tickets
-        + void addTicket(Ticket<?> t)
-    }
-
-    abstract class Client {
-        + {abstract} boolean validateId(String id)
-        + {abstract} void addTicket(Ticket<?> t)
-    }
-
-    class IndividualClient {
-        - String cashierId
-        - List<Ticket<?>> tickets
-    }
-
-    class CompanyClient {
-        - String cashierId
-        - List<Ticket<?>> tickets
-    }
-
-    class ClientRepository implements java.io.Serializable {
-        - List<Client> clients
-    }
-    
-    class CashierRepository implements java.io.Serializable {
-        - List<Cashier> cashiers
-    }
-
-    User <|-- Cashier
-    User <|-- Client
-    Client <|-- IndividualClient
-    Client <|-- CompanyClient
-    
-    ClientRepository o-- Client
-    CashierRepository o-- Cashier
-}
-
-'--- INFRASTRUCTURE ---
-package "es.upm.etsisi.poo.infrastructure" {
-    package "printing" {
-        interface PrintStrategy implements java.io.Serializable {
-            + String formatTicket(Ticket<?> ticket)
+    package "application" {
+        class App {
+            + {static} main(String[])
         }
 
-        class StandardPrintStrategy
-        class CompanyPrintStrategy
-        class ServicePrintStrategy
-
-        PrintStrategy <|.. StandardPrintStrategy
-        PrintStrategy <|.. CompanyPrintStrategy
-        PrintStrategy <|.. ServicePrintStrategy
+        class Store {
+            - catalog : Catalog
+            - ticketRepository : TicketRepository
+            - clientRepository : ClientRepository
+            - cashierRepository : CashierRepository
+            + Store()
+            + addProduct(Product)
+            + addClient(Client)
+            + addCashier(Cashier)
+            + createTicket(String, String, String, TicketPrintType) : Ticket
+            + addProductToTicket(String, String, String, int, List<String>)
+            + removeProductFromTicket(String, String, String)
+            + printTicket(String, String) : String
+            + findClientById(String) : Client
+            + findCashierById(String) : Cashier
+            + getTicketsByCashierId(String) : List<Ticket>
+            + refreshCounters()
+        }
     }
 
-    package "persistence" {
-        class FilePersistenceHandler {
-            - String FILE_NAME
-            + void save(Store store)
-            + Store load()
+    package "ui" {
+        interface Command {
+            + execute(String[])
+        }
+
+        abstract class AbstractCommand {
+            # store : Store
+            + AbstractCommand(Store)
+            # parseArgs(String) : List<String>
+        }
+
+        class ProductCommand {
+            + ProductCommand(Store)
+            + execute(String[])
+            - isId(String) : boolean
+        }
+
+        class ClientCommand {
+            + ClientCommand(Store)
+            + execute(String[])
+        }
+
+        class CashierCommand {
+            + CashierCommand(Store)
+            + execute(String[])
+        }
+
+        class TicketCommand {
+            + TicketCommand(Store)
+            + execute(String[])
+        }
+
+        class CommandHandler {
+            - commands : Map<String, Command>
+            - store : Store
+            + CommandHandler(Store)
+            + handle(String)
+            - initializeCommands()
+            - printHelp()
+        }
+
+        class TicketCashierComparator implements java.util.Comparator {
+             - store : Store
+             + TicketCashierComparator(Store)
+             + compare(Ticket, Ticket) : int
+        }
+    }
+
+    package "infrastructure" {
+        package "persistence" {
+            class FilePersistenceHandler {
+                - {static} FILE_NAME : String
+                + save(Store)
+                + load() : Store
+            }
+        }
+
+        package "printing" {
+            class StandardPrintStrategy {
+                 + formatTicket(Ticket) : String
+            }
+            class CompanyPrintStrategy {
+                 - {static} MIXED_TICKET_DISCOUNT_RATE : double
+                 + formatTicket(Ticket) : String
+            }
+            class ServicePrintStrategy {
+                 + formatTicket(Ticket) : String
+            }
+        }
+    }
+
+    package "domain" {
+
+        package "exceptions" {
+            class UPMStoreDomainException extends RuntimeException
+            class DuplicateEntryException extends UPMStoreDomainException
+            class InvalidProductDataException extends UPMStoreDomainException
+            class ResourceNotFoundException extends UPMStoreDomainException
+            class TicketRuleViolationException extends UPMStoreDomainException
+            class TicketTypeMismatchException extends UPMStoreDomainException
+            class UnauthorizedAccessException extends UPMStoreDomainException
+            class PersistenceException extends UPMStoreDomainException
+        }
+        
+        package "product" {
+            class Catalog {
+                - products : List<Product>
+                - {static} MAX_PRODUCTS : int
+                + addProduct(Product)
+                + removeProduct(String) : Product
+                + updateProduct(String, String, String)
+                + getProduct(String) : Product
+            }
+
+            abstract class Product {
+                - name : String
+                - price : double
+                - id : String
+                - category : ProductCategory
+                - {static} nextId : int
+                # {static} nextServiceId : int
+                + getId() : String
+                + getName() : String
+                + getPrice() : double
+                + setName(String)
+                + setPrice(double)
+                + {abstract} validate()
+                + {abstract} isBookable() : boolean
+                + {abstract} getLineTotal(int, List<String>) : double
+                + isService() : boolean
+            }
+
+            class StandardProduct {
+                + StandardProduct(String, ProductCategory, double)
+                - validateStandardProduct(String, double)
+                + isBookable() : boolean
+                + getCustomTexts() : List<String>
+            }
+
+            class CustomizableProduct {
+                - maxCustomizableTexts : int
+                - customTexts : List<String>
+                - {static} CUSTOM_SURCHARGE : double
+                + addCustomText(List<String>, String)
+                + getLineTotal(int, List<String>) : double
+            }
+
+            abstract class BookableProduct {
+                - maxParticipants : int
+                - expirationDate : LocalDateTime
+                + getExpirationDate() : LocalDateTime
+                + {abstract} validateTicketAddition()
+            }
+
+            class EventProduct {
+                - type : EventType
+                - {static} MIN_FOOD_PLANNING_DAYS : int
+                - {static} MIN_MEETING_PLANNING_HOURS : int
+                + validate()
+                + getExpirationDetails() : String
+            }
+
+            class Service {
+                - serviceType : ServiceType
+                - expirationDate : LocalDateTime
+                + Service(LocalDateTime, ServiceType)
+                + getPrintablePriceDetails() : String
+                + isService() : boolean
+            }
+
+            ' Enums hanging separately
+            enum ProductCategory {
+                MERCH
+                BOOK
+                CLOTHES
+                STATIONERY
+                ELECTRONICS
+                + getDiscount() : double
+            }
+            
+            enum EventType {
+                FOOD
+                MEETING
+                + isPlanningTimeValid(LocalDateTime) : boolean
+            }
+            
+            enum ServiceType {
+                TRANSPORT
+                EVENT
+                INSURANCE
+            }
+        }
+
+        package "user" {
+            class ClientRepository {
+                - clients : List<Client>
+                + add(Client)
+                + findById(String) : Client
+                + remove(String)
+            }
+            
+            class CashierRepository {
+                - cashiers : List<Cashier>
+                + add(Cashier)
+                + findById(String) : Cashier
+                + remove(String)
+            }
+
+            abstract class User {
+                - id : String
+                - name : String
+                - email : String
+                + getId() : String
+                + getName() : String
+            }
+
+            class Cashier {
+                - tickets : List<Ticket>
+                + {static} generateCashierId(List<Cashier>) : String
+                + addTicket(Ticket)
+                + hasTicket(String) : boolean
+            }
+
+            abstract class Client {
+                + {abstract} createTicket(String, char) : Ticket
+                + {abstract} validateId(String) : boolean
+                + {abstract} addTicket(Ticket)
+                + {abstract} hasTicket(String) : boolean
+            }
+
+            class IndividualClient {
+                - cashierId : String
+                - tickets : List<Ticket>
+                + createTicket(String, char) : Ticket
+            }
+
+            class CompanyClient {
+                - cashierId : String
+                - tickets : List<Ticket>
+                + createTicket(String, char) : Ticket
+            }
+        }
+
+        package "ticket" {
+            class TicketRepository {
+                - tickets : List<Ticket>
+                + add(Ticket)
+                + findById(String) : Ticket
+                + remove(Ticket)
+                + getAll() : List<Ticket>
+            }
+
+            abstract class Ticket<T extends Product> {
+                - id : String
+                - state : TicketState
+                - lines : List<TicketLine>
+                - printStrategy : PrintStrategy
+                - {static} MAX_TICKET_LINES : int
+                + addProduct(T, int, List<String>)
+                + removeProduct(String) : boolean
+                + print() : String
+                + setPrintStrategy(PrintStrategy)
+                + {abstract} accepts(Product) : boolean
+                + {abstract} validateProduct(Product)
+                + {abstract} getTotalPrice() : double
+            }
+
+            class CommonTicket {
+                + accepts(Product) : boolean
+                + validateProduct(Product)
+                + getTotalPrice() : double
+            }
+
+            class CompanyTicket {
+                - validationPolicy : ValidationPolicy
+                + CompanyTicket(String, TicketPrintType)
+                + accepts(Product) : boolean
+                + validateProduct(Product)
+                + getTotalPrice() : double
+                + print() : String
+            }
+
+            class TicketLine<T> {
+                - quantity : int
+                - product : T
+                - customTexts : List<String>
+                + getQuantity() : int
+                + getProduct() : T
+                + getLineTotal() : double
+            }
+
+            ' Enums hanging separately
+            enum TicketState {
+               EMPTY
+               ACTIVE
+               CLOSED
+            }
+            
+            enum TicketPrintType {
+               COMPANY
+               SERVICE
+               STANDARD
+               + getFlag() : char
+            }
+        }
+
+        package "printing" {
+            interface PrintStrategy {
+                + formatTicket(Ticket) : String
+            }
         }
     }
 }
 
-'--- APPLICATION ---
-package "es.upm.etsisi.poo.application" {
-    class Store implements java.io.Serializable {
-        + void addProduct(Product p)
-        + Ticket<?> createTicket(...)
-        + void addProductToTicket(...)
-        + String printTicket(...)
-    }
-    note top: Facade / Main Model
-}
+' --- RELATIONSHIPS ---
 
-'--- UI ---
-package "es.upm.etsisi.poo.ui" {
-    interface Command {
-        + void execute(String[] args)
-    }
+' 1. Application Entry & UI
+App ..> Store : uses
+App ..> FilePersistenceHandler : uses
+App ..> CommandHandler : uses
 
-    abstract class AbstractCommand {
-        # Store store
-        + List<String> parseArgs(String args)
-    }
+CommandHandler o-- "0..*" Command : has
+CommandHandler --> Store : modifies
+AbstractCommand ..|> Command
+AbstractCommand --> Store : operates on
 
-    class CommandHandler {
-        - Map<String, Command> commands
-        + void handle(String input)
-    }
+' Command inheritance
+ProductCommand --|> AbstractCommand
+ClientCommand --|> AbstractCommand
+CashierCommand --|> AbstractCommand
+TicketCommand --|> AbstractCommand
+TicketCashierComparator ..> Store
 
-    class ProductCommand
-    class TicketCommand
-    class ClientCommand
-    class CashierCommand
-    
-    class TicketCashierComparator
+' 2. Infrastructure
+FilePersistenceHandler ..> Store : saves/loads
 
-    Command <|.. AbstractCommand
-    AbstractCommand <|-- ProductCommand
-    AbstractCommand <|-- TicketCommand
-    AbstractCommand <|-- ClientCommand
-    AbstractCommand <|-- CashierCommand
-    
-    CommandHandler o-- Command
-}
+' 3. Store (Central Hub)
+Store --> Catalog
+Store --> TicketRepository
+Store --> ClientRepository
+Store --> CashierRepository
 
-'--- RELATIONSHIPS ACROSS PACKAGES ---
+' 4. Product Domain
+Catalog o-- "0..*" Product : manages
+Product <|-- StandardProduct
+Product <|-- CustomizableProduct
+Product <|-- BookableProduct
+Product <|-- Service
+BookableProduct <|-- EventProduct
 
-' Strategy Pattern
-Ticket o-right- PrintStrategy
+' 5. User Domain
+User <|-- Cashier
+User <|-- Client
+Client <|-- IndividualClient
+Client <|-- CompanyClient
 
-' Store Aggregations (The Hexagon Core)
-Store *-- Catalog
-Store *-- TicketRepository
-Store *-- ClientRepository
-Store *-- CashierRepository
+ClientRepository o-- "0..*" Client
+CashierRepository o-- "0..*" Cashier
 
-' Persistence
-FilePersistenceHandler ..> Store : Saves/Loads
+Cashier --> "0..*" Ticket : manages
+Client --> "0..*" Ticket : owns
 
-' UI to Application
-AbstractCommand --> Store : Uses
-CommandHandler --> Store : Uses
-TicketCashierComparator --> Store : Uses
+' 6. Ticket Domain
+TicketRepository o-- "0..*" Ticket
+Ticket <|-- CommonTicket
+Ticket <|-- CompanyTicket
+Ticket *-- "0..*" TicketLine : contains
+TicketLine --> "1" Product : references
 
-' User to Ticket Associations
-Cashier o-- Ticket : created >
-Client o-- Ticket : owns >
+' 7. Strategy Pattern
+Ticket o-- PrintStrategy : uses
+StandardPrintStrategy ..|> PrintStrategy
+CompanyPrintStrategy ..|> PrintStrategy
+ServicePrintStrategy ..|> PrintStrategy
 
 @enduml
