@@ -28,7 +28,7 @@ class CashierCommand extends AbstractCommand {
         argList.remove(0);
 
         switch (command) {
-            case "add":
+            case "add" -> {
                 String id = null;
                 String name;
                 String email;
@@ -43,8 +43,8 @@ class CashierCommand extends AbstractCommand {
 
                 store.addCashier(id, name, email);
                 System.out.println("cash add: ok");
-                break;
-            case "remove":
+            }
+            case "remove" -> {
                 if (!argList.isEmpty()) {
                     String cashierId = argList.get(0);
                     store.removeCashier(cashierId);
@@ -52,8 +52,8 @@ class CashierCommand extends AbstractCommand {
                 } else {
                     throw new IllegalArgumentException("Usage: cash remove <id>");
                 }
-                break;
-            case "list":
+            }
+            case "list" -> {
                 List<Cashier> cashierList = store.getCashiers();
                 // Rule: Sort by name (E2)
                 Collections.sort(cashierList);
@@ -62,8 +62,8 @@ class CashierCommand extends AbstractCommand {
                     System.out.println("  " + cashier);
                 }
                 System.out.println("cash list: ok");
-                break;
-            case "tickets":
+            }
+            case "tickets" -> {
                 if (!argList.isEmpty()) {
                     String cashierId = argList.get(0);
                     Cashier cashier = store.findCashierById(cashierId);
@@ -89,9 +89,8 @@ class CashierCommand extends AbstractCommand {
                 } else {
                     throw new IllegalArgumentException("Usage: cash tickets <id>");
                 }
-                break;
-            default:
-                System.out.println("Unknown cash command.");
+            }
+            default -> System.out.println("Unknown cash command.");
         }
     }
 }

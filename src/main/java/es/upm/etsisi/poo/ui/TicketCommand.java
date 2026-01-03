@@ -28,7 +28,7 @@ class TicketCommand extends AbstractCommand {
         argList.remove(0);
 
         switch (command) {
-            case "new":
+            case "new" -> {
                 String ticketId = null;
                 String cashierId;
                 String clientId;
@@ -52,8 +52,8 @@ class TicketCommand extends AbstractCommand {
 
                 store.createTicket(ticketId, cashierId, clientId, printType);
                 System.out.println("ticket new: ok");
-                break;
-            case "add":
+            }
+            case "add" -> {
                 String addTicketId = argList.get(0);
                 String addCashierId = argList.get(1);
                 String prodId = argList.get(2);
@@ -69,7 +69,7 @@ class TicketCommand extends AbstractCommand {
 
                 // Logic: Parse custom text (--p).
                 @SuppressWarnings("Convert2Diamond")
-                List<String> customTexts = new ArrayList<String>();
+                        List<String> customTexts = new ArrayList<String>();
                 for (int i = 4; i < argList.size(); i++) {
                     if (argList.get(i).startsWith("--p")) {
                         String text = argList.get(i).substring(3);
@@ -81,8 +81,8 @@ class TicketCommand extends AbstractCommand {
 
                 store.addProductToTicket(addTicketId, addCashierId, prodId, amount, customTexts);
                 System.out.println("ticket add: ok");
-                break;
-            case "remove":
+            }
+            case "remove" -> {
                 if (argList.size() != 3) {
                     throw new IllegalArgumentException("Usage: ticket remove <ticketId> <cashId> <prodId>");
                 }
@@ -92,8 +92,8 @@ class TicketCommand extends AbstractCommand {
 
                 store.removeProductFromTicket(removeTicketId, removeCashierId, removeProdId);
                 System.out.println("ticket remove: ok");
-                break;
-            case "print":
+            }
+            case "print" -> {
                 if (argList.size() != 2) {
                     throw new IllegalArgumentException("Usage: ticket print <ticketId> <cashId>");
                 }
@@ -102,9 +102,9 @@ class TicketCommand extends AbstractCommand {
 
                 String receipt = store.printTicket(printTicketId, printCashierId);
                 System.out.print(receipt);
-                break;
+            }
 
-            case "list":
+            case "list" -> {
                 List<Ticket<?>> allTickets = store.getTickets();
                 // Sort: Cashier name, then ID.
                 allTickets.sort(new TicketCashierComparator(store));
@@ -119,9 +119,8 @@ class TicketCommand extends AbstractCommand {
                             + uId + ", State: " + ticket.getState());
                 }
                 System.out.println("ticket list: ok");
-                break;
-            default:
-                System.out.println("Unknown ticket command.");
+            }
+            default -> System.out.println("Unknown ticket command.");
         }
     }
 }

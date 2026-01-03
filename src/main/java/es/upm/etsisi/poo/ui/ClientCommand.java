@@ -30,7 +30,7 @@ class ClientCommand extends AbstractCommand {
         argList.remove(0);
 
         switch (command) {
-            case "add":
+            case "add" -> {
                 String id = argList.get(1);
                 String name = argList.get(0);
                 String email = argList.get(2);
@@ -53,8 +53,8 @@ class ClientCommand extends AbstractCommand {
 
                 store.addClient(client);
                 System.out.println("client add: ok");
-                break;
-            case "remove":
+            }
+            case "remove" -> {
                 if (!argList.isEmpty()) {
                     String dniToRemove = argList.get(0);
                     store.removeClient(dniToRemove);
@@ -62,8 +62,8 @@ class ClientCommand extends AbstractCommand {
                 } else {
                     throw new IllegalArgumentException("Usage: client remove <DNI>");
                 }
-                break;
-            case "list":
+            }
+            case "list" -> {
                 List<Client> clientList = store.getClients();
 
                 // Rule: Sort by name (E2)
@@ -73,9 +73,8 @@ class ClientCommand extends AbstractCommand {
                     System.out.println("  " + c);
                 }
                 System.out.println("client list: ok");
-                break;
-            default:
-                System.out.println("Unknown client command.");
+            }
+            default -> System.out.println("Unknown client command.");
         }
     }
 }

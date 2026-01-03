@@ -38,27 +38,24 @@ public class Catalog implements java.io.Serializable {
         }
 
         switch (field.toUpperCase()) {
-            case "NAME":
-                prod.setName(value);
-                break;
-            case "CATEGORY":
+            case "NAME" -> prod.setName(value);
+            case "CATEGORY" -> {
                 try {
                     ProductCategory newCategory = ProductCategory.valueOf(value.toUpperCase());
                     prod.setCategory(newCategory);
                 } catch (IllegalArgumentException e) {
                     throw new IllegalArgumentException("Error: Invalid category");
                 }
-                break;
-            case "PRICE":
+            }
+            case "PRICE" -> {
                 try {
                     double newPrice = Double.parseDouble(value);
                     prod.setPrice(newPrice);
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Error: Invalid price");
                 }
-                break;
-            default:
-                throw new IllegalArgumentException("Error: Invalid field");
+            }
+            default -> throw new IllegalArgumentException("Error: Invalid field");
         }
     }
 

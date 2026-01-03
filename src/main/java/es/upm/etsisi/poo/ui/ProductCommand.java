@@ -30,7 +30,7 @@ class ProductCommand extends AbstractCommand {
         argList.remove(0);
 
         switch (command) {
-            case "add":
+            case "add" -> {
                 // E3: prod add <expiration: yyyy-MM-dd> <category>
                 if (argList.size() == 2) {
                     try {
@@ -86,9 +86,8 @@ class ProductCommand extends AbstractCommand {
                 store.addProduct(prod);
                 System.out.println(prod);
                 System.out.println("prod add: ok");
-                break;
-            case "addFood":
-            case "addMeeting":
+            }
+            case "addFood", "addMeeting" -> {
                 String eventId = null;
                 if (isId(argList.get(0))) {
                     eventId = argList.get(0);
@@ -122,16 +121,16 @@ class ProductCommand extends AbstractCommand {
                 store.addProduct(eventProduct);
                 System.out.println(eventProduct);
                 System.out.println("prod " + command + ": ok");
-                break;
-            case "list":
+            }
+            case "list" -> {
                 List<Product> productList = store.getProducts();
                 System.out.println("Catalog:");
                 for (Product p : productList) {
                     System.out.println("  " + p);
                 }
                 System.out.println("prod list: ok");
-                break;
-            case "update":
+            }
+            case "update" -> {
                 if (argList.size() >= 3) {
                     String productId = argList.get(0);
                     String field = argList.get(1);
@@ -140,17 +139,16 @@ class ProductCommand extends AbstractCommand {
                     System.out.println(store.getCatalog().getProduct(productId));
                     System.out.println("prod update: ok");
                 }
-                break;
-            case "remove":
+            }
+            case "remove" -> {
                 if (!argList.isEmpty()) {
                     String removeId = argList.get(0);
                     Product removedProduct = store.removeProduct(removeId);
                     System.out.println(removedProduct);
                     System.out.println("prod remove: ok");
                 }
-                break;
-            default:
-                System.out.println("Usage: prod add | addFood | addMeeting | list | update | remove");
+            }
+            default -> System.out.println("Usage: prod add | addFood | addMeeting | list | update | remove");
         }
     }
 

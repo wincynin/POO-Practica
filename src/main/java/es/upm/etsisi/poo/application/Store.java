@@ -93,17 +93,11 @@ public class Store implements java.io.Serializable {
 
         // Inject the PrintStrategy based on the requested type
         es.upm.etsisi.poo.domain.printing.PrintStrategy strategy;
-        switch (printType) {
-            case COMPANY:
-                strategy = new CompanyPrintStrategy();
-                break;
-            case SERVICE:
-                strategy = new ServicePrintStrategy();
-                break;
-            default:
-                strategy = new StandardPrintStrategy();
-                break;
-        }
+        strategy = switch (printType) {
+            case COMPANY -> new CompanyPrintStrategy();
+            case SERVICE -> new ServicePrintStrategy();
+            default -> new StandardPrintStrategy();
+        };
         newTicket.setPrintStrategy(strategy);
         
         // Logic: Register ticket in repositories.

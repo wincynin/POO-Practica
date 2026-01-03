@@ -69,16 +69,12 @@ public class CompanyTicket extends Ticket<Product> {
 
     private static class ValidationPolicyFactory {
         static ValidationPolicy getPolicy(TicketPrintType printType) {
-            switch (printType) {
-                case COMPANY:
-                    return new MixedPolicy();
-                case SERVICE:
-                    return new ServiceOnlyPolicy();
-                case STANDARD:
-                    return new ProductOnlyPolicy();
-                default:
-                    return new DefaultPolicy();
-            }
+            return switch (printType) {
+                case COMPANY -> new MixedPolicy();
+                case SERVICE -> new ServiceOnlyPolicy();
+                case STANDARD -> new ProductOnlyPolicy();
+                default -> new DefaultPolicy();
+            };
         }
     }
 

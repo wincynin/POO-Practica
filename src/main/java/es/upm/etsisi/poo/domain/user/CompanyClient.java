@@ -66,17 +66,11 @@ public class CompanyClient extends Client {
     public Ticket<?> createTicket(String ticketId, char flag) {
         // 1. Convert the primitive char flag to our Domain Enum
         es.upm.etsisi.poo.domain.ticket.TicketPrintType type;
-        switch (Character.toLowerCase(flag)) {
-            case 'c':
-                type = es.upm.etsisi.poo.domain.ticket.TicketPrintType.COMPANY;
-                break;
-            case 's':
-                type = es.upm.etsisi.poo.domain.ticket.TicketPrintType.SERVICE;
-                break;
-            default:
-                type = es.upm.etsisi.poo.domain.ticket.TicketPrintType.STANDARD;
-                break;
-        }
+        type = switch (Character.toLowerCase(flag)) {
+            case 'c' -> es.upm.etsisi.poo.domain.ticket.TicketPrintType.COMPANY;
+            case 's' -> es.upm.etsisi.poo.domain.ticket.TicketPrintType.SERVICE;
+            default -> es.upm.etsisi.poo.domain.ticket.TicketPrintType.STANDARD;
+        };
 
         // 2. Pass the Enum to the new constructor
         return new CompanyTicket(ticketId, type);
